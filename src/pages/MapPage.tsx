@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
+import Map from '../components/Map'
 
 function MapPage() {
   const { user } = useAuth()
@@ -12,9 +13,9 @@ function MapPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Karte</h1>
+    <div className="h-screen flex flex-col">
+      <header className="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold text-slate-800">Travel App</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm text-slate-600">{user?.email}</span>
           <button
@@ -24,8 +25,10 @@ function MapPage() {
             Abmelden
           </button>
         </div>
-      </div>
-      <p className="text-slate-600">Hier wird die Karte angezeigt.</p>
+      </header>
+      <main className="flex-1">
+        <Map />
+      </main>
     </div>
   )
 }
