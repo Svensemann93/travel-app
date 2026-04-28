@@ -8,12 +8,18 @@ import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
 import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
+import ConfirmDialog from '../components/ConfirmDialog'
+import type { Place } from '../types/place'
 
 function MapPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const { places, reload } = usePlaces()
+
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
+  const [editingPlace, setEditingPlace] = useState<Place | null>(null)
+  const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -24,7 +30,7 @@ function MapPage() {
     setClickedPosition(latlng)
   }
 
-  async function handleSavePlace(data: { name: string; description: string }) {
+  async function handleCreatePlace(data: { name: string; description: string }) {
     if (!clickedPosition || !user) return
 
     const { error } = await supabase.from('places').insert({
@@ -39,6 +45,42 @@ function MapPage() {
       throw new Error(error.message)
     }
 
+    await reload()
+  }
+
+  async function handleUpdatePlace(data: { name: string; description: string }) {
+    if (!editingPlace) return
+
+    const { error } = await supabase
+      .from('places')
+      .update({
+        name: data.name,
+        description: data.description || null,
+      })
+      .eq('id', editingPlace.id)
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    await reload()
+  }
+
+  async function handleConfirmDelete() {
+    if (!deletingPlace) return
+
+    setIsDeleting(true)
+
+    const { error } = await supabase.from('places').delete().eq('id', deletingPlace.id)
+
+    setIsDeleting(false)
+
+    if (error) {
+      console.error('Delete error:', error)
+      return
+    }
+
+    setDeletingPlace(null)
     await reload()
   }
 
@@ -58,17 +100,45 @@ function MapPage() {
       </header>
       <main className="flex-1">
         <Map>
-          <PlaceMarkers places={places} />
+          <PlaceMarkers
+            places={places}
+            onEdit={(place) => setEditingPlace(place)}
+            onDelete={(place) => setDeletingPlace(place)}
+          />
           <MapClickHandler onMapClick={handleMapClick} />
         </Map>
       </main>
 
       <PlaceFormModal
+        key={clickedPosition ? `${clickedPosition.lat}-${clickedPosition.lng}` : 'create-closed'}
         isOpen={clickedPosition !== null}
         latitude={clickedPosition?.lat ?? 0}
         longitude={clickedPosition?.lng ?? 0}
         onClose={() => setClickedPosition(null)}
-        onSave={handleSavePlace}
+        onSave={handleCreatePlace}
+      />
+
+      <PlaceFormModal
+        key={editingPlace?.id ?? 'edit-closed'}
+        isOpen={editingPlace !== null}
+        latitude={editingPlace?.latitude ?? 0}
+        longitude={editingPlace?.longitude ?? 0}
+        initialData={
+          editingPlace
+            ? { name: editingPlace.name, description: editingPlace.description ?? '' }
+            : undefined
+        }
+        onClose={() => setEditingPlace(null)}
+        onSave={handleUpdatePlace}
+      />
+      <ConfirmDialog
+        isOpen={deletingPlace !== null}
+        title="Ort löschen"
+        message={`Möchtest du "${deletingPlace?.name}" wirklich löschen? Das kann nicht rückgängig gemacht werden.`}
+        confirmLabel="Löschen"
+        isProcessing={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeletingPlace(null)}
       />
     </div>
   )

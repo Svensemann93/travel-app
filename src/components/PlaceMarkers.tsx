@@ -14,16 +14,34 @@ const markerIcon = new Icon({
 
 type Props = {
   places: Place[]
+  onEdit: (place: Place) => void
+  onDelete: (place: Place) => void
 }
 
-function PlaceMarkers({ places }: Props) {
+function PlaceMarkers({ places, onEdit, onDelete }: Props) {
   return (
     <>
       {places.map((place) => (
         <Marker key={place.id} position={[place.latitude, place.longitude]} icon={markerIcon}>
           <Popup>
-            <strong>{place.name}</strong>
-            {place.description && <p className="mt-1">{place.description}</p>}
+            <div className="min-w-[180px]">
+              <strong className="text-base">{place.name}</strong>
+              {place.description && <p className="mt-1 mb-2 text-slate-600">{place.description}</p>}
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => onEdit(place)}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Bearbeiten
+                </button>
+                <button
+                  onClick={() => onDelete(place)}
+                  className="text-sm text-red-600 hover:underline"
+                >
+                  Löschen
+                </button>
+              </div>
+            </div>
           </Popup>
         </Marker>
       ))}

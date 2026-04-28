@@ -1,18 +1,26 @@
 import { useState } from 'react'
 
+type PlaceData = {
+  name: string
+  description: string
+}
+
 type Props = {
   isOpen: boolean
   latitude: number
   longitude: number
+  initialData?: PlaceData
   onClose: () => void
-  onSave: (data: { name: string; description: string }) => Promise<void>
+  onSave: (data: PlaceData) => Promise<void>
 }
 
-function PlaceFormModal({ isOpen, latitude, longitude, onClose, onSave }: Props) {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
+function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onSave }: Props) {
+  const [name, setName] = useState(initialData?.name ?? '')
+  const [description, setDescription] = useState(initialData?.description ?? '')
   const [errorMessage, setErrorMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+
+  const isEditMode = initialData !== undefined
 
   if (!isOpen) return null
 
@@ -23,8 +31,6 @@ function PlaceFormModal({ isOpen, latitude, longitude, onClose, onSave }: Props)
 
     try {
       await onSave({ name, description })
-      setName('')
-      setDescription('')
       onClose()
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unbekannter Fehler')
@@ -36,7 +42,9 @@ function PlaceFormModal({ isOpen, latitude, longitude, onClose, onSave }: Props)
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h2 className="text-xl font-bold text-slate-800 mb-4">Neuen Ort hinzufügen</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-4">
+          {isEditMode ? 'Ort bearbeiten' : 'Neuen Ort hinzufügen'}
+        </h2>
 
         <p className="text-sm text-slate-500 mb-4">
           Position: {latitude.toFixed(5)}, {longitude.toFixed(5)}
