@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import MapPage from './pages/MapPage'
+import PlacesListPage from './pages/PlacesListPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -12,6 +13,14 @@ function App() {
         element={
           <ProtectedRoute>
             <MapPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/places"
+        element={
+          <ProtectedRoute>
+            <PlacesListPage />
           </ProtectedRoute>
         }
       />
