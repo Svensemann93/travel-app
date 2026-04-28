@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { LatLng } from 'leaflet'
 import { useAuth } from '../hooks/useAuth'
 import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
+import MapFocuser from '../components/MapFocuser'
 import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
@@ -20,6 +21,19 @@ function MapPage() {
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const focusId = searchParams.get('focus')
+  const focusedPlace = focusId ? (places.find((p) => p.id === focusId) ?? null) : null
+
+  useEffect(() => {
+    if (focusId && focusedPlace) {
+      const timer = setTimeout(() => {
+        setSearchParams({}, { replace: true })
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [focusId, focusedPlace, setSearchParams])
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -87,7 +101,17 @@ function MapPage() {
   return (
     <div className="h-screen flex flex-col">
       <header className="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-slate-800">Travel App</h1>
+        <div className="flex items-center gap-6">
+          <h1 className="text-xl font-bold text-slate-800">Travel App</h1>
+          <nav className="flex gap-4">
+            <Link to="/" className="text-sm font-semibold text-slate-900">
+              Karte
+            </Link>
+            <Link to="/places" className="text-sm text-slate-600 hover:text-slate-900">
+              Meine Orte
+            </Link>
+          </nav>
+        </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-slate-600">{user?.email}</span>
           <button
@@ -106,6 +130,7 @@ function MapPage() {
             onDelete={(place) => setDeletingPlace(place)}
           />
           <MapClickHandler onMapClick={handleMapClick} />
+          <MapFocuser place={focusedPlace} />
         </Map>
       </main>
 
@@ -131,6 +156,7 @@ function MapPage() {
         onClose={() => setEditingPlace(null)}
         onSave={handleUpdatePlace}
       />
+
       <ConfirmDialog
         isOpen={deletingPlace !== null}
         title="Ort löschen"
