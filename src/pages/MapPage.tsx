@@ -1,15 +1,45 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import type { LatLng } from 'leaflet'
 import { useAuth } from '../hooks/useAuth'
+import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
 import Map from '../components/Map'
+import MapClickHandler from '../components/MapClickHandler'
+import PlaceMarkers from '../components/PlaceMarkers'
+import PlaceFormModal from '../components/PlaceFormModal'
 
 function MapPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { places, reload } = usePlaces()
+  const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
 
   async function handleLogout() {
     await supabase.auth.signOut()
     navigate('/login')
+  }
+
+  function handleMapClick(latlng: LatLng) {
+    setClickedPosition(latlng)
+  }
+
+  async function handleSavePlace(data: { name: string; description: string }) {
+    if (!clickedPosition || !user) return
+
+    const { error } = await supabase.from('places').insert({
+      user_id: user.id,
+      name: data.name,
+      description: data.description || null,
+      latitude: clickedPosition.lat,
+      longitude: clickedPosition.lng,
+    })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    await reload()
   }
 
   return (
@@ -27,8 +57,19 @@ function MapPage() {
         </div>
       </header>
       <main className="flex-1">
-        <Map />
+        <Map>
+          <PlaceMarkers places={places} />
+          <MapClickHandler onMapClick={handleMapClick} />
+        </Map>
       </main>
+
+      <PlaceFormModal
+        isOpen={clickedPosition !== null}
+        latitude={clickedPosition?.lat ?? 0}
+        longitude={clickedPosition?.lng ?? 0}
+        onClose={() => setClickedPosition(null)}
+        onSave={handleSavePlace}
+      />
     </div>
   )
 }
