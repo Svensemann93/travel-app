@@ -4,7 +4,7 @@ import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
 
 function PlacesListPage() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const { places, isLoading, errorMessage } = usePlaces()
   const navigate = useNavigate()
 
@@ -29,10 +29,13 @@ function PlacesListPage() {
             <Link to="/places" className="text-sm font-semibold text-slate-900">
               Meine Orte
             </Link>
+            <Link to="/profile" className="text-sm text-slate-600 hover:text-slate-900">
+              Profil
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-600">{user?.email}</span>
+          <span className="text-sm text-slate-600">{profile?.username ?? user?.email}</span>
           <button
             onClick={handleLogout}
             className="bg-slate-200 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-300 transition-colors text-sm"

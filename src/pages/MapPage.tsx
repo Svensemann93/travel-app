@@ -13,7 +13,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import type { Place } from '../types/place'
 
 function MapPage() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const navigate = useNavigate()
   const { places, reload } = usePlaces()
 
@@ -110,10 +110,13 @@ function MapPage() {
             <Link to="/places" className="text-sm text-slate-600 hover:text-slate-900">
               Meine Orte
             </Link>
+            <Link to="/profile" className="text-sm text-slate-600 hover:text-slate-900">
+              Profil
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-600">{user?.email}</span>
+          <span className="text-sm text-slate-600">{profile?.username ?? user?.email}</span>
           <button
             onClick={handleLogout}
             className="bg-slate-200 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-300 transition-colors text-sm"
