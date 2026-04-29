@@ -48,7 +48,16 @@ function PlacesListPage() {
       <main className="max-w-4xl mx-auto p-8">
         <h2 className="text-2xl font-bold text-slate-800 mb-6">Meine Orte</h2>
 
-        {isLoading && <p className="text-slate-600">Lädt...</p>}
+        {isLoading && (
+          <div className="space-y-3">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="bg-white rounded-lg shadow-sm p-4 animate-pulse">
+                <div className="h-4 bg-slate-200 rounded w-1/3 mb-2" />
+                <div className="h-3 bg-slate-100 rounded w-2/3" />
+              </div>
+            ))}
+          </div>
+        )}
 
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">

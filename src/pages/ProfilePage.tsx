@@ -82,7 +82,7 @@ function ProfilePage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6 border border-red-200">
-          <h3 className="text-lg font-semibold text-slate-800 mb-2">Gefahrenzone</h3>
+          <h3 className="text-lg font-semibold text-slate-800 mb-2">Account löschen</h3>
           <p className="text-sm text-slate-600 mb-4">
             Wenn du deinen Account löschst, werden alle deine Daten unwiderruflich entfernt.
           </p>
