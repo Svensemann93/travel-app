@@ -4,6 +4,7 @@ import type { LatLng } from 'leaflet'
 import { useAuth } from '../hooks/useAuth'
 import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
+import { uploadPhoto } from '../lib/photoStorage'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
 import MapFocuser from '../components/MapFocuser'
@@ -14,17 +15,25 @@ import type { Place } from '../types/place'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 
+type PlaceFormData = {
+  name: string
+  description: string
+  rating: number | null
+  price_level: number | null
+  website_url: string
+  photos: File[]
+}
+
 function MapPage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
   const { places, isLoading, reload } = usePlaces()
-
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-
   const [searchParams, setSearchParams] = useSearchParams()
+
   const focusId = searchParams.get('focus')
   const focusedPlace = focusId ? (places.find((p) => p.id === focusId) ?? null) : null
 
@@ -46,37 +55,74 @@ function MapPage() {
     setClickedPosition(latlng)
   }
 
-  async function handleCreatePlace(data: { name: string; description: string }) {
+  async function uploadPhotosForPlace(placeId: string, userId: string, photos: File[]) {
+    for (let i = 0; i < photos.length; i++) {
+      const path = await uploadPhoto(userId, placeId, photos[i])
+      const { error } = await supabase.from('place_photos').insert({
+        place_id: placeId,
+        user_id: userId,
+        url: path,
+        position: i,
+      })
+      if (error) throw new Error(error.message)
+    }
+  }
+
+  async function handleCreatePlace(data: PlaceFormData) {
     if (!clickedPosition || !user) return
 
-    const { error } = await supabase.from('places').insert({
-      user_id: user.id,
-      name: data.name,
-      description: data.description || null,
-      latitude: clickedPosition.lat,
-      longitude: clickedPosition.lng,
-    })
+    const { data: inserted, error } = await supabase
+      .from('places')
+      .insert({
+        user_id: user.id,
+        name: data.name,
+        description: data.description || null,
+        rating: data.rating,
+        price_level: data.price_level,
+        website_url: data.website_url || null,
+        latitude: clickedPosition.lat,
+        longitude: clickedPosition.lng,
+      })
+      .select('id')
+      .single()
 
-    if (error) {
-      throw new Error(error.message)
+    if (error) throw new Error(error.message)
+
+    if (data.photos.length > 0) {
+      await uploadPhotosForPlace(inserted.id, user.id, data.photos)
     }
 
     await reload()
   }
 
-  async function handleUpdatePlace(data: { name: string; description: string }) {
-    if (!editingPlace) return
+  async function handleUpdatePlace(data: PlaceFormData) {
+    if (!editingPlace || !user) return
 
     const { error } = await supabase
       .from('places')
       .update({
         name: data.name,
         description: data.description || null,
+        rating: data.rating,
+        price_level: data.price_level,
+        website_url: data.website_url || null,
       })
       .eq('id', editingPlace.id)
 
-    if (error) {
-      throw new Error(error.message)
+    if (error) throw new Error(error.message)
+
+    if (data.photos.length > 0) {
+      const existingCount = editingPlace.photos?.length ?? 0
+      for (let i = 0; i < data.photos.length; i++) {
+        const path = await uploadPhoto(user.id, editingPlace.id, data.photos[i])
+        const { error: photoError } = await supabase.from('place_photos').insert({
+          place_id: editingPlace.id,
+          user_id: user.id,
+          url: path,
+          position: existingCount + i,
+        })
+        if (photoError) throw new Error(photoError.message)
+      }
     }
 
     await reload()
@@ -84,18 +130,13 @@ function MapPage() {
 
   async function handleConfirmDelete() {
     if (!deletingPlace) return
-
     setIsDeleting(true)
-
     const { error } = await supabase.from('places').delete().eq('id', deletingPlace.id)
-
     setIsDeleting(false)
-
     if (error) {
       console.error('Delete error:', error)
       return
     }
-
     setDeletingPlace(null)
     await reload()
   }
@@ -127,6 +168,7 @@ function MapPage() {
           </button>
         </div>
       </header>
+
       <main className="flex-1 relative">
         <Map>
           <PlaceMarkers
@@ -138,8 +180,9 @@ function MapPage() {
           <MapFocuser place={focusedPlace} />
         </Map>
         {isLoading && <MapLoadingIndicator />}
-        {!isLoading && places.length === 0 && <MapEmptyState />}{' '}
+        {!isLoading && places.length === 0 && <MapEmptyState />}
       </main>
+
       <PlaceFormModal
         key={clickedPosition ? `${clickedPosition.lat}-${clickedPosition.lng}` : 'create-closed'}
         isOpen={clickedPosition !== null}
@@ -156,7 +199,13 @@ function MapPage() {
         longitude={editingPlace?.longitude ?? 0}
         initialData={
           editingPlace
-            ? { name: editingPlace.name, description: editingPlace.description ?? '' }
+            ? {
+                name: editingPlace.name,
+                description: editingPlace.description ?? '',
+                rating: editingPlace.rating,
+                price_level: editingPlace.price_level,
+                website_url: editingPlace.website_url ?? '',
+              }
             : undefined
         }
         onClose={() => setEditingPlace(null)}

@@ -21,7 +21,7 @@ export function PlacesProvider({ children }: { children: ReactNode }) {
 
     const { data, error } = await supabase
       .from('places')
-      .select('*')
+      .select('*, photos:place_photos(*)')
       .order('created_at', { ascending: false })
 
     if (error) {

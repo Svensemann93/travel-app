@@ -2,6 +2,19 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
+import SignedImage from '../components/SignedImage'
+
+function StarDisplay({ rating }: { rating: number }) {
+  return (
+    <span>
+      {[1, 2, 3, 4, 5].map((s) => (
+        <span key={s} className={s <= rating ? 'text-yellow-400' : 'text-slate-300'}>
+          ★
+        </span>
+      ))}
+    </span>
+  )
+}
 
 function PlacesListPage() {
   const { user, profile } = useAuth()
@@ -79,22 +92,53 @@ function PlacesListPage() {
 
         {places.length > 0 && (
           <ul className="space-y-3">
-            {places.map((place) => (
-              <li key={place.id}>
-                <button
-                  onClick={() => handlePlaceClick(place.id)}
-                  className="w-full text-left bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
-                >
-                  <h3 className="font-semibold text-slate-800">{place.name}</h3>
-                  {place.description && (
-                    <p className="text-sm text-slate-600 mt-1">{place.description}</p>
-                  )}
-                  <p className="text-xs text-slate-400 mt-2">
-                    {place.latitude.toFixed(5)}, {place.longitude.toFixed(5)}
-                  </p>
-                </button>
-              </li>
-            ))}
+            {places.map((place) => {
+              const firstPhoto = place.photos?.slice().sort((a, b) => a.position - b.position)[0]
+
+              return (
+                <li key={place.id}>
+                  <button
+                    onClick={() => handlePlaceClick(place.id)}
+                    className="w-full text-left bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex"
+                  >
+                    {/* Thumbnail */}
+                    {firstPhoto ? (
+                      <SignedImage
+                        path={firstPhoto.url}
+                        alt={place.name}
+                        className="w-24 h-24 object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 bg-slate-100 flex-shrink-0 flex items-center justify-center text-slate-300 text-2xl">
+                        📍
+                      </div>
+                    )}
+
+                    {/* Inhalt */}
+                    <div className="p-4 flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-800">{place.name}</h3>
+
+                      <div className="flex items-center gap-2 mt-1">
+                        {place.rating && <StarDisplay rating={place.rating} />}
+                        {place.price_level && (
+                          <span className="text-sm font-medium text-green-700">
+                            {'$'.repeat(place.price_level)}
+                          </span>
+                        )}
+                      </div>
+
+                      {place.description && (
+                        <p className="text-sm text-slate-600 mt-1 truncate">{place.description}</p>
+                      )}
+
+                      <p className="text-xs text-slate-400 mt-1">
+                        {place.latitude.toFixed(5)}, {place.longitude.toFixed(5)}
+                      </p>
+                    </div>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         )}
       </main>
