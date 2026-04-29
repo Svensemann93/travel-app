@@ -11,11 +11,13 @@ import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import type { Place } from '../types/place'
+import MapEmptyState from '../components/MapEmptyState'
+import MapLoadingIndicator from '../components/MapLoadingIndicator'
 
 function MapPage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
-  const { places, reload } = usePlaces()
+  const { places, isLoading, reload } = usePlaces()
 
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
@@ -125,7 +127,7 @@ function MapPage() {
           </button>
         </div>
       </header>
-      <main className="flex-1">
+      <main className="flex-1 relative">
         <Map>
           <PlaceMarkers
             places={places}
@@ -135,8 +137,9 @@ function MapPage() {
           <MapClickHandler onMapClick={handleMapClick} />
           <MapFocuser place={focusedPlace} />
         </Map>
+        {isLoading && <MapLoadingIndicator />}
+        {!isLoading && places.length === 0 && <MapEmptyState />}{' '}
       </main>
-
       <PlaceFormModal
         key={clickedPosition ? `${clickedPosition.lat}-${clickedPosition.lng}` : 'create-closed'}
         isOpen={clickedPosition !== null}
