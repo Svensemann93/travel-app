@@ -3,20 +3,72 @@ import { useState } from 'react'
 type PlaceData = {
   name: string
   description: string
+  rating: number | null
+  price_level: number | null
+  website_url: string
+  photos: File[]
 }
 
 type Props = {
   isOpen: boolean
   latitude: number
   longitude: number
-  initialData?: PlaceData
+  initialData?: Omit<PlaceData, 'photos'>
   onClose: () => void
   onSave: (data: PlaceData) => Promise<void>
+}
+
+function StarRating({ value, onChange }: { value: number | null; onChange: (v: number) => void }) {
+  const [hovered, setHovered] = useState<number | null>(null)
+
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => onChange(value === star ? 0 : star)}
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(null)}
+          className="text-2xl leading-none transition-colors"
+        >
+          <span className={(hovered ?? value ?? 0) >= star ? 'text-yellow-400' : 'text-slate-300'}>
+            ★
+          </span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function PriceLevel({ value, onChange }: { value: number | null; onChange: (v: number) => void }) {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3].map((level) => (
+        <button
+          key={level}
+          type="button"
+          onClick={() => onChange(value === level ? 0 : level)}
+          className={`px-3 py-1 rounded-md border text-sm font-medium transition-colors ${
+            (value ?? 0) >= level
+              ? 'bg-green-600 border-green-600 text-white'
+              : 'border-slate-300 text-slate-400 hover:border-slate-400'
+          }`}
+        >
+          {'$'.repeat(level)}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onSave }: Props) {
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
+  const [rating, setRating] = useState<number | null>(initialData?.rating ?? null)
+  const [priceLevel, setPriceLevel] = useState<number | null>(initialData?.price_level ?? null)
+  const [websiteUrl, setWebsiteUrl] = useState(initialData?.website_url ?? '')
+  const [photos, setPhotos] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
 
@@ -24,13 +76,30 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
 
   if (!isOpen) return null
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? [])
+    setPhotos((prev) => [...prev, ...files])
+    e.target.value = '' // Reset damit gleiche Datei nochmals gewählt werden kann
+  }
+
+  function removePhoto(index: number) {
+    setPhotos((prev) => prev.filter((_, i) => i !== index))
+  }
+
   async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
     setErrorMessage('')
     setIsSaving(true)
 
     try {
-      await onSave({ name, description })
+      await onSave({
+        name,
+        description,
+        rating: rating === 0 ? null : rating,
+        price_level: priceLevel === 0 ? null : priceLevel,
+        website_url: websiteUrl,
+        photos,
+      })
       onClose()
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unbekannter Fehler')
@@ -41,7 +110,7 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold text-slate-800 mb-4">
           {isEditMode ? 'Ort bearbeiten' : 'Neuen Ort hinzufügen'}
         </h2>
@@ -51,6 +120,7 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
           <div>
             <label htmlFor="place-name" className="block text-sm font-medium text-slate-700 mb-1">
               Name
@@ -66,6 +136,7 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
             />
           </div>
 
+          {/* Beschreibung */}
           <div>
             <label
               htmlFor="place-description"
@@ -80,6 +151,72 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
               rows={3}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+
+          {/* Bewertung + Preis */}
+          <div className="flex gap-6">
+            <div>
+              <p className="block text-sm font-medium text-slate-700 mb-1">Bewertung</p>
+              <StarRating value={rating} onChange={setRating} />
+            </div>
+            <div>
+              <p className="block text-sm font-medium text-slate-700 mb-1">Preis</p>
+              <PriceLevel value={priceLevel} onChange={setPriceLevel} />
+            </div>
+          </div>
+
+          {/* Website */}
+          <div>
+            <label
+              htmlFor="place-website"
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
+              Website
+            </label>
+            <input
+              id="place-website"
+              type="url"
+              value={websiteUrl}
+              onChange={(e) => setWebsiteUrl(e.target.value)}
+              placeholder="https://..."
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Fotos */}
+          <div>
+            <p className="block text-sm font-medium text-slate-700 mb-1">Fotos</p>
+            <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-md text-sm text-slate-500 hover:border-blue-400 hover:text-blue-500 transition-colors">
+              <span>+ Fotos hinzufügen</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+
+            {photos.length > 0 && (
+              <div className="mt-2 grid grid-cols-3 gap-2">
+                {photos.map((file, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      className="w-full h-20 object-cover rounded-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {errorMessage && (
