@@ -4,14 +4,14 @@ import type { LatLng } from 'leaflet'
 import { useAuth } from '../hooks/useAuth'
 import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
-import { uploadPhoto } from '../lib/photoStorage'
+import { uploadPhoto, deletePhotos } from '../lib/photoStorage'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
 import MapFocuser from '../components/MapFocuser'
 import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
-import type { Place } from '../types/place'
+import type { Place, PlacePhoto } from '../types/place'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 
@@ -22,6 +22,11 @@ type PlaceFormData = {
   price_level: number | null
   website_url: string
   photos: File[]
+  photosToDelete: string[]
+}
+
+function collectStoragePaths(photos: PlacePhoto[]): string[] {
+  return photos.flatMap((p) => (p.thumb_url ? [p.url, p.thumb_url] : [p.url]))
 }
 
 function MapPage() {
@@ -55,14 +60,20 @@ function MapPage() {
     setClickedPosition(latlng)
   }
 
-  async function uploadPhotosForPlace(placeId: string, userId: string, photos: File[]) {
-    for (let i = 0; i < photos.length; i++) {
-      const path = await uploadPhoto(userId, placeId, photos[i])
+  async function uploadAndInsertPhotos(
+    placeId: string,
+    userId: string,
+    files: File[],
+    startPosition: number,
+  ) {
+    for (let i = 0; i < files.length; i++) {
+      const { fullPath, thumbPath } = await uploadPhoto(userId, placeId, files[i])
       const { error } = await supabase.from('place_photos').insert({
         place_id: placeId,
         user_id: userId,
-        url: path,
-        position: i,
+        url: fullPath,
+        thumb_url: thumbPath,
+        position: startPosition + i,
       })
       if (error) throw new Error(error.message)
     }
@@ -89,7 +100,7 @@ function MapPage() {
     if (error) throw new Error(error.message)
 
     if (data.photos.length > 0) {
-      await uploadPhotosForPlace(inserted.id, user.id, data.photos)
+      await uploadAndInsertPhotos(inserted.id, user.id, data.photos, 0)
     }
 
     await reload()
@@ -111,18 +122,20 @@ function MapPage() {
 
     if (error) throw new Error(error.message)
 
+    if (data.photosToDelete.length > 0) {
+      const toDelete = (editingPlace.photos ?? []).filter((p) => data.photosToDelete.includes(p.id))
+      await deletePhotos(collectStoragePaths(toDelete))
+
+      const { error: dbError } = await supabase
+        .from('place_photos')
+        .delete()
+        .in('id', data.photosToDelete)
+      if (dbError) throw new Error(dbError.message)
+    }
+
     if (data.photos.length > 0) {
-      const existingCount = editingPlace.photos?.length ?? 0
-      for (let i = 0; i < data.photos.length; i++) {
-        const path = await uploadPhoto(user.id, editingPlace.id, data.photos[i])
-        const { error: photoError } = await supabase.from('place_photos').insert({
-          place_id: editingPlace.id,
-          user_id: user.id,
-          url: path,
-          position: existingCount + i,
-        })
-        if (photoError) throw new Error(photoError.message)
-      }
+      const remaining = (editingPlace.photos?.length ?? 0) - data.photosToDelete.length
+      await uploadAndInsertPhotos(editingPlace.id, user.id, data.photos, remaining)
     }
 
     await reload()
@@ -131,6 +144,16 @@ function MapPage() {
   async function handleConfirmDelete() {
     if (!deletingPlace) return
     setIsDeleting(true)
+
+    const paths = collectStoragePaths(deletingPlace.photos ?? [])
+    if (paths.length > 0) {
+      try {
+        await deletePhotos(paths)
+      } catch (err) {
+        console.error('Storage cleanup failed:', err)
+      }
+    }
+
     const { error } = await supabase.from('places').delete().eq('id', deletingPlace.id)
     setIsDeleting(false)
     if (error) {
@@ -205,6 +228,7 @@ function MapPage() {
                 rating: editingPlace.rating,
                 price_level: editingPlace.price_level,
                 website_url: editingPlace.website_url ?? '',
+                existingPhotos: editingPlace.photos ?? [],
               }
             : undefined
         }
