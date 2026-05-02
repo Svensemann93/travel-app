@@ -3,6 +3,7 @@ export type PlacePhoto = {
   place_id: string
   user_id: string
   url: string
+  thumb_url: string | null
   position: number
   created_at: string
 }

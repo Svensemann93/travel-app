@@ -104,7 +104,7 @@ function PlacesListPage() {
                     {/* Thumbnail */}
                     {firstPhoto ? (
                       <SignedImage
-                        path={firstPhoto.url}
+                        path={firstPhoto.thumb_url ?? firstPhoto.url}
                         alt={place.name}
                         className="w-24 h-24 object-cover flex-shrink-0"
                       />

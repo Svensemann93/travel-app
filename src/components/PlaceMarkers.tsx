@@ -49,7 +49,7 @@ function PlaceMarkers({ places, onEdit, onDelete }: Props) {
                         className="shrink-0 cursor-zoom-in"
                       >
                         <SignedImage
-                          path={p.url}
+                          path={p.thumb_url ?? p.url}
                           alt={place.name}
                           className="h-40 w-56 object-cover rounded"
                         />
