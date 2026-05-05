@@ -4,14 +4,13 @@ import type { LatLng } from 'leaflet'
 import { useAuth } from '../hooks/useAuth'
 import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
-import { uploadPhoto, deletePhotos } from '../lib/photoStorage'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
 import MapFocuser from '../components/MapFocuser'
 import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
-import type { Place, PlacePhoto } from '../types/place'
+import type { Place } from '../types/place'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 
@@ -25,14 +24,10 @@ type PlaceFormData = {
   photosToDelete: string[]
 }
 
-function collectStoragePaths(photos: PlacePhoto[]): string[] {
-  return photos.flatMap((p) => (p.thumb_url ? [p.url, p.thumb_url] : [p.url]))
-}
-
 function MapPage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
-  const { places, isLoading, reload } = usePlaces()
+  const { places, isLoading, createPlace, updatePlace, deletePlace } = usePlaces()
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
@@ -60,32 +55,10 @@ function MapPage() {
     setClickedPosition(latlng)
   }
 
-  async function uploadAndInsertPhotos(
-    placeId: string,
-    userId: string,
-    files: File[],
-    startPosition: number,
-  ) {
-    for (let i = 0; i < files.length; i++) {
-      const { fullPath, thumbPath } = await uploadPhoto(userId, placeId, files[i])
-      const { error } = await supabase.from('place_photos').insert({
-        place_id: placeId,
-        user_id: userId,
-        url: fullPath,
-        thumb_url: thumbPath,
-        position: startPosition + i,
-      })
-      if (error) throw new Error(error.message)
-    }
-  }
-
   async function handleCreatePlace(data: PlaceFormData) {
-    if (!clickedPosition || !user) return
-
-    const { data: inserted, error } = await supabase
-      .from('places')
-      .insert({
-        user_id: user.id,
+    if (!clickedPosition) return
+    await createPlace(
+      {
         name: data.name,
         description: data.description || null,
         rating: data.rating,
@@ -93,75 +66,38 @@ function MapPage() {
         website_url: data.website_url || null,
         latitude: clickedPosition.lat,
         longitude: clickedPosition.lng,
-      })
-      .select('id')
-      .single()
-
-    if (error) throw new Error(error.message)
-
-    if (data.photos.length > 0) {
-      await uploadAndInsertPhotos(inserted.id, user.id, data.photos, 0)
-    }
-
-    await reload()
+      },
+      data.photos,
+    )
   }
 
   async function handleUpdatePlace(data: PlaceFormData) {
-    if (!editingPlace || !user) return
-
-    const { error } = await supabase
-      .from('places')
-      .update({
+    if (!editingPlace) return
+    await updatePlace(
+      editingPlace.id,
+      {
         name: data.name,
         description: data.description || null,
         rating: data.rating,
         price_level: data.price_level,
         website_url: data.website_url || null,
-      })
-      .eq('id', editingPlace.id)
-
-    if (error) throw new Error(error.message)
-
-    if (data.photosToDelete.length > 0) {
-      const toDelete = (editingPlace.photos ?? []).filter((p) => data.photosToDelete.includes(p.id))
-      await deletePhotos(collectStoragePaths(toDelete))
-
-      const { error: dbError } = await supabase
-        .from('place_photos')
-        .delete()
-        .in('id', data.photosToDelete)
-      if (dbError) throw new Error(dbError.message)
-    }
-
-    if (data.photos.length > 0) {
-      const remaining = (editingPlace.photos?.length ?? 0) - data.photosToDelete.length
-      await uploadAndInsertPhotos(editingPlace.id, user.id, data.photos, remaining)
-    }
-
-    await reload()
+      },
+      data.photos,
+      data.photosToDelete,
+    )
   }
 
   async function handleConfirmDelete() {
     if (!deletingPlace) return
     setIsDeleting(true)
-
-    const paths = collectStoragePaths(deletingPlace.photos ?? [])
-    if (paths.length > 0) {
-      try {
-        await deletePhotos(paths)
-      } catch (err) {
-        console.error('Storage cleanup failed:', err)
-      }
+    try {
+      await deletePlace(deletingPlace.id)
+      setDeletingPlace(null)
+    } catch (err) {
+      console.error('Delete error:', err)
+    } finally {
+      setIsDeleting(false)
     }
-
-    const { error } = await supabase.from('places').delete().eq('id', deletingPlace.id)
-    setIsDeleting(false)
-    if (error) {
-      console.error('Delete error:', error)
-      return
-    }
-    setDeletingPlace(null)
-    await reload()
   }
 
   return (
