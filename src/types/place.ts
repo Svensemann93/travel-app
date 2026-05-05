@@ -21,3 +21,16 @@ export type Place = {
   created_at: string
   photos: PlacePhoto[]
 }
+
+export type PlaceUpdateInput = {
+  name: string
+  description: string | null
+  rating: number | null
+  price_level: number | null
+  website_url: string | null
+}
+
+export type PlaceCreateInput = PlaceUpdateInput & {
+  latitude: number
+  longitude: number
+}

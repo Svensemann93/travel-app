@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../hooks/useAuth'
 import { usePlaces } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
@@ -18,11 +19,13 @@ function StarDisplay({ rating }: { rating: number }) {
 
 function PlacesListPage() {
   const { user, profile } = useAuth()
-  const { places, isLoading, errorMessage } = usePlaces()
+  const { data: places = [], isLoading, error } = usePlaces()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   async function handleLogout() {
     await supabase.auth.signOut()
+    queryClient.clear()
     navigate('/login')
   }
 
@@ -72,9 +75,9 @@ function PlacesListPage() {
           </div>
         )}
 
-        {errorMessage && (
+        {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-            {errorMessage}
+            {error.message}
           </div>
         )}
 
@@ -101,7 +104,6 @@ function PlacesListPage() {
                     onClick={() => handlePlaceClick(place.id)}
                     className="w-full text-left bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex"
                   >
-                    {/* Thumbnail */}
                     {firstPhoto ? (
                       <SignedImage
                         path={firstPhoto.thumb_url ?? firstPhoto.url}
@@ -114,7 +116,6 @@ function PlacesListPage() {
                       </div>
                     )}
 
-                    {/* Inhalt */}
                     <div className="p-4 flex-1 min-w-0">
                       <h3 className="font-semibold text-slate-800">{place.name}</h3>
 

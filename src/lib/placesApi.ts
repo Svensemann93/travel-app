@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 import { uploadPhoto, deletePhotos as deletePhotoFiles } from './photoStorage'
 import type { Place, PlacePhoto } from '../types/place'
-import type { PlaceCreateInput, PlaceUpdateInput } from './placesContextValue'
+import type { PlaceCreateInput, PlaceUpdateInput } from '../types/place'
 
 type PlaceRow = Omit<Place, 'photos'>
 
