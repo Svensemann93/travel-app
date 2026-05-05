@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import type { LatLng } from 'leaflet'
 import { useAuth } from '../hooks/useAuth'
-import { usePlaces } from '../hooks/usePlaces'
+import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
 import { supabase } from '../lib/supabase'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
@@ -27,11 +28,14 @@ type PlaceFormData = {
 function MapPage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
-  const { places, isLoading, createPlace, updatePlace, deletePlace } = usePlaces()
+  const queryClient = useQueryClient()
+  const { data: places = [], isLoading } = usePlaces()
+  const createPlace = useCreatePlace()
+  const updatePlace = useUpdatePlace()
+  const deletePlace = useDeletePlace()
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
 
   const focusId = searchParams.get('focus')
@@ -48,6 +52,7 @@ function MapPage() {
 
   async function handleLogout() {
     await supabase.auth.signOut()
+    queryClient.clear()
     navigate('/login')
   }
 
@@ -57,8 +62,8 @@ function MapPage() {
 
   async function handleCreatePlace(data: PlaceFormData) {
     if (!clickedPosition) return
-    await createPlace(
-      {
+    await createPlace.mutateAsync({
+      data: {
         name: data.name,
         description: data.description || null,
         rating: data.rating,
@@ -67,36 +72,33 @@ function MapPage() {
         latitude: clickedPosition.lat,
         longitude: clickedPosition.lng,
       },
-      data.photos,
-    )
+      photos: data.photos,
+    })
   }
 
   async function handleUpdatePlace(data: PlaceFormData) {
     if (!editingPlace) return
-    await updatePlace(
-      editingPlace.id,
-      {
+    await updatePlace.mutateAsync({
+      id: editingPlace.id,
+      data: {
         name: data.name,
         description: data.description || null,
         rating: data.rating,
         price_level: data.price_level,
         website_url: data.website_url || null,
       },
-      data.photos,
-      data.photosToDelete,
-    )
+      photosToAdd: data.photos,
+      photoIdsToDelete: data.photosToDelete,
+    })
   }
 
   async function handleConfirmDelete() {
     if (!deletingPlace) return
-    setIsDeleting(true)
     try {
-      await deletePlace(deletingPlace.id)
+      await deletePlace.mutateAsync(deletingPlace.id)
       setDeletingPlace(null)
     } catch (err) {
       console.error('Delete error:', err)
-    } finally {
-      setIsDeleting(false)
     }
   }
 
@@ -177,7 +179,7 @@ function MapPage() {
         title="Ort löschen"
         message={`Möchtest du "${deletingPlace?.name}" wirklich löschen? Das kann nicht rückgängig gemacht werden.`}
         confirmLabel="Löschen"
-        isProcessing={isDeleting}
+        isProcessing={deletePlace.isPending}
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeletingPlace(null)}
       />
