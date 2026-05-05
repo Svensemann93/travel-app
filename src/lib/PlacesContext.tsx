@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { supabase } from './supabase'
 import { PlacesContext } from './placesContextValue'
 import { AuthContext } from './authContextValue'
@@ -13,50 +13,65 @@ export function PlacesProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const reload = useCallback(async () => {
-    if (!userId) {
-      setPlaces([])
-      return
-    }
+  const fetchPlaces = useCallback(
+    async (signal?: AbortSignal) => {
+      if (!userId) {
+        setPlaces([])
+        return
+      }
 
-    const { data, error } = await supabase
-      .from('places')
-      .select('*, photos:place_photos(*)')
-      .order('created_at', { ascending: false })
+      const query = supabase
+        .from('places')
+        .select('*, photos:place_photos(*)')
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      setErrorMessage(error.message)
-      setPlaces([])
-    } else {
-      setErrorMessage(null)
-      setPlaces(data ?? [])
-    }
-  }, [userId])
+      if (signal) {
+        query.abortSignal(signal)
+      }
+
+      const { data, error } = await query
+
+      if (signal?.aborted) return
+
+      if (error) {
+        setErrorMessage(error.message)
+        setPlaces([])
+      } else {
+        setErrorMessage(null)
+        setPlaces(data ?? [])
+      }
+    },
+    [userId],
+  )
+
+  const reload = useCallback(() => fetchPlaces(), [fetchPlaces])
 
   useEffect(() => {
     if (!userId) {
       setPlaces([])
+      setErrorMessage(null)
       setIsLoading(false)
       return
     }
 
-    let isMounted = true
+    const controller = new AbortController()
     setIsLoading(true)
 
-    reload().finally(() => {
-      if (isMounted) {
+    fetchPlaces(controller.signal).finally(() => {
+      if (!controller.signal.aborted) {
         setIsLoading(false)
       }
     })
 
     return () => {
-      isMounted = false
+      controller.abort()
     }
-  }, [userId, reload])
+  }, [userId, fetchPlaces])
 
-  return (
-    <PlacesContext.Provider value={{ places, isLoading, errorMessage, reload }}>
-      {children}
-    </PlacesContext.Provider>
+  const value = useMemo(
+    () => ({ places, isLoading, errorMessage, reload }),
+    [places, isLoading, errorMessage, reload],
   )
+
+  return <PlacesContext.Provider value={value}>{children}</PlacesContext.Provider>
 }
