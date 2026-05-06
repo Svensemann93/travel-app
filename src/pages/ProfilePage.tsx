@@ -1,21 +1,19 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
+import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 
 function ProfilePage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-
-  async function handleLogout() {
-    await supabase.auth.signOut()
-    navigate('/login')
-  }
 
   async function handleDeleteAccount() {
     setIsDeleting(true)
@@ -31,33 +29,13 @@ function ProfilePage() {
     }
 
     await supabase.auth.signOut()
+    queryClient.clear()
     navigate('/login')
   }
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-6">
-          <h1 className="text-xl font-bold text-slate-800">Travel App</h1>
-          <nav className="flex gap-4">
-            <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">
-              Karte
-            </Link>
-            <Link to="/places" className="text-sm text-slate-600 hover:text-slate-900">
-              Meine Orte
-            </Link>
-            <Link to="/profile" className="text-sm font-semibold text-slate-900">
-              Profil
-            </Link>
-          </nav>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="bg-slate-200 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-300 transition-colors text-sm"
-        >
-          Abmelden
-        </button>
-      </header>
+      <AppHeader />
 
       <main className="max-w-2xl mx-auto p-8">
         <h2 className="text-2xl font-bold text-slate-800 mb-6">Mein Profil</h2>
