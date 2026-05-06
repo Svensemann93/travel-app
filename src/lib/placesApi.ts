@@ -56,24 +56,26 @@ export async function insertPhotoRows(
   files: File[],
   startPosition: number,
 ): Promise<PlacePhoto[]> {
-  const inserted: PlacePhoto[] = []
-  for (let i = 0; i < files.length; i++) {
-    const { fullPath, thumbPath } = await uploadPhoto(userId, placeId, files[i])
-    const { data, error } = await supabase
-      .from('place_photos')
-      .insert({
-        place_id: placeId,
-        user_id: userId,
-        url: fullPath,
-        thumb_url: thumbPath,
-        position: startPosition + i,
-      })
-      .select('*')
-      .single()
-    if (error) throw new Error(error.message)
-    inserted.push(data)
-  }
-  return inserted
+  if (files.length === 0) return []
+
+  return Promise.all(
+    files.map(async (file, i) => {
+      const { fullPath, thumbPath } = await uploadPhoto(userId, placeId, file)
+      const { data, error } = await supabase
+        .from('place_photos')
+        .insert({
+          place_id: placeId,
+          user_id: userId,
+          url: fullPath,
+          thumb_url: thumbPath,
+          position: startPosition + i,
+        })
+        .select('*')
+        .single()
+      if (error) throw new Error(error.message)
+      return data
+    }),
+  )
 }
 
 export async function removePhotos(photos: PlacePhoto[]): Promise<void> {
