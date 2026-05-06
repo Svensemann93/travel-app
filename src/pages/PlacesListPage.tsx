@@ -1,8 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '../hooks/useAuth'
 import { usePlaces } from '../hooks/usePlaces'
-import { supabase } from '../lib/supabase'
+import AppHeader from '../components/AppHeader'
 import SignedImage from '../components/SignedImage'
 
 function StarDisplay({ rating }: { rating: number }) {
@@ -18,16 +16,8 @@ function StarDisplay({ rating }: { rating: number }) {
 }
 
 function PlacesListPage() {
-  const { user, profile } = useAuth()
   const { data: places = [], isLoading, error } = usePlaces()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
-
-  async function handleLogout() {
-    await supabase.auth.signOut()
-    queryClient.clear()
-    navigate('/login')
-  }
 
   function handlePlaceClick(placeId: string) {
     navigate(`/?focus=${placeId}`)
@@ -35,31 +25,7 @@ function PlacesListPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-6">
-          <h1 className="text-xl font-bold text-slate-800">Travel App</h1>
-          <nav className="flex gap-4">
-            <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">
-              Karte
-            </Link>
-            <Link to="/places" className="text-sm font-semibold text-slate-900">
-              Meine Orte
-            </Link>
-            <Link to="/profile" className="text-sm text-slate-600 hover:text-slate-900">
-              Profil
-            </Link>
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-600">{profile?.username ?? user?.email}</span>
-          <button
-            onClick={handleLogout}
-            className="bg-slate-200 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-300 transition-colors text-sm"
-          >
-            Abmelden
-          </button>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="max-w-4xl mx-auto p-8">
         <h2 className="text-2xl font-bold text-slate-800 mb-6">Meine Orte</h2>
