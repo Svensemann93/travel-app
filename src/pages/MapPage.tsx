@@ -9,6 +9,7 @@ import MapFocuser from '../components/MapFocuser'
 import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
+import AddToTripModal from '../components/AddToTripModal'
 import type { Place } from '../types/place'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
@@ -31,6 +32,7 @@ function MapPage() {
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
+  const [addingToTripPlace, setAddingToTripPlace] = useState<Place | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
 
   const focusId = searchParams.get('focus')
@@ -101,6 +103,7 @@ function MapPage() {
             places={places}
             onEdit={(place) => setEditingPlace(place)}
             onDelete={(place) => setDeletingPlace(place)}
+            onAddToTrip={(place) => setAddingToTripPlace(place)}
           />
           <MapClickHandler onMapClick={handleMapClick} />
           <MapFocuser place={focusedPlace} />
@@ -148,6 +151,8 @@ function MapPage() {
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeletingPlace(null)}
       />
+
+      <AddToTripModal place={addingToTripPlace} onClose={() => setAddingToTripPlace(null)} />
     </div>
   )
 }

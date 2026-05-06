@@ -1,27 +1,18 @@
 import { useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
-import { Icon } from 'leaflet'
 import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
 import Lightbox from './Lightbox'
-
-const markerIcon = new Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-})
+import { defaultMarkerIcon } from '../lib/leafletIcons'
 
 type Props = {
   places: Place[]
   onEdit: (place: Place) => void
   onDelete: (place: Place) => void
+  onAddToTrip: (place: Place) => void
 }
 
-function PlaceMarkers({ places, onEdit, onDelete }: Props) {
+function PlaceMarkers({ places, onEdit, onDelete, onAddToTrip }: Props) {
   const [lightbox, setLightbox] = useState<{ place: Place; index: number } | null>(null)
 
   return (
@@ -33,7 +24,11 @@ function PlaceMarkers({ places, onEdit, onDelete }: Props) {
           : ''
 
         return (
-          <Marker key={place.id} position={[place.latitude, place.longitude]} icon={markerIcon}>
+          <Marker
+            key={place.id}
+            position={[place.latitude, place.longitude]}
+            icon={defaultMarkerIcon}
+          >
             <Popup minWidth={280}>
               <div className="min-w-280px space-y-2">
                 {photos.length > 0 ? (
@@ -88,7 +83,13 @@ function PlaceMarkers({ places, onEdit, onDelete }: Props) {
                   </a>
                 ) : null}
 
-                <div className="flex gap-2 pt-1 border-t border-slate-100">
+                <div className="flex gap-3 pt-1 border-t border-slate-100 flex-wrap">
+                  <button
+                    onClick={() => onAddToTrip(place)}
+                    className="text-sm text-green-700 hover:underline"
+                  >
+                    + Zu Trip
+                  </button>
                   <button
                     onClick={() => onEdit(place)}
                     className="text-sm text-blue-600 hover:underline"

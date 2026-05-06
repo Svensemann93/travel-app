@@ -3,15 +3,8 @@ import { Link } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import TripFormModal from '../components/TripFormModal'
 import { useCreateTrip, useTrips } from '../hooks/useTrips'
+import { formatDateRange } from '../lib/dateFormat'
 import type { TripInput } from '../types/trip'
-
-function formatDateRange(start: string | null, end: string | null): string | null {
-  if (!start && !end) return null
-  const fmt = (d: string) => new Date(d).toLocaleDateString('de-CH')
-  if (start && end) return `${fmt(start)} – ${fmt(end)}`
-  if (start) return `ab ${fmt(start)}`
-  return `bis ${fmt(end!)}`
-}
 
 function TripsListPage() {
   const { data: trips = [], isLoading, error } = useTrips()
