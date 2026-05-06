@@ -3,6 +3,8 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import MapPage from './pages/MapPage'
 import PlacesListPage from './pages/PlacesListPage'
+import TripsListPage from './pages/TripsListPage'
+import TripDetailPage from './pages/TripDetailPage'
 import ProfilePage from './pages/ProfilePage'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -22,6 +24,22 @@ function App() {
         element={
           <ProtectedRoute>
             <PlacesListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/trips"
+        element={
+          <ProtectedRoute>
+            <TripsListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/trips/:tripId"
+        element={
+          <ProtectedRoute>
+            <TripDetailPage />
           </ProtectedRoute>
         }
       />

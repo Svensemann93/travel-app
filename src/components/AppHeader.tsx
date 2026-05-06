@@ -4,9 +4,10 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Karte' },
-  { to: '/places', label: 'Meine Orte' },
-  { to: '/profile', label: 'Profil' },
+  { to: '/', label: 'Karte', match: (path: string) => path === '/' },
+  { to: '/places', label: 'Meine Orte', match: (path: string) => path === '/places' },
+  { to: '/trips', label: 'Trips', match: (path: string) => path.startsWith('/trips') },
+  { to: '/profile', label: 'Profil', match: (path: string) => path === '/profile' },
 ]
 
 function AppHeader() {
@@ -26,8 +27,8 @@ function AppHeader() {
       <div className="flex items-center gap-6">
         <h1 className="text-xl font-bold text-slate-800">Travel App</h1>
         <nav className="flex gap-4">
-          {NAV_ITEMS.map(({ to, label }) => {
-            const isActive = location.pathname === to
+          {NAV_ITEMS.map(({ to, label, match }) => {
+            const isActive = match(location.pathname)
             return (
               <Link
                 key={to}
