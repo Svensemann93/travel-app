@@ -2,18 +2,19 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
+import Map from '../components/Map'
+import MapFocuser from '../components/MapFocuser'
 import TripFormModal from '../components/TripFormModal'
 import TripPlaceItem from '../components/TripPlaceItem'
-import { useDeleteTrip, useTripWithPlaces, useUpdateTrip } from '../hooks/useTrips'
+import TripPlaceMarkers from '../components/TripPlaceMarkers'
+import {
+  useDeleteTrip,
+  useRemovePlaceFromTrip,
+  useTripWithPlaces,
+  useUpdateTrip,
+} from '../hooks/useTrips'
+import { formatDateRange } from '../lib/dateFormat'
 import type { TripInput } from '../types/trip'
-
-function formatDateRange(start: string | null, end: string | null): string | null {
-  if (!start && !end) return null
-  const fmt = (d: string) => new Date(d).toLocaleDateString('de-CH')
-  if (start && end) return `${fmt(start)} – ${fmt(end)}`
-  if (start) return `ab ${fmt(start)}`
-  return `bis ${fmt(end!)}`
-}
 
 function TripDetailPage() {
   const { tripId = '' } = useParams<{ tripId: string }>()
@@ -21,8 +22,11 @@ function TripDetailPage() {
   const { data: trip, isLoading, error } = useTripWithPlaces(tripId)
   const updateTrip = useUpdateTrip()
   const deleteTrip = useDeleteTrip()
+  const removePlaceFromTrip = useRemovePlaceFromTrip()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
+  const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
 
   async function handleUpdate(data: TripInput) {
     if (!trip) return
@@ -39,12 +43,27 @@ function TripDetailPage() {
     }
   }
 
+  async function handleRemovePlace(placeId: string) {
+    if (!trip) return
+    setRemovingPlaceId(placeId)
+    try {
+      await removePlaceFromTrip.mutateAsync({ tripId: trip.id, placeId })
+      if (focusedPlaceId === placeId) setFocusedPlaceId(null)
+    } catch (err) {
+      console.error('Remove place error:', err)
+    } finally {
+      setRemovingPlaceId(null)
+    }
+  }
+
   const dateRange = trip ? formatDateRange(trip.start_date, trip.end_date) : null
+  const places = trip?.trip_places.map((tp) => tp.place) ?? []
+  const focusedPlace = focusedPlaceId ? (places.find((p) => p.id === focusedPlaceId) ?? null) : null
 
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
-      <main className="max-w-4xl mx-auto p-8">
+      <main className="max-w-7xl mx-auto p-8">
         <Link to="/trips" className="text-sm text-slate-600 hover:text-slate-900 mb-4 inline-block">
           ← Zurück zu meinen Trips
         </Link>
@@ -96,23 +115,37 @@ function TripDetailPage() {
               )}
             </div>
 
-            <h3 className="text-lg font-semibold text-slate-800 mb-3">Orte</h3>
-
             {trip.trip_places.length === 0 ? (
               <div className="bg-white rounded-lg shadow-sm p-8 text-center">
                 <p className="text-slate-600">
-                  Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und füge ihn
-                  diesem Trip hinzu.
+                  Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und wähle
+                  diesen Trip aus, um Orte hinzuzufügen.
                 </p>
               </div>
             ) : (
-              <ul className="space-y-3">
-                {trip.trip_places.map((tp) => (
-                  <li key={tp.place_id}>
-                    <TripPlaceItem place={tp.place} />
-                  </li>
-                ))}
-              </ul>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Orte</h3>
+                  <ul className="space-y-3">
+                    {trip.trip_places.map((tp) => (
+                      <li key={tp.place_id}>
+                        <TripPlaceItem
+                          place={tp.place}
+                          onSelect={() => setFocusedPlaceId(tp.place_id)}
+                          onRemove={() => handleRemovePlace(tp.place_id)}
+                          isRemoving={removingPlaceId === tp.place_id}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="h-[60vh] lg:h-[70vh] lg:sticky lg:top-8">
+                  <Map>
+                    <TripPlaceMarkers places={places} />
+                    <MapFocuser place={focusedPlace} />
+                  </Map>
+                </div>
+              </div>
             )}
 
             <TripFormModal
