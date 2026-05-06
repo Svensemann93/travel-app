@@ -23,22 +23,31 @@ export async function uploadPhoto(
     resizeImage(file, { maxDimension: 400, quality: 0.7 }),
   ])
 
-  const fullUpload = await supabase.storage.from(BUCKET).upload(fullPath, fullBlob, {
-    cacheControl: '3600',
-    upsert: false,
-    contentType: 'image/jpeg',
-  })
-  if (fullUpload.error) throw fullUpload.error
+  const [fullUpload, thumbUpload] = await Promise.all([
+    supabase.storage.from(BUCKET).upload(fullPath, fullBlob, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: 'image/jpeg',
+    }),
+    supabase.storage.from(BUCKET).upload(thumbPath, thumbBlob, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: 'image/jpeg',
+    }),
+  ])
 
-  const thumbUpload = await supabase.storage.from(BUCKET).upload(thumbPath, thumbBlob, {
-    cacheControl: '3600',
-    upsert: false,
-    contentType: 'image/jpeg',
-  })
-  if (thumbUpload.error) {
-    // Falls thumb-Upload fehlschlägt, full wieder löschen damit keine Waise bleibt
-    await supabase.storage.from(BUCKET).remove([fullPath])
-    throw thumbUpload.error
+  if (fullUpload.error || thumbUpload.error) {
+    const orphans: string[] = []
+    if (!fullUpload.error) orphans.push(fullPath)
+    if (!thumbUpload.error) orphans.push(thumbPath)
+    if (orphans.length > 0) {
+      try {
+        await supabase.storage.from(BUCKET).remove(orphans)
+      } catch {
+        // best-effort cleanup, ignore failures
+      }
+    }
+    throw fullUpload.error ?? thumbUpload.error
   }
 
   return { fullPath, thumbPath }
