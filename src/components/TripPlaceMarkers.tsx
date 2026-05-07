@@ -1,7 +1,7 @@
 import { Marker, Popup } from 'react-leaflet'
 import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
-import { defaultMarkerIcon } from '../lib/leafletIcons'
+import { getNumberedMarkerIcon } from '../lib/leafletIcons'
 
 type Props = {
   places: Place[]
@@ -10,13 +10,13 @@ type Props = {
 function TripPlaceMarkers({ places }: Props) {
   return (
     <>
-      {places.map((place) => {
+      {places.map((place, index) => {
         const firstPhoto = place.photos?.slice().sort((a, b) => a.position - b.position)[0]
         return (
           <Marker
             key={place.id}
             position={[place.latitude, place.longitude]}
-            icon={defaultMarkerIcon}
+            icon={getNumberedMarkerIcon(index + 1)}
           >
             <Popup minWidth={200}>
               <div className="space-y-2">

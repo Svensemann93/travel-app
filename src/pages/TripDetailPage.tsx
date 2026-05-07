@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Map from '../components/Map'
+import MapFitBounds from '../components/MapFitBounds'
 import MapFocuser from '../components/MapFocuser'
 import TripFormModal from '../components/TripFormModal'
 import TripPlaceItem from '../components/TripPlaceItem'
@@ -27,6 +28,8 @@ function TripDetailPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
+
+  const places = useMemo(() => trip?.trip_places.map((tp) => tp.place) ?? [], [trip?.trip_places])
 
   async function handleUpdate(data: TripInput) {
     if (!trip) return
@@ -57,7 +60,6 @@ function TripDetailPage() {
   }
 
   const dateRange = trip ? formatDateRange(trip.start_date, trip.end_date) : null
-  const places = trip?.trip_places.map((tp) => tp.place) ?? []
   const focusedPlace = focusedPlaceId ? (places.find((p) => p.id === focusedPlaceId) ?? null) : null
 
   return (
@@ -142,6 +144,7 @@ function TripDetailPage() {
                 <div className="h-[60vh] lg:h-[70vh] lg:sticky lg:top-8">
                   <Map>
                     <TripPlaceMarkers places={places} />
+                    <MapFitBounds places={places} />
                     <MapFocuser place={focusedPlace} />
                   </Map>
                 </div>
