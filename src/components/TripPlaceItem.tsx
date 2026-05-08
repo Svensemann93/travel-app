@@ -1,62 +1,89 @@
-import SignedImage from './SignedImage'
+import type { HTMLAttributes } from 'react'
 import type { Place } from '../types/place'
+import SignedImage from './SignedImage'
 
 type Props = {
   place: Place
   onSelect?: () => void
   onRemove?: () => void
   isRemoving?: boolean
+  dragHandleProps?: HTMLAttributes<HTMLButtonElement>
+  isDragging?: boolean
 }
 
-function TripPlaceItem({ place, onSelect, onRemove, isRemoving }: Props) {
+function TripPlaceItem({
+  place,
+  onSelect,
+  onRemove,
+  isRemoving,
+  dragHandleProps,
+  isDragging,
+}: Props) {
   const firstPhoto = place.photos?.slice().sort((a, b) => a.position - b.position)[0]
 
-  const inner = (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden flex">
-      {firstPhoto ? (
+  return (
+    <div
+      className={`bg-white rounded-lg shadow-sm p-3 flex gap-3 items-center ${
+        isDragging ? 'shadow-lg ring-2 ring-blue-200' : ''
+      }`}
+    >
+      {dragHandleProps && (
+        <button
+          type="button"
+          {...dragHandleProps}
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Reihenfolge ändern"
+          className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing flex-shrink-0 p-1 touch-none"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            width="16"
+            height="16"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="6" cy="3" r="1.5" />
+            <circle cx="10" cy="3" r="1.5" />
+            <circle cx="6" cy="8" r="1.5" />
+            <circle cx="10" cy="8" r="1.5" />
+            <circle cx="6" cy="13" r="1.5" />
+            <circle cx="10" cy="13" r="1.5" />
+          </svg>
+        </button>
+      )}
+
+      {firstPhoto && (
         <SignedImage
           path={firstPhoto.thumb_url ?? firstPhoto.url}
           alt={place.name}
-          className="w-24 h-24 object-cover flex-shrink-0"
+          className="h-14 w-14 object-cover rounded flex-shrink-0"
         />
-      ) : (
-        <div className="w-24 h-24 bg-slate-100 flex-shrink-0 flex items-center justify-center text-slate-300 text-2xl">
-          📍
-        </div>
       )}
-      <div className="p-4 flex-1 min-w-0">
-        <h4 className="font-semibold text-slate-800">{place.name}</h4>
+
+      <button
+        type="button"
+        onClick={onSelect}
+        disabled={!onSelect}
+        className="flex-1 text-left disabled:cursor-default min-w-0"
+      >
+        <h4 className="font-medium text-slate-800 truncate">{place.name}</h4>
         {place.description && (
-          <p className="text-sm text-slate-600 mt-1 line-clamp-1">{place.description}</p>
+          <p className="text-sm text-slate-500 line-clamp-1">{place.description}</p>
         )}
-      </div>
+      </button>
+
       {onRemove && (
         <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onRemove()
-          }}
+          type="button"
+          onClick={onRemove}
           disabled={isRemoving}
-          aria-label="Aus Trip entfernen"
-          className="px-4 text-slate-400 hover:text-red-600 transition-colors disabled:opacity-50"
+          className="text-sm text-red-600 hover:underline disabled:opacity-50 flex-shrink-0"
         >
-          ✕
+          {isRemoving ? '…' : 'Entfernen'}
         </button>
       )}
     </div>
   )
-
-  if (onSelect) {
-    return (
-      <button
-        onClick={onSelect}
-        className="w-full text-left hover:shadow-md transition-shadow rounded-lg block"
-      >
-        {inner}
-      </button>
-    )
-  }
-  return inner
 }
 
 export default TripPlaceItem
