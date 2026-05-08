@@ -1,16 +1,32 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import type { DragEndEvent } from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Map from '../components/Map'
 import MapFitBounds from '../components/MapFitBounds'
 import MapFocuser from '../components/MapFocuser'
+import SortableTripPlaceItem from '../components/SortableTripPlaceItem'
 import TripFormModal from '../components/TripFormModal'
-import TripPlaceItem from '../components/TripPlaceItem'
 import TripPlaceMarkers from '../components/TripPlaceMarkers'
 import {
   useDeleteTrip,
   useRemovePlaceFromTrip,
+  useReorderTripPlaces,
   useTripWithPlaces,
   useUpdateTrip,
 } from '../hooks/useTrips'
@@ -24,10 +40,16 @@ function TripDetailPage() {
   const updateTrip = useUpdateTrip()
   const deleteTrip = useDeleteTrip()
   const removePlaceFromTrip = useRemovePlaceFromTrip()
+  const reorderTripPlaces = useReorderTripPlaces()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
 
   const places = useMemo(() => trip?.trip_places.map((tp) => tp.place) ?? [], [trip?.trip_places])
 
@@ -57,6 +79,20 @@ function TripDetailPage() {
     } finally {
       setRemovingPlaceId(null)
     }
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id || !trip) return
+
+    const oldIndex = trip.trip_places.findIndex((tp) => tp.place_id === active.id)
+    const newIndex = trip.trip_places.findIndex((tp) => tp.place_id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+
+    const newOrder = arrayMove(trip.trip_places, oldIndex, newIndex)
+    const orderedPlaceIds = newOrder.map((tp) => tp.place_id)
+
+    reorderTripPlaces.mutate({ tripId: trip.id, orderedPlaceIds })
   }
 
   const dateRange = trip ? formatDateRange(trip.start_date, trip.end_date) : null
@@ -127,19 +163,36 @@ function TripDetailPage() {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">Orte</h3>
-                  <ul className="space-y-3">
-                    {trip.trip_places.map((tp) => (
-                      <li key={tp.place_id}>
-                        <TripPlaceItem
-                          place={tp.place}
-                          onSelect={() => setFocusedPlaceId(tp.place_id)}
-                          onRemove={() => handleRemovePlace(tp.place_id)}
-                          isRemoving={removingPlaceId === tp.place_id}
-                        />
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-3">
+                    Orte{' '}
+                    <span className="text-sm font-normal text-slate-500">
+                      (ziehen zum Sortieren)
+                    </span>
+                  </h3>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={trip.trip_places.map((tp) => tp.place_id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <ul className="space-y-3">
+                        {trip.trip_places.map((tp) => (
+                          <li key={tp.place_id}>
+                            <SortableTripPlaceItem
+                              id={tp.place_id}
+                              place={tp.place}
+                              onSelect={() => setFocusedPlaceId(tp.place_id)}
+                              onRemove={() => handleRemovePlace(tp.place_id)}
+                              isRemoving={removingPlaceId === tp.place_id}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    </SortableContext>
+                  </DndContext>
                 </div>
                 <div className="h-[60vh] lg:h-[70vh] lg:sticky lg:top-8">
                   <Map>
