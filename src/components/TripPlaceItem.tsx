@@ -4,6 +4,7 @@ import SignedImage from './SignedImage'
 
 type Props = {
   place: Place
+  number?: number
   onSelect?: () => void
   onRemove?: () => void
   isRemoving?: boolean
@@ -13,6 +14,7 @@ type Props = {
 
 function TripPlaceItem({
   place,
+  number,
   onSelect,
   onRemove,
   isRemoving,
@@ -50,6 +52,15 @@ function TripPlaceItem({
             <circle cx="10" cy="13" r="1.5" />
           </svg>
         </button>
+      )}
+
+      {number !== undefined && (
+        <div
+          aria-hidden="true"
+          className="bg-blue-600 text-white font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm flex-shrink-0"
+        >
+          {number}
+        </div>
       )}
 
       {firstPhoto && (
