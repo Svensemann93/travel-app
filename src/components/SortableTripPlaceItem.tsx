@@ -6,12 +6,13 @@ import TripPlaceItem from './TripPlaceItem'
 type Props = {
   id: string
   place: Place
+  number?: number
   onSelect: () => void
   onRemove: () => void
   isRemoving: boolean
 }
 
-function SortableTripPlaceItem({ id, place, onSelect, onRemove, isRemoving }: Props) {
+function SortableTripPlaceItem({ id, place, number, onSelect, onRemove, isRemoving }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   })
@@ -27,6 +28,7 @@ function SortableTripPlaceItem({ id, place, onSelect, onRemove, isRemoving }: Pr
     <div ref={setNodeRef} style={style}>
       <TripPlaceItem
         place={place}
+        number={number}
         onSelect={onSelect}
         onRemove={onRemove}
         isRemoving={isRemoving}

@@ -179,11 +179,12 @@ function TripDetailPage() {
                       strategy={verticalListSortingStrategy}
                     >
                       <ul className="space-y-3">
-                        {trip.trip_places.map((tp) => (
+                        {trip.trip_places.map((tp, index) => (
                           <li key={tp.place_id}>
                             <SortableTripPlaceItem
                               id={tp.place_id}
                               place={tp.place}
+                              number={index + 1}
                               onSelect={() => setFocusedPlaceId(tp.place_id)}
                               onRemove={() => handleRemovePlace(tp.place_id)}
                               isRemoving={removingPlaceId === tp.place_id}
