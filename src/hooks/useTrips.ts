@@ -7,11 +7,11 @@ import {
   fetchTripsForUser,
   insertTripPlaceRow,
   insertTripRow,
+  updateTripPlaceRow,
   updateTripPlacePositions,
   updateTripRow,
 } from '../lib/tripsApi'
-import type { Trip, TripInput, TripWithPlaces } from '../types/trip'
-
+import type { Trip, TripInput, TripPlaceUpdateInput, TripWithPlaces } from '../types/trip'
 export const tripsKeys = {
   all: ['trips'] as const,
   lists: () => [...tripsKeys.all, 'list'] as const,
@@ -209,6 +209,41 @@ export function useReorderTripPlaces() {
       if (context?.previous) {
         queryClient.setQueryData(tripsKeys.detail(tripId), context.previous)
       }
+    },
+  })
+}
+export function useUpdateTripPlace() {
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const userId = user?.id
+
+  return useMutation({
+    mutationFn: async ({
+      tripId,
+      placeId,
+      data,
+    }: {
+      tripId: string
+      placeId: string
+      data: TripPlaceUpdateInput
+    }) => {
+      if (!userId) throw new Error('Not authenticated')
+      await updateTripPlaceRow(tripId, placeId, data)
+      return { tripId, placeId, data }
+    },
+    onSuccess: ({ tripId, placeId, data }) => {
+      queryClient.setQueryData<TripWithPlaces | null>(tripsKeys.detail(tripId), (old) => {
+        if (!old) return old
+        return {
+          ...old,
+          trip_places: old.trip_places.map((tp) =>
+            tp.place_id === placeId ? { ...tp, ...data } : tp,
+          ),
+        }
+      })
+    },
+    onError: (_err, { tripId }) => {
+      queryClient.invalidateQueries({ queryKey: tripsKeys.detail(tripId) })
     },
   })
 }

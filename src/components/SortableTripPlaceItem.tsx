@@ -7,12 +7,25 @@ type Props = {
   id: string
   place: Place
   number?: number
+  plannedDate?: string | null
+  notes?: string | null
   onSelect: () => void
+  onEdit: () => void
   onRemove: () => void
   isRemoving: boolean
 }
 
-function SortableTripPlaceItem({ id, place, number, onSelect, onRemove, isRemoving }: Props) {
+function SortableTripPlaceItem({
+  id,
+  place,
+  number,
+  plannedDate,
+  notes,
+  onSelect,
+  onEdit,
+  onRemove,
+  isRemoving,
+}: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   })
@@ -29,7 +42,10 @@ function SortableTripPlaceItem({ id, place, number, onSelect, onRemove, isRemovi
       <TripPlaceItem
         place={place}
         number={number}
+        plannedDate={plannedDate}
+        notes={notes}
         onSelect={onSelect}
+        onEdit={onEdit}
         onRemove={onRemove}
         isRemoving={isRemoving}
         dragHandleProps={{ ...attributes, ...listeners }}
