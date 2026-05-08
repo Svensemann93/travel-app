@@ -1,5 +1,11 @@
 import { supabase } from './supabase'
-import type { Trip, TripInput, TripPlace, TripWithPlaces } from '../types/trip'
+import type {
+  Trip,
+  TripInput,
+  TripPlace,
+  TripPlaceUpdateInput,
+  TripWithPlaces,
+} from '../types/trip'
 
 export async function fetchTripsForUser(signal?: AbortSignal): Promise<Trip[]> {
   let query = supabase.from('trips').select('*').order('created_at', { ascending: false })
@@ -92,4 +98,20 @@ export async function updateTripPlacePositions(
     .from('trip_places')
     .upsert(updates, { onConflict: 'trip_id,place_id' })
   if (error) throw new Error(error.message)
+}
+
+export async function updateTripPlaceRow(
+  tripId: string,
+  placeId: string,
+  data: TripPlaceUpdateInput,
+): Promise<TripPlace> {
+  const { data: row, error } = await supabase
+    .from('trip_places')
+    .update(data)
+    .eq('trip_id', tripId)
+    .eq('place_id', placeId)
+    .select('*')
+    .single()
+  if (error) throw new Error(error.message)
+  return row
 }

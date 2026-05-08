@@ -1,37 +1,23 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import type { DragEndEvent } from '@dnd-kit/core'
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Map from '../components/Map'
 import MapFitBounds from '../components/MapFitBounds'
 import MapFocuser from '../components/MapFocuser'
-import SortableTripPlaceItem from '../components/SortableTripPlaceItem'
 import TripFormModal from '../components/TripFormModal'
+import TripPlaceEditModal from '../components/TripPlaceEditModal'
+import TripPlaceList from '../components/TripPlaceList'
 import TripPlaceMarkers from '../components/TripPlaceMarkers'
 import {
   useDeleteTrip,
   useRemovePlaceFromTrip,
-  useReorderTripPlaces,
   useTripWithPlaces,
   useUpdateTrip,
+  useUpdateTripPlace,
 } from '../hooks/useTrips'
 import { formatDateRange } from '../lib/dateFormat'
-import type { TripInput } from '../types/trip'
+import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../types/trip'
 
 function TripDetailPage() {
   const { tripId = '' } = useParams<{ tripId: string }>()
@@ -40,16 +26,12 @@ function TripDetailPage() {
   const updateTrip = useUpdateTrip()
   const deleteTrip = useDeleteTrip()
   const removePlaceFromTrip = useRemovePlaceFromTrip()
-  const reorderTripPlaces = useReorderTripPlaces()
+  const updateTripPlace = useUpdateTripPlace()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  )
+  const [editingTripPlace, setEditingTripPlace] = useState<TripPlaceWithPlace | null>(null)
 
   const places = useMemo(() => trip?.trip_places.map((tp) => tp.place) ?? [], [trip?.trip_places])
 
@@ -81,18 +63,18 @@ function TripDetailPage() {
     }
   }
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
-    if (!over || active.id === over.id || !trip) return
-
-    const oldIndex = trip.trip_places.findIndex((tp) => tp.place_id === active.id)
-    const newIndex = trip.trip_places.findIndex((tp) => tp.place_id === over.id)
-    if (oldIndex === -1 || newIndex === -1) return
-
-    const newOrder = arrayMove(trip.trip_places, oldIndex, newIndex)
-    const orderedPlaceIds = newOrder.map((tp) => tp.place_id)
-
-    reorderTripPlaces.mutate({ tripId: trip.id, orderedPlaceIds })
+  async function handleUpdateTripPlace(data: TripPlaceUpdateInput) {
+    if (!editingTripPlace) return
+    try {
+      await updateTripPlace.mutateAsync({
+        tripId: editingTripPlace.trip_id,
+        placeId: editingTripPlace.place_id,
+        data,
+      })
+      setEditingTripPlace(null)
+    } catch (err) {
+      console.error('Update trip place error:', err)
+    }
   }
 
   const dateRange = trip ? formatDateRange(trip.start_date, trip.end_date) : null
@@ -169,31 +151,14 @@ function TripDetailPage() {
                       (ziehen zum Sortieren)
                     </span>
                   </h3>
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={trip.trip_places.map((tp) => tp.place_id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <ul className="space-y-3">
-                        {trip.trip_places.map((tp, index) => (
-                          <li key={tp.place_id}>
-                            <SortableTripPlaceItem
-                              id={tp.place_id}
-                              place={tp.place}
-                              number={index + 1}
-                              onSelect={() => setFocusedPlaceId(tp.place_id)}
-                              onRemove={() => handleRemovePlace(tp.place_id)}
-                              isRemoving={removingPlaceId === tp.place_id}
-                            />
-                          </li>
-                        ))}
-                      </ul>
-                    </SortableContext>
-                  </DndContext>
+                  <TripPlaceList
+                    tripId={trip.id}
+                    tripPlaces={trip.trip_places}
+                    removingPlaceId={removingPlaceId}
+                    onSelectPlace={setFocusedPlaceId}
+                    onEditPlace={setEditingTripPlace}
+                    onRemovePlace={handleRemovePlace}
+                  />
                 </div>
                 <div className="h-[60vh] lg:h-[70vh] lg:sticky lg:top-8">
                   <Map>
@@ -215,6 +180,24 @@ function TripDetailPage() {
               }}
               onClose={() => setIsEditOpen(false)}
               onSave={handleUpdate}
+            />
+
+            <TripPlaceEditModal
+              isOpen={!!editingTripPlace}
+              initialData={
+                editingTripPlace
+                  ? {
+                      planned_date: editingTripPlace.planned_date,
+                      notes: editingTripPlace.notes,
+                    }
+                  : { planned_date: null, notes: null }
+              }
+              placeName={editingTripPlace?.place.name ?? ''}
+              tripStartDate={trip.start_date}
+              tripEndDate={trip.end_date}
+              isSaving={updateTripPlace.isPending}
+              onSave={handleUpdateTripPlace}
+              onClose={() => setEditingTripPlace(null)}
             />
           </>
         )}

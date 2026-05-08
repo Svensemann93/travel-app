@@ -34,3 +34,8 @@ export type TripInput = {
   start_date: string | null
   end_date: string | null
 }
+
+export type TripPlaceUpdateInput = {
+  planned_date: string | null
+  notes: string | null
+}
