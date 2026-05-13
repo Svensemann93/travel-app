@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import AuthLayout from '../components/AuthLayout'
 import FormField from '../components/FormField'
+import RegistrationSuccess from '../components/RegistrationSuccess'
 import { supabase } from '../lib/supabase'
 
 function RegisterPage() {
@@ -10,7 +10,7 @@ function RegisterPage() {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+  const [isRegistered, setIsRegistered] = useState(false)
 
   async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -20,7 +20,10 @@ function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { username } },
+      options: {
+        data: { username },
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
     })
 
     setIsLoading(false)
@@ -29,7 +32,11 @@ function RegisterPage() {
       setErrorMessage(error.message)
       return
     }
-    navigate('/')
+    setIsRegistered(true)
+  }
+
+  if (isRegistered) {
+    return <RegistrationSuccess email={email} />
   }
 
   return (
@@ -46,6 +53,7 @@ function RegisterPage() {
           type="email"
           value={email}
           onChange={setEmail}
+          autoComplete="email"
           required
         />
         <FormField
@@ -53,6 +61,7 @@ function RegisterPage() {
           label="Benutzername"
           value={username}
           onChange={setUsername}
+          autoComplete="username"
           required
         />
         <FormField
@@ -61,6 +70,8 @@ function RegisterPage() {
           type="password"
           value={password}
           onChange={setPassword}
+          autoComplete="new-password"
+          minLength={10}
           required
         />
         {errorMessage && (
