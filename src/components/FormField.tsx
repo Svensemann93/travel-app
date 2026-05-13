@@ -6,7 +6,9 @@ type Props = {
   onChange: (v: string) => void
   required?: boolean
   maxLength?: number
+  minLength?: number
   autoFocus?: boolean
+  autoComplete?: string
   placeholder?: string
   min?: string
   max?: string

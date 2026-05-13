@@ -41,6 +41,7 @@ function LoginPage() {
           type="email"
           value={email}
           onChange={setEmail}
+          autoComplete="email"
           required
         />
         <FormField
@@ -49,6 +50,7 @@ function LoginPage() {
           type="password"
           value={password}
           onChange={setPassword}
+          autoComplete="current-password"
           required
         />
         {errorMessage && (
