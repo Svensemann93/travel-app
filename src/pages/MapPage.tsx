@@ -6,6 +6,7 @@ import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
 import MapFocuser from '../components/MapFocuser'
+import SearchControl from '../components/SearchControl'
 import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
@@ -99,6 +100,7 @@ function MapPage() {
 
       <main className="flex-1 relative">
         <Map>
+          <SearchControl />
           <PlaceMarkers
             places={places}
             onEdit={(place) => setEditingPlace(place)}

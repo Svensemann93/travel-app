@@ -1,0 +1,30 @@
+.leaflet-geosearch-bar {
+  width: 320px;
+  max-width: calc(100% - 24px);
+  margin: 12px auto 0;
+}
+
+.leaflet-geosearch-bar form,
+.leaflet-touch .leaflet-geosearch-bar form {
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-geosearch-bar form input,
+.leaflet-touch .leaflet-geosearch-bar form input {
+  height: 42px;
+  border-radius: 10px;
+  font-size: 14px;
+  text-indent: 14px;
+}
+
+.leaflet-geosearch-bar button.reset,
+.leaflet-touch .leaflet-control-geosearch button.reset {
+  line-height: 42px;
+  padding: 0 14px;
+  font-weight: normal;
+  color: #888;
+  border-radius: 0 10px 10px 0;
+}
