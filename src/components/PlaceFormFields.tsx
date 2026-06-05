@@ -1,0 +1,110 @@
+import PhotoUploader from './PhotoUploader'
+import PriceLevel from './PriceLevel'
+import StarRating from './StarRating'
+import CollapsibleSection from './CollapsibleSection'
+import { CATEGORIES } from '../lib/categories'
+import type { PlaceFormApi } from '../hooks/usePlaceForm'
+
+type Props = {
+  form: PlaceFormApi
+  onError: (message: string) => void
+}
+
+function PlaceFormFields({ form, onError }: Props) {
+  return (
+    <>
+      <div>
+        <label htmlFor="place-name" className="block text-sm font-medium text-slate-700 mb-1">
+          Name
+        </label>
+        <input
+          id="place-name"
+          type="text"
+          value={form.name}
+          onChange={(e) => form.setName(e.target.value)}
+          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+          autoFocus
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor="place-description"
+          className="block text-sm font-medium text-slate-700 mb-1"
+        >
+          Beschreibung
+        </label>
+        <textarea
+          id="place-description"
+          value={form.description}
+          onChange={(e) => form.setDescription(e.target.value)}
+          rows={3}
+          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <p className="block text-sm font-medium text-slate-700 mb-1">Kategorie</p>
+        <div className="flex flex-wrap gap-2">
+          {CATEGORIES.map((cat) => {
+            const isSelected = form.category === cat.id
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => form.setCategory(cat.id)}
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                  isSelected
+                    ? 'border-transparent text-white'
+                    : 'border-slate-300 text-slate-700 hover:bg-slate-50'
+                }`}
+                style={isSelected ? { backgroundColor: cat.color } : undefined}
+              >
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.9)' : cat.color }}
+                />
+                {cat.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <CollapsibleSection title="Bewertung">
+        <StarRating value={form.rating} onChange={form.setRating} />
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Preis">
+        <PriceLevel value={form.priceLevel} onChange={form.setPriceLevel} />
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Website">
+        <input
+          id="place-website"
+          type="url"
+          aria-label="Website"
+          value={form.websiteUrl}
+          onChange={(e) => form.setWebsiteUrl(e.target.value)}
+          placeholder="https://..."
+          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Fotos">
+        <PhotoUploader
+          newPhotos={form.photos}
+          existingPhotos={form.existingPhotos}
+          onAddNewPhotos={form.addPhotos}
+          onRemoveNewPhoto={form.removeNewPhoto}
+          onRemoveExistingPhoto={form.removeExistingPhoto}
+          onError={onError}
+        />
+      </CollapsibleSection>
+    </>
+  )
+}
+
+export default PlaceFormFields

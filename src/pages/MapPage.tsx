@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
 import type { LatLng } from 'leaflet'
-import {
-  useCreatePlace,
-  useDeletePlace,
-  usePlaces,
-  useUpdatePlace,
-  useUpdatePlaceLocation,
-} from '../hooks/usePlaces'
+import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
 import { useEntryPoint } from '../hooks/useEntryPoint'
+import { useReposition } from '../hooks/useReposition'
+import { useFocusedPlace } from '../hooks/useFocusedPlace'
+import { placeToFormInitial } from '../hooks/usePlaceForm'
+import type { PlaceFormValues } from '../hooks/usePlaceForm'
 import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
@@ -18,57 +15,37 @@ import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import AddToTripModal from '../components/AddToTripModal'
-import type { Place } from '../types/place'
-import type { CategoryId } from '../lib/categories'
+import RepositionBar from '../components/RepositionBar'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 import LocateControl from '../components/LocateControl'
-
-type PlaceFormData = {
-  name: string
-  description: string
-  category: CategoryId
-  rating: number | null
-  price_level: number | null
-  website_url: string
-  photos: File[]
-  photosToDelete: string[]
-}
+import type { Place } from '../types/place'
 
 function MapPage() {
   const { data: places = [], isLoading } = usePlaces()
   const { data: entryPoint, isLoading: isEntryLoading } = useEntryPoint()
   const createPlace = useCreatePlace()
   const updatePlace = useUpdatePlace()
-  const updateLocation = useUpdatePlaceLocation()
   const deletePlace = useDeletePlace()
+  const reposition = useReposition()
+  const focusedPlace = useFocusedPlace(places)
+
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
   const [addingToTripPlace, setAddingToTripPlace] = useState<Place | null>(null)
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const focusId = searchParams.get('focus')
-  const focusedPlace = focusId ? (places.find((p) => p.id === focusId) ?? null) : null
-
-  useEffect(() => {
-    if (focusId && focusedPlace) {
-      const timer = setTimeout(() => {
-        setSearchParams({}, { replace: true })
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [focusId, focusedPlace, setSearchParams])
 
   function handleMapClick(latlng: LatLng) {
     setClickedPosition(latlng)
   }
 
-  function handleMovePlace(place: Place, latitude: number, longitude: number) {
-    updateLocation.mutate({ id: place.id, latitude, longitude })
+  function handleStartReposition() {
+    if (!editingPlace) return
+    reposition.start(editingPlace)
+    setEditingPlace(null)
   }
 
-  async function handleCreatePlace(data: PlaceFormData) {
+  async function handleCreatePlace(data: PlaceFormValues) {
     if (!clickedPosition) return
     await createPlace.mutateAsync({
       data: {
@@ -85,7 +62,7 @@ function MapPage() {
     })
   }
 
-  async function handleUpdatePlace(data: PlaceFormData) {
+  async function handleUpdatePlace(data: PlaceFormValues) {
     if (!editingPlace) return
     await updatePlace.mutateAsync({
       id: editingPlace.id,
@@ -129,17 +106,29 @@ function MapPage() {
             <LocateControl />
             <PlaceMarkers
               places={places}
+              repositioningId={reposition.place?.id ?? null}
+              pendingPosition={reposition.pendingPosition}
+              onDragMove={reposition.dragMove}
               onEdit={(place) => setEditingPlace(place)}
               onDelete={(place) => setDeletingPlace(place)}
               onAddToTrip={(place) => setAddingToTripPlace(place)}
-              onMove={handleMovePlace}
             />
-            <MapClickHandler onMapClick={handleMapClick} />
+            {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace} />
           </Map>
         )}
         {!isEntryLoading && isLoading && <MapLoadingIndicator />}
         {!isEntryLoading && !isLoading && places.length === 0 && <MapEmptyState />}
+
+        {reposition.place && (
+          <RepositionBar
+            placeName={reposition.place.name}
+            hasMoved={reposition.pendingPosition !== null}
+            isSaving={reposition.isSaving}
+            onSave={reposition.confirm}
+            onCancel={reposition.cancel}
+          />
+        )}
       </main>
 
       <PlaceFormModal
@@ -156,21 +145,10 @@ function MapPage() {
         isOpen={editingPlace !== null}
         latitude={editingPlace?.latitude ?? 0}
         longitude={editingPlace?.longitude ?? 0}
-        initialData={
-          editingPlace
-            ? {
-                name: editingPlace.name,
-                description: editingPlace.description ?? '',
-                category: editingPlace.category,
-                rating: editingPlace.rating,
-                price_level: editingPlace.price_level,
-                website_url: editingPlace.website_url ?? '',
-                existingPhotos: editingPlace.photos ?? [],
-              }
-            : undefined
-        }
+        initialData={editingPlace ? placeToFormInitial(editingPlace) : undefined}
         onClose={() => setEditingPlace(null)}
         onSave={handleUpdatePlace}
+        onReposition={handleStartReposition}
       />
 
       <ConfirmDialog
