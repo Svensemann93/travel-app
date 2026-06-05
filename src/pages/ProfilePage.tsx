@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
+import EntryPointSetting from '../components/EntryPointSetting'
 
 function ProfilePage() {
   const { user, profile } = useAuth()
@@ -58,6 +59,8 @@ function ProfilePage() {
             </p>
           </div>
         </div>
+
+        <EntryPointSetting />
 
         <div className="bg-white rounded-lg shadow-sm p-6 border border-red-200">
           <h3 className="text-lg font-semibold text-slate-800 mb-2">Account löschen</h3>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { LatLng } from 'leaflet'
 import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
+import { useEntryPoint } from '../hooks/useEntryPoint'
 import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
@@ -14,6 +15,7 @@ import AddToTripModal from '../components/AddToTripModal'
 import type { Place } from '../types/place'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
+import LocateControl from '../components/LocateControl'
 
 type PlaceFormData = {
   name: string
@@ -27,6 +29,7 @@ type PlaceFormData = {
 
 function MapPage() {
   const { data: places = [], isLoading } = usePlaces()
+  const { data: entryPoint, isLoading: isEntryLoading } = useEntryPoint()
   const createPlace = useCreatePlace()
   const updatePlace = useUpdatePlace()
   const deletePlace = useDeletePlace()
@@ -99,19 +102,28 @@ function MapPage() {
       <AppHeader />
 
       <main className="flex-1 relative">
-        <Map>
-          <SearchControl />
-          <PlaceMarkers
-            places={places}
-            onEdit={(place) => setEditingPlace(place)}
-            onDelete={(place) => setDeletingPlace(place)}
-            onAddToTrip={(place) => setAddingToTripPlace(place)}
-          />
-          <MapClickHandler onMapClick={handleMapClick} />
-          <MapFocuser place={focusedPlace} />
-        </Map>
-        {isLoading && <MapLoadingIndicator />}
-        {!isLoading && places.length === 0 && <MapEmptyState />}
+        {isEntryLoading ? (
+          <MapLoadingIndicator />
+        ) : (
+          <Map
+            key={entryPoint ? `${entryPoint.latitude},${entryPoint.longitude}` : 'world'}
+            center={entryPoint ? [entryPoint.latitude, entryPoint.longitude] : undefined}
+            zoom={entryPoint ? 13 : undefined}
+          >
+            <SearchControl />
+            <LocateControl />
+            <PlaceMarkers
+              places={places}
+              onEdit={(place) => setEditingPlace(place)}
+              onDelete={(place) => setDeletingPlace(place)}
+              onAddToTrip={(place) => setAddingToTripPlace(place)}
+            />
+            <MapClickHandler onMapClick={handleMapClick} />
+            <MapFocuser place={focusedPlace} />
+          </Map>
+        )}
+        {!isEntryLoading && isLoading && <MapLoadingIndicator />}
+        {!isEntryLoading && !isLoading && places.length === 0 && <MapEmptyState />}
       </main>
 
       <PlaceFormModal
