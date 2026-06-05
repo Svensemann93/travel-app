@@ -1,3 +1,5 @@
+import type { CategoryId } from '../lib/categories'
+
 export type PlacePhoto = {
   id: string
   place_id: string
@@ -15,6 +17,7 @@ export type Place = {
   description: string | null
   latitude: number
   longitude: number
+  category: CategoryId
   rating: number | null
   price_level: number | null
   website_url: string | null
@@ -25,6 +28,7 @@ export type Place = {
 export type PlaceUpdateInput = {
   name: string
   description: string | null
+  category: CategoryId
   rating: number | null
   price_level: number | null
   website_url: string | null

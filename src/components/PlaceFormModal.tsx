@@ -3,11 +3,14 @@ import Modal from './Modal'
 import PhotoUploader from './PhotoUploader'
 import PriceLevel from './PriceLevel'
 import StarRating from './StarRating'
+import { CATEGORIES, DEFAULT_CATEGORY } from '../lib/categories'
+import type { CategoryId } from '../lib/categories'
 import type { PlacePhoto } from '../types/place'
 
 type PlaceData = {
   name: string
   description: string
+  category: CategoryId
   rating: number | null
   price_level: number | null
   website_url: string
@@ -29,6 +32,7 @@ type Props = {
 function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onSave }: Props) {
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
+  const [category, setCategory] = useState<CategoryId>(initialData?.category ?? DEFAULT_CATEGORY)
   const [rating, setRating] = useState<number | null>(initialData?.rating ?? null)
   const [priceLevel, setPriceLevel] = useState<number | null>(initialData?.price_level ?? null)
   const [websiteUrl, setWebsiteUrl] = useState(initialData?.website_url ?? '')
@@ -51,6 +55,7 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
       await onSave({
         name,
         description,
+        category,
         rating: rating === 0 ? null : rating,
         price_level: priceLevel === 0 ? null : priceLevel,
         website_url: websiteUrl,
@@ -105,6 +110,37 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
             rows={3}
             className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        <div>
+          <p className="block text-sm font-medium text-slate-700 mb-1">Kategorie</p>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((cat) => {
+              const isSelected = category === cat.id
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => setCategory(cat.id)}
+                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                    isSelected
+                      ? 'border-transparent text-white'
+                      : 'border-slate-300 text-slate-700 hover:bg-slate-50'
+                  }`}
+                  style={isSelected ? { backgroundColor: cat.color } : undefined}
+                >
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{
+                      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.9)' : cat.color,
+                    }}
+                  />
+                  {cat.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         <div className="flex gap-6">
