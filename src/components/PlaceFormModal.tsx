@@ -1,48 +1,30 @@
 import { useId, useState } from 'react'
 import Modal from './Modal'
-import PhotoUploader from './PhotoUploader'
-import PriceLevel from './PriceLevel'
-import StarRating from './StarRating'
-import CollapsibleSection from './CollapsibleSection'
-import { CATEGORIES, DEFAULT_CATEGORY } from '../lib/categories'
-import type { CategoryId } from '../lib/categories'
-import type { PlacePhoto } from '../types/place'
-
-type PlaceData = {
-  name: string
-  description: string
-  category: CategoryId
-  rating: number | null
-  price_level: number | null
-  website_url: string
-  photos: File[]
-  photosToDelete: string[]
-}
+import PlaceFormFields from './PlaceFormFields'
+import { usePlaceForm } from '../hooks/usePlaceForm'
+import type { PlaceFormInitial, PlaceFormValues } from '../hooks/usePlaceForm'
 
 type Props = {
   isOpen: boolean
   latitude: number
   longitude: number
-  initialData?: Omit<PlaceData, 'photos' | 'photosToDelete'> & {
-    existingPhotos?: PlacePhoto[]
-  }
+  initialData?: PlaceFormInitial
   onClose: () => void
-  onSave: (data: PlaceData) => Promise<void>
+  onSave: (data: PlaceFormValues) => Promise<void>
+  onReposition?: () => void
 }
 
-function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onSave }: Props) {
+function PlaceFormModal({
+  isOpen,
+  latitude,
+  longitude,
+  initialData,
+  onClose,
+  onSave,
+  onReposition,
+}: Props) {
   const formId = useId()
-  const [name, setName] = useState(initialData?.name ?? '')
-  const [description, setDescription] = useState(initialData?.description ?? '')
-  const [category, setCategory] = useState<CategoryId>(initialData?.category ?? DEFAULT_CATEGORY)
-  const [rating, setRating] = useState<number | null>(initialData?.rating ?? null)
-  const [priceLevel, setPriceLevel] = useState<number | null>(initialData?.price_level ?? null)
-  const [websiteUrl, setWebsiteUrl] = useState(initialData?.website_url ?? '')
-  const [photos, setPhotos] = useState<File[]>([])
-  const [existingPhotos, setExistingPhotos] = useState<PlacePhoto[]>(
-    initialData?.existingPhotos ?? [],
-  )
-  const [photosToDelete, setPhotosToDelete] = useState<string[]>([])
+  const form = usePlaceForm(initialData)
   const [errorMessage, setErrorMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
 
@@ -52,18 +34,8 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
     event.preventDefault()
     setErrorMessage('')
     setIsSaving(true)
-
     try {
-      await onSave({
-        name,
-        description,
-        category,
-        rating: rating === 0 ? null : rating,
-        price_level: priceLevel === 0 ? null : priceLevel,
-        website_url: websiteUrl,
-        photos,
-        photosToDelete,
-      })
+      await onSave(form.getValues())
       onClose()
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unbekannter Fehler')
@@ -77,23 +49,37 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
       isOpen={isOpen}
       onClose={onClose}
       footer={
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isSaving}
-            className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
-          >
-            Abbrechen
-          </button>
-          <button
-            type="submit"
-            form={formId}
-            disabled={isSaving}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400"
-          >
-            {isSaving ? 'Speichert...' : 'Speichern'}
-          </button>
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            {isEditMode && onReposition ? (
+              <button
+                type="button"
+                onClick={onReposition}
+                disabled={isSaving}
+                className="rounded-md px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-100"
+              >
+                Standort verschieben
+              </button>
+            ) : null}
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSaving}
+              className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
+            >
+              Abbrechen
+            </button>
+            <button
+              type="submit"
+              form={formId}
+              disabled={isSaving}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400"
+            >
+              {isSaving ? 'Speichert...' : 'Speichern'}
+            </button>
+          </div>
         </div>
       }
     >
@@ -106,101 +92,7 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
       </p>
 
       <form id={formId} onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="place-name" className="block text-sm font-medium text-slate-700 mb-1">
-            Name
-          </label>
-          <input
-            id="place-name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            autoFocus
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="place-description"
-            className="block text-sm font-medium text-slate-700 mb-1"
-          >
-            Beschreibung
-          </label>
-          <textarea
-            id="place-description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <p className="block text-sm font-medium text-slate-700 mb-1">Kategorie</p>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((cat) => {
-              const isSelected = category === cat.id
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => setCategory(cat.id)}
-                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                    isSelected
-                      ? 'border-transparent text-white'
-                      : 'border-slate-300 text-slate-700 hover:bg-slate-50'
-                  }`}
-                  style={isSelected ? { backgroundColor: cat.color } : undefined}
-                >
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{
-                      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.9)' : cat.color,
-                    }}
-                  />
-                  {cat.label}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        <CollapsibleSection title="Bewertung">
-          <StarRating value={rating} onChange={setRating} />
-        </CollapsibleSection>
-
-        <CollapsibleSection title="Preis">
-          <PriceLevel value={priceLevel} onChange={setPriceLevel} />
-        </CollapsibleSection>
-
-        <CollapsibleSection title="Website">
-          <input
-            id="place-website"
-            type="url"
-            aria-label="Website"
-            value={websiteUrl}
-            onChange={(e) => setWebsiteUrl(e.target.value)}
-            placeholder="https://..."
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </CollapsibleSection>
-
-        <CollapsibleSection title="Fotos">
-          <PhotoUploader
-            newPhotos={photos}
-            existingPhotos={existingPhotos}
-            onAddNewPhotos={(files) => setPhotos((prev) => [...prev, ...files])}
-            onRemoveNewPhoto={(index) => setPhotos((prev) => prev.filter((_, i) => i !== index))}
-            onRemoveExistingPhoto={(photo) => {
-              setExistingPhotos((prev) => prev.filter((p) => p.id !== photo.id))
-              setPhotosToDelete((prev) => [...prev, photo.id])
-            }}
-            onError={setErrorMessage}
-          />
-        </CollapsibleSection>
+        <PlaceFormFields form={form} onError={setErrorMessage} />
 
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm">
