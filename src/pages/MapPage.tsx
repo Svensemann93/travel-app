@@ -13,6 +13,7 @@ import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import AddToTripModal from '../components/AddToTripModal'
 import type { Place } from '../types/place'
+import type { CategoryId } from '../lib/categories'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 import LocateControl from '../components/LocateControl'
@@ -20,6 +21,7 @@ import LocateControl from '../components/LocateControl'
 type PlaceFormData = {
   name: string
   description: string
+  category: CategoryId
   rating: number | null
   price_level: number | null
   website_url: string
@@ -61,6 +63,7 @@ function MapPage() {
       data: {
         name: data.name,
         description: data.description || null,
+        category: data.category,
         rating: data.rating,
         price_level: data.price_level,
         website_url: data.website_url || null,
@@ -78,6 +81,7 @@ function MapPage() {
       data: {
         name: data.name,
         description: data.description || null,
+        category: data.category,
         rating: data.rating,
         price_level: data.price_level,
         website_url: data.website_url || null,
@@ -145,6 +149,7 @@ function MapPage() {
             ? {
                 name: editingPlace.name,
                 description: editingPlace.description ?? '',
+                category: editingPlace.category,
                 rating: editingPlace.rating,
                 price_level: editingPlace.price_level,
                 website_url: editingPlace.website_url ?? '',

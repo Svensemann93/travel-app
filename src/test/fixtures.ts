@@ -9,11 +9,13 @@ export function makePlace(overrides: Partial<Place> = {}): Place {
     description: null,
     latitude: 47.3769,
     longitude: 8.5417,
+    category: 'other',
     rating: null,
     price_level: null,
     website_url: null,
     created_at: '2025-01-15T00:00:00.000Z',
     photos: [],
+
     ...overrides,
   }
 }
