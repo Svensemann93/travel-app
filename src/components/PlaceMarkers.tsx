@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
+import type { Marker as LeafletMarker } from 'leaflet'
 import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
 import Lightbox from './Lightbox'
@@ -10,9 +11,10 @@ type Props = {
   onEdit: (place: Place) => void
   onDelete: (place: Place) => void
   onAddToTrip: (place: Place) => void
+  onMove: (place: Place, latitude: number, longitude: number) => void
 }
 
-function PlaceMarkers({ places, onEdit, onDelete, onAddToTrip }: Props) {
+function PlaceMarkers({ places, onEdit, onDelete, onAddToTrip, onMove }: Props) {
   const [lightbox, setLightbox] = useState<{ place: Place; index: number } | null>(null)
 
   return (
@@ -28,6 +30,14 @@ function PlaceMarkers({ places, onEdit, onDelete, onAddToTrip }: Props) {
             key={place.id}
             position={[place.latitude, place.longitude]}
             icon={defaultMarkerIcon}
+            draggable
+            eventHandlers={{
+              dragend: (event) => {
+                const marker = event.target as LeafletMarker
+                const next = marker.getLatLng()
+                onMove(place, next.lat, next.lng)
+              },
+            }}
           >
             <Popup minWidth={280}>
               <div className="min-w-280px space-y-2">

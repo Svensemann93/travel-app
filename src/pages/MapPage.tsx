@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { LatLng } from 'leaflet'
-import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
+import {
+  useCreatePlace,
+  useDeletePlace,
+  usePlaces,
+  useUpdatePlace,
+  useUpdatePlaceLocation,
+} from '../hooks/usePlaces'
 import { useEntryPoint } from '../hooks/useEntryPoint'
 import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
@@ -34,6 +40,7 @@ function MapPage() {
   const { data: entryPoint, isLoading: isEntryLoading } = useEntryPoint()
   const createPlace = useCreatePlace()
   const updatePlace = useUpdatePlace()
+  const updateLocation = useUpdatePlaceLocation()
   const deletePlace = useDeletePlace()
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
@@ -55,6 +62,10 @@ function MapPage() {
 
   function handleMapClick(latlng: LatLng) {
     setClickedPosition(latlng)
+  }
+
+  function handleMovePlace(place: Place, latitude: number, longitude: number) {
+    updateLocation.mutate({ id: place.id, latitude, longitude })
   }
 
   async function handleCreatePlace(data: PlaceFormData) {
@@ -121,6 +132,7 @@ function MapPage() {
               onEdit={(place) => setEditingPlace(place)}
               onDelete={(place) => setDeletingPlace(place)}
               onAddToTrip={(place) => setAddingToTripPlace(place)}
+              onMove={handleMovePlace}
             />
             <MapClickHandler onMapClick={handleMapClick} />
             <MapFocuser place={focusedPlace} />
