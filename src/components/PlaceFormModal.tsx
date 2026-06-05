@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import Modal from './Modal'
 import PhotoUploader from './PhotoUploader'
 import PriceLevel from './PriceLevel'
 import StarRating from './StarRating'
+import CollapsibleSection from './CollapsibleSection'
 import { CATEGORIES, DEFAULT_CATEGORY } from '../lib/categories'
 import type { CategoryId } from '../lib/categories'
 import type { PlacePhoto } from '../types/place'
@@ -30,6 +31,7 @@ type Props = {
 }
 
 function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onSave }: Props) {
+  const formId = useId()
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
   const [category, setCategory] = useState<CategoryId>(initialData?.category ?? DEFAULT_CATEGORY)
@@ -71,7 +73,30 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      footer={
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSaving}
+            className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
+          >
+            Abbrechen
+          </button>
+          <button
+            type="submit"
+            form={formId}
+            disabled={isSaving}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400"
+          >
+            {isSaving ? 'Speichert...' : 'Speichern'}
+          </button>
+        </div>
+      }
+    >
       <h2 className="text-xl font-bold text-slate-800 mb-4">
         {isEditMode ? 'Ort bearbeiten' : 'Neuen Ort hinzufügen'}
       </h2>
@@ -80,7 +105,7 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
         Position: {latitude.toFixed(5)}, {longitude.toFixed(5)}
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form id={formId} onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="place-name" className="block text-sm font-medium text-slate-700 mb-1">
             Name
@@ -143,66 +168,45 @@ function PlaceFormModal({ isOpen, latitude, longitude, initialData, onClose, onS
           </div>
         </div>
 
-        <div className="flex gap-6">
-          <div>
-            <p className="block text-sm font-medium text-slate-700 mb-1">Bewertung</p>
-            <StarRating value={rating} onChange={setRating} />
-          </div>
-          <div>
-            <p className="block text-sm font-medium text-slate-700 mb-1">Preis</p>
-            <PriceLevel value={priceLevel} onChange={setPriceLevel} />
-          </div>
-        </div>
+        <CollapsibleSection title="Bewertung">
+          <StarRating value={rating} onChange={setRating} />
+        </CollapsibleSection>
 
-        <div>
-          <label htmlFor="place-website" className="block text-sm font-medium text-slate-700 mb-1">
-            Website
-          </label>
+        <CollapsibleSection title="Preis">
+          <PriceLevel value={priceLevel} onChange={setPriceLevel} />
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Website">
           <input
             id="place-website"
             type="url"
+            aria-label="Website"
             value={websiteUrl}
             onChange={(e) => setWebsiteUrl(e.target.value)}
             placeholder="https://..."
             className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
+        </CollapsibleSection>
 
-        <PhotoUploader
-          newPhotos={photos}
-          existingPhotos={existingPhotos}
-          onAddNewPhotos={(files) => setPhotos((prev) => [...prev, ...files])}
-          onRemoveNewPhoto={(index) => setPhotos((prev) => prev.filter((_, i) => i !== index))}
-          onRemoveExistingPhoto={(photo) => {
-            setExistingPhotos((prev) => prev.filter((p) => p.id !== photo.id))
-            setPhotosToDelete((prev) => [...prev, photo.id])
-          }}
-          onError={setErrorMessage}
-        />
+        <CollapsibleSection title="Fotos">
+          <PhotoUploader
+            newPhotos={photos}
+            existingPhotos={existingPhotos}
+            onAddNewPhotos={(files) => setPhotos((prev) => [...prev, ...files])}
+            onRemoveNewPhoto={(index) => setPhotos((prev) => prev.filter((_, i) => i !== index))}
+            onRemoveExistingPhoto={(photo) => {
+              setExistingPhotos((prev) => prev.filter((p) => p.id !== photo.id))
+              setPhotosToDelete((prev) => [...prev, photo.id])
+            }}
+            onError={setErrorMessage}
+          />
+        </CollapsibleSection>
 
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm">
             {errorMessage}
           </div>
         )}
-
-        <div className="flex gap-2 justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isSaving}
-            className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
-          >
-            Abbrechen
-          </button>
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400"
-          >
-            {isSaving ? 'Speichert...' : 'Speichern'}
-          </button>
-        </div>
       </form>
     </Modal>
   )

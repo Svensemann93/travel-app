@@ -5,11 +5,19 @@ type Props = {
   isOpen: boolean
   onClose: () => void
   children: ReactNode
+  footer?: ReactNode
   maxWidth?: 'sm' | 'md' | 'lg'
   fullscreenOnMobile?: boolean
 }
 
-function Modal({ isOpen, onClose, children, maxWidth = 'md', fullscreenOnMobile = true }: Props) {
+function Modal({
+  isOpen,
+  onClose,
+  children,
+  footer,
+  maxWidth = 'md',
+  fullscreenOnMobile = true,
+}: Props) {
   useEffect(() => {
     if (!isOpen) return
     function handleEscape(event: KeyboardEvent) {
@@ -36,8 +44,8 @@ function Modal({ isOpen, onClose, children, maxWidth = 'md', fullscreenOnMobile 
     : 'fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 p-4'
 
   const containerClass = fullscreenOnMobile
-    ? `flex h-full w-full flex-col overflow-y-auto bg-white p-6 shadow-xl sm:h-auto sm:max-h-[90vh] sm:rounded-lg ${maxWidthClass}`
-    : `max-h-[90vh] w-full overflow-y-auto rounded-lg bg-white p-6 shadow-xl ${maxWidthClass}`
+    ? `flex h-full w-full flex-col overflow-hidden bg-white shadow-xl sm:h-auto sm:max-h-[90vh] sm:rounded-lg ${maxWidthClass}`
+    : `flex max-h-[90vh] w-full flex-col overflow-hidden rounded-lg bg-white shadow-xl ${maxWidthClass}`
 
   return (
     <div className={wrapperClass} onClick={onClose}>
@@ -47,7 +55,10 @@ function Modal({ isOpen, onClose, children, maxWidth = 'md', fullscreenOnMobile 
         className={containerClass}
         onClick={(e) => e.stopPropagation()}
       >
-        {children}
+        <div className="min-h-0 flex-1 overflow-y-auto p-6">{children}</div>
+        {footer && (
+          <div className="shrink-0 border-t border-slate-200 bg-white px-6 py-4">{footer}</div>
+        )}
       </div>
     </div>
   )

@@ -45,7 +45,6 @@ function PhotoUploader({
 
   return (
     <div>
-      <p className="block text-sm font-medium text-slate-700 mb-1">Fotos</p>
       <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-md text-sm text-slate-500 hover:border-blue-400 hover:text-blue-500 transition-colors">
         <span>+ Fotos hinzufügen</span>
         <input
