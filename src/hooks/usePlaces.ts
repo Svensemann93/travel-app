@@ -7,6 +7,7 @@ import {
   insertPlaceRow,
   removePhotoStorageOnly,
   removePhotos,
+  updatePlaceLocation,
   updatePlaceRow,
 } from '../lib/placesApi'
 import type { Place, PlaceCreateInput, PlaceUpdateInput } from '../types/place'
@@ -107,6 +108,54 @@ export function useUpdatePlace() {
       if (userId) {
         queryClient.invalidateQueries({ queryKey: placesKeys.list(userId) })
       }
+    },
+  })
+}
+
+export function useUpdatePlaceLocation() {
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const userId = user?.id
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      latitude,
+      longitude,
+    }: {
+      id: string
+      latitude: number
+      longitude: number
+    }): Promise<Place> => {
+      if (!userId) throw new Error('Not authenticated')
+
+      const existing = queryClient
+        .getQueryData<Place[]>(placesKeys.list(userId))
+        ?.find((p) => p.id === id)
+      if (!existing) throw new Error('Place not found')
+
+      const row = await updatePlaceLocation(id, latitude, longitude)
+      return { ...row, photos: existing.photos }
+    },
+    onMutate: async ({ id, latitude, longitude }) => {
+      if (!userId) return
+      await queryClient.cancelQueries({ queryKey: placesKeys.list(userId) })
+      const previous = queryClient.getQueryData<Place[]>(placesKeys.list(userId))
+      queryClient.setQueryData<Place[]>(placesKeys.list(userId), (old = []) =>
+        old.map((p) => (p.id === id ? { ...p, latitude, longitude } : p)),
+      )
+      return { previous }
+    },
+    onError: (_error, _variables, context) => {
+      if (userId && context?.previous) {
+        queryClient.setQueryData(placesKeys.list(userId), context.previous)
+      }
+    },
+    onSuccess: (updatedPlace) => {
+      if (!userId) return
+      queryClient.setQueryData<Place[]>(placesKeys.list(userId), (old = []) =>
+        old.map((p) => (p.id === updatedPlace.id ? updatedPlace : p)),
+      )
     },
   })
 }

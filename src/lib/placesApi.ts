@@ -45,6 +45,21 @@ export async function updatePlaceRow(id: string, data: PlaceUpdateInput): Promis
   return row
 }
 
+export async function updatePlaceLocation(
+  id: string,
+  latitude: number,
+  longitude: number,
+): Promise<PlaceRow> {
+  const { data: row, error } = await supabase
+    .from('places')
+    .update({ latitude, longitude })
+    .eq('id', id)
+    .select('*')
+    .single()
+  if (error) throw new Error(error.message)
+  return row
+}
+
 export async function deletePlaceRow(id: string): Promise<void> {
   const { error } = await supabase.from('places').delete().eq('id', id)
   if (error) throw new Error(error.message)
