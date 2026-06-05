@@ -4,7 +4,8 @@ import type { Marker as LeafletMarker } from 'leaflet'
 import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
 import Lightbox from './Lightbox'
-import { defaultMarkerIcon } from '../lib/leafletIcons'
+import { getCategoryMarkerIcon } from '../lib/leafletIcons'
+import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 
 type Props = {
   places: Place[]
@@ -24,12 +25,13 @@ function PlaceMarkers({ places, onEdit, onDelete, onAddToTrip, onMove }: Props) 
         const websiteText = place.website_url
           ? place.website_url.replace('https://', '').replace('http://', '')
           : ''
+        const category = CATEGORY_MAP[place.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
 
         return (
           <Marker
             key={place.id}
             position={[place.latitude, place.longitude]}
-            icon={defaultMarkerIcon}
+            icon={getCategoryMarkerIcon(category.color)}
             draggable
             eventHandlers={{
               dragend: (event) => {
@@ -39,7 +41,12 @@ function PlaceMarkers({ places, onEdit, onDelete, onAddToTrip, onMove }: Props) 
               },
             }}
           >
-            <Popup minWidth={280}>
+            <Popup
+              minWidth={280}
+              maxHeight={400}
+              autoPanPaddingTopLeft={[16, 90]}
+              autoPanPaddingBottomRight={[16, 16]}
+            >
               <div className="min-w-280px space-y-2">
                 {photos.length > 0 ? (
                   <div className="flex gap-1 overflow-x-auto pb-1">
@@ -64,6 +71,16 @@ function PlaceMarkers({ places, onEdit, onDelete, onAddToTrip, onMove }: Props) 
                 ) : null}
 
                 <strong className="text-base block">{place.name}</strong>
+
+                <div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ backgroundColor: category.color }}
+                    />
+                    {category.label}
+                  </span>
+                </div>
 
                 {place.rating ? (
                   <div className="text-sm">
