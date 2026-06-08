@@ -18,7 +18,9 @@ import {
   useUpdateTrip,
   useUpdateTripPlace,
 } from '../hooks/useTrips'
+import { useCreateJournalFromTrip } from '../hooks/useJournals'
 import { formatDateRange } from '../lib/dateFormat'
+import type { JournalInput } from '../types/journal'
 import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../types/trip'
 
 function TripDetailPage() {
@@ -29,9 +31,11 @@ function TripDetailPage() {
   const deleteTrip = useDeleteTrip()
   const removePlaceFromTrip = useRemovePlaceFromTrip()
   const updateTripPlace = useUpdateTripPlace()
+  const createJournalFromTrip = useCreateJournalFromTrip()
   const { selected } = useCategoryFilter()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isCreateJournalOpen, setIsCreateJournalOpen] = useState(false)
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
   const [editingTripPlace, setEditingTripPlace] = useState<TripPlaceWithPlace | null>(null)
@@ -89,6 +93,21 @@ function TripDetailPage() {
     }
   }
 
+  async function handleCreateJournal(data: JournalInput) {
+    if (!trip) return
+    try {
+      const journal = await createJournalFromTrip.mutateAsync({
+        trip,
+        title: data.title,
+        description: data.description,
+      })
+      setIsCreateJournalOpen(false)
+      navigate(`/journal/${journal.id}`)
+    } catch (err) {
+      console.error('Create journal error:', err)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
@@ -111,6 +130,7 @@ function TripDetailPage() {
               dateRange={formatDateRange(trip.start_date, trip.end_date)}
               onEdit={() => setIsEditOpen(true)}
               onDelete={() => setIsDeleteOpen(true)}
+              onCreateJournal={() => setIsCreateJournalOpen(true)}
             />
 
             {trip.trip_places.length === 0 ? (
@@ -157,15 +177,19 @@ function TripDetailPage() {
               trip={trip}
               isEditOpen={isEditOpen}
               isDeleteOpen={isDeleteOpen}
+              isJournalOpen={isCreateJournalOpen}
               editingTripPlace={editingTripPlace}
               isUpdatingPlace={updateTripPlace.isPending}
               isDeleting={deleteTrip.isPending}
+              isCreatingJournal={createJournalFromTrip.isPending}
               onCloseEdit={() => setIsEditOpen(false)}
               onCloseDelete={() => setIsDeleteOpen(false)}
+              onCloseJournal={() => setIsCreateJournalOpen(false)}
               onCloseEditingPlace={() => setEditingTripPlace(null)}
               onSaveTrip={handleUpdate}
               onSaveTripPlace={handleUpdateTripPlace}
               onConfirmDelete={handleConfirmDelete}
+              onCreateJournal={handleCreateJournal}
             />
           </>
         )}

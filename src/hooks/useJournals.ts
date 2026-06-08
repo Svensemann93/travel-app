@@ -6,11 +6,13 @@ import {
   fetchJournalWithEntries,
   fetchJournalsForUser,
   insertEntryRow,
+  insertEntryRows,
   insertJournalRow,
   updateEntryRow,
   updateJournalRow,
 } from '../lib/journalsApi'
 import type { Journal, JournalEntryInput, JournalInput, JournalWithEntries } from '../types/journal'
+import type { TripWithPlaces } from '../types/trip'
 
 export const journalsKeys = {
   all: ['journals'] as const,
@@ -154,5 +156,51 @@ export function useDeleteEntry() {
       queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
     onError: (_e, { journalId }) =>
       queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
+  })
+}
+
+export function useCreateJournalFromTrip() {
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const userId = user?.id
+  return useMutation({
+    mutationFn: async ({
+      trip,
+      title,
+      description,
+    }: {
+      trip: TripWithPlaces
+      title: string
+      description: string | null
+    }): Promise<Journal> => {
+      if (!userId) throw new Error('Not authenticated')
+      const journal = await insertJournalRow(userId, { title, description, trip_id: trip.id })
+      try {
+        const entries = trip.trip_places.map((tp) => ({
+          position: tp.position,
+          data: {
+            entry_date: tp.planned_date,
+            title: tp.place.name,
+            body: tp.notes,
+            place_id: tp.place_id,
+          },
+        }))
+        await insertEntryRows(journal.id, entries)
+      } catch (err) {
+        await deleteJournalRow(journal.id)
+        throw err
+      }
+      return journal
+    },
+    onSuccess: (journal) => {
+      if (!userId) return
+      queryClient.setQueryData<Journal[]>(journalsKeys.list(userId), (old = []) => [
+        journal,
+        ...old,
+      ])
+    },
+    onError: () => {
+      if (userId) queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+    },
   })
 }
