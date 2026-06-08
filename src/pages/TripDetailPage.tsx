@@ -4,11 +4,13 @@ import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
 import MapFitBounds from '../components/MapFitBounds'
 import MapFocuser from '../components/MapFocuser'
+import CategoryFilter from '../components/CategoryFilter'
 import TripDetailHeader from '../components/TripDetailHeader'
 import TripDetailModals from '../components/TripDetailModals'
 import TripDetailStatus from '../components/TripDetailStatus'
 import TripPlaceList from '../components/TripPlaceList'
 import TripPlaceMarkers from '../components/TripPlaceMarkers'
+import { useCategoryFilter } from '../contexts/categoryFilter'
 import {
   useDeleteTrip,
   useRemovePlaceFromTrip,
@@ -27,6 +29,7 @@ function TripDetailPage() {
   const deleteTrip = useDeleteTrip()
   const removePlaceFromTrip = useRemovePlaceFromTrip()
   const updateTripPlace = useUpdateTripPlace()
+  const { selected } = useCategoryFilter()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
@@ -34,6 +37,14 @@ function TripDetailPage() {
   const [editingTripPlace, setEditingTripPlace] = useState<TripPlaceWithPlace | null>(null)
 
   const places = useMemo(() => trip?.trip_places.map((tp) => tp.place) ?? [], [trip?.trip_places])
+  const numbered = useMemo(
+    () => places.map((place, index) => ({ place, number: index + 1 })),
+    [places],
+  )
+  const visibleNumbered = useMemo(
+    () => numbered.filter((n) => selected.has(n.place.category)),
+    [numbered, selected],
+  )
   const focusedPlace = focusedPlaceId ? (places.find((p) => p.id === focusedPlaceId) ?? null) : null
 
   async function handleUpdate(data: TripInput) {
@@ -128,11 +139,16 @@ function TripDetailPage() {
                   />
                 </div>
                 <div className="h-[60vh] lg:sticky lg:top-8 lg:h-[70vh]">
-                  <Map>
-                    <TripPlaceMarkers places={places} />
-                    <MapFitBounds places={places} />
-                    <MapFocuser place={focusedPlace} />
-                  </Map>
+                  <div className="mb-2 hidden justify-end md:flex">
+                    <CategoryFilter />
+                  </div>
+                  <div className="h-full md:h-[calc(100%-3rem)]">
+                    <Map>
+                      <TripPlaceMarkers places={visibleNumbered} />
+                      <MapFitBounds places={places} />
+                      <MapFocuser place={focusedPlace} />
+                    </Map>
+                  </div>
                 </div>
               </div>
             )}

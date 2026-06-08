@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { LatLng } from 'leaflet'
 import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
 import { useEntryPoint } from '../hooks/useEntryPoint'
 import { useReposition } from '../hooks/useReposition'
 import { useFocusedPlace } from '../hooks/useFocusedPlace'
+import { useCategoryFilter } from '../contexts/categoryFilter'
+import { filterPlacesByCategory } from '../lib/filterPlaces'
 import { placeToFormInitial } from '../hooks/usePlaceForm'
 import type { PlaceFormValues } from '../hooks/usePlaceForm'
 import AppHeader from '../components/AppHeader'
@@ -16,6 +18,7 @@ import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import AddToTripModal from '../components/AddToTripModal'
 import RepositionBar from '../components/RepositionBar'
+import CategoryFilter from '../components/CategoryFilter'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 import LocateControl from '../components/LocateControl'
@@ -29,6 +32,9 @@ function MapPage() {
   const deletePlace = useDeletePlace()
   const reposition = useReposition()
   const focusedPlace = useFocusedPlace(places)
+  const { selected } = useCategoryFilter()
+
+  const visiblePlaces = useMemo(() => filterPlacesByCategory(places, selected), [places, selected])
 
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
@@ -105,7 +111,7 @@ function MapPage() {
             <SearchControl />
             <LocateControl />
             <PlaceMarkers
-              places={places}
+              places={visiblePlaces}
               repositioningId={reposition.place?.id ?? null}
               pendingPosition={reposition.pendingPosition}
               onDragMove={reposition.dragMove}
@@ -119,6 +125,10 @@ function MapPage() {
         )}
         {!isEntryLoading && isLoading && <MapLoadingIndicator />}
         {!isEntryLoading && !isLoading && places.length === 0 && <MapEmptyState />}
+
+        {!isEntryLoading && places.length > 0 && (
+          <CategoryFilter className="absolute right-4 top-4 z-[1000] hidden md:block" />
+        )}
 
         {reposition.place && (
           <RepositionBar

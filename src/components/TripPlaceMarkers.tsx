@@ -3,20 +3,22 @@ import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
 import { getNumberedMarkerIcon } from '../lib/leafletIcons'
 
+export type NumberedPlace = { place: Place; number: number }
+
 type Props = {
-  places: Place[]
+  places: NumberedPlace[]
 }
 
 function TripPlaceMarkers({ places }: Props) {
   return (
     <>
-      {places.map((place, index) => {
+      {places.map(({ place, number }) => {
         const firstPhoto = place.photos?.slice().sort((a, b) => a.position - b.position)[0]
         return (
           <Marker
             key={place.id}
             position={[place.latitude, place.longitude]}
-            icon={getNumberedMarkerIcon(index + 1)}
+            icon={getNumberedMarkerIcon(number)}
           >
             <Popup minWidth={200}>
               <div className="space-y-2">

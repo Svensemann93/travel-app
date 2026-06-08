@@ -1,6 +1,10 @@
+import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { usePlaces } from '../hooks/usePlaces'
+import { useCategoryFilter } from '../contexts/categoryFilter'
+import { filterPlacesByCategory } from '../lib/filterPlaces'
 import AppHeader from '../components/AppHeader'
+import CategoryFilter from '../components/CategoryFilter'
 import SignedImage from '../components/SignedImage'
 
 function StarDisplay({ rating }: { rating: number }) {
@@ -17,7 +21,10 @@ function StarDisplay({ rating }: { rating: number }) {
 
 function PlacesListPage() {
   const { data: places = [], isLoading, error } = usePlaces()
+  const { selected } = useCategoryFilter()
   const navigate = useNavigate()
+
+  const visiblePlaces = useMemo(() => filterPlacesByCategory(places, selected), [places, selected])
 
   function handlePlaceClick(placeId: string) {
     navigate(`/?focus=${placeId}`)
@@ -28,7 +35,10 @@ function PlacesListPage() {
       <AppHeader />
 
       <main className="max-w-4xl mx-auto p-8">
-        <h2 className="text-2xl font-bold text-slate-800 mb-6">Meine Orte</h2>
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h2 className="text-2xl font-bold text-slate-800">Meine Orte</h2>
+          {places.length > 0 && <CategoryFilter className="hidden md:block" />}
+        </div>
 
         {isLoading && (
           <div className="space-y-3">
@@ -59,9 +69,15 @@ function PlacesListPage() {
           </div>
         )}
 
-        {places.length > 0 && (
+        {!isLoading && places.length > 0 && visiblePlaces.length === 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center text-slate-600">
+            Keine Orte in den gewählten Kategorien.
+          </div>
+        )}
+
+        {visiblePlaces.length > 0 && (
           <ul className="space-y-3">
-            {places.map((place) => {
+            {visiblePlaces.map((place) => {
               const firstPhoto = place.photos?.slice().sort((a, b) => a.position - b.position)[0]
 
               return (
