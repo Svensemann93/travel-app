@@ -1,5 +1,11 @@
 import type { Place } from '../types/place'
 import type { Trip, TripPlace, TripPlaceWithPlace, TripWithPlaces } from '../types/trip'
+import type {
+  Journal,
+  JournalEntry,
+  JournalEntryWithPlace,
+  JournalWithEntries,
+} from '../types/journal'
 
 export function makePlace(overrides: Partial<Place> = {}): Place {
   return {
@@ -65,6 +71,53 @@ export function makeTripWithPlaces(overrides: Partial<TripWithPlaces> = {}): Tri
   return {
     ...makeTrip(),
     trip_places: [],
+    ...overrides,
+  }
+}
+
+export function makeJournal(overrides: Partial<Journal> = {}): Journal {
+  return {
+    id: 'journal-1',
+    user_id: 'test-user-id',
+    trip_id: null,
+    title: 'Test Journal',
+    description: null,
+    created_at: '2025-01-15T00:00:00.000Z',
+    updated_at: '2025-01-15T00:00:00.000Z',
+    ...overrides,
+  }
+}
+
+export function makeJournalEntry(overrides: Partial<JournalEntry> = {}): JournalEntry {
+  return {
+    id: 'entry-1',
+    journal_id: 'journal-1',
+    place_id: null,
+    entry_date: null,
+    title: null,
+    body: null,
+    position: 0,
+    created_at: '2025-01-15T00:00:00.000Z',
+    ...overrides,
+  }
+}
+
+export function makeJournalEntryWithPlace(
+  overrides: Partial<JournalEntryWithPlace> = {},
+): JournalEntryWithPlace {
+  return {
+    ...makeJournalEntry(),
+    place: null,
+    ...overrides,
+  }
+}
+
+export function makeJournalWithEntries(
+  overrides: Partial<JournalWithEntries> = {},
+): JournalWithEntries {
+  return {
+    ...makeJournal(),
+    journal_entries: [],
     ...overrides,
   }
 }
