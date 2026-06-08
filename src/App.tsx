@@ -12,6 +12,8 @@ const MapPage = lazy(() => import('./pages/MapPage'))
 const PlacesListPage = lazy(() => import('./pages/PlacesListPage'))
 const TripsListPage = lazy(() => import('./pages/TripsListPage'))
 const TripDetailPage = lazy(() => import('./pages/TripDetailPage'))
+const JournalsListPage = lazy(() => import('./pages/JournalsListPage'))
+const JournalDetailPage = lazy(() => import('./pages/JournalDetailPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 
 function App() {
@@ -49,6 +51,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <TripDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/journal"
+              element={
+                <ProtectedRoute>
+                  <JournalsListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/journal/:journalId"
+              element={
+                <ProtectedRoute>
+                  <JournalDetailPage />
                 </ProtectedRoute>
               }
             />
