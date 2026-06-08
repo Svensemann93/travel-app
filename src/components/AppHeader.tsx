@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Karte', match: (path: string) => path === '/' },
   { to: '/places', label: 'Meine Orte', match: (path: string) => path === '/places' },
   { to: '/trips', label: 'Trips', match: (path: string) => path.startsWith('/trips') },
+  { to: '/journal', label: 'Tagebuch', match: (path: string) => path.startsWith('/journal') },
   { to: '/profile', label: 'Profil', match: (path: string) => path === '/profile' },
 ]
 
