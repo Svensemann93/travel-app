@@ -1,6 +1,8 @@
 import ConfirmDialog from './ConfirmDialog'
+import JournalFormModal from './JournalFormModal'
 import TripFormModal from './TripFormModal'
 import TripPlaceEditModal from './TripPlaceEditModal'
+import type { JournalInput } from '../types/journal'
 import type {
   TripInput,
   TripPlaceUpdateInput,
@@ -12,30 +14,38 @@ type Props = {
   trip: TripWithPlaces
   isEditOpen: boolean
   isDeleteOpen: boolean
+  isJournalOpen: boolean
   editingTripPlace: TripPlaceWithPlace | null
   isUpdatingPlace: boolean
   isDeleting: boolean
+  isCreatingJournal: boolean
   onCloseEdit: () => void
   onCloseDelete: () => void
+  onCloseJournal: () => void
   onCloseEditingPlace: () => void
   onSaveTrip: (data: TripInput) => Promise<void>
   onSaveTripPlace: (data: TripPlaceUpdateInput) => Promise<void>
   onConfirmDelete: () => Promise<void>
+  onCreateJournal: (data: JournalInput) => void
 }
 
 function TripDetailModals({
   trip,
   isEditOpen,
   isDeleteOpen,
+  isJournalOpen,
   editingTripPlace,
   isUpdatingPlace,
   isDeleting,
+  isCreatingJournal,
   onCloseEdit,
   onCloseDelete,
+  onCloseJournal,
   onCloseEditingPlace,
   onSaveTrip,
   onSaveTripPlace,
   onConfirmDelete,
+  onCreateJournal,
 }: Props) {
   return (
     <>
@@ -63,6 +73,14 @@ function TripDetailModals({
         isSaving={isUpdatingPlace}
         onSave={onSaveTripPlace}
         onClose={onCloseEditingPlace}
+      />
+      <JournalFormModal
+        key={isJournalOpen ? 'journal-open' : 'journal-closed'}
+        isOpen={isJournalOpen}
+        initialData={{ title: trip.name, description: trip.description ?? '' }}
+        isSaving={isCreatingJournal}
+        onClose={onCloseJournal}
+        onSave={onCreateJournal}
       />
       <ConfirmDialog
         isOpen={isDeleteOpen}

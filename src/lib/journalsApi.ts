@@ -70,6 +70,16 @@ export async function insertEntryRow(
   return row
 }
 
+export async function insertEntryRows(
+  journalId: string,
+  entries: { position: number; data: JournalEntryInput }[],
+): Promise<void> {
+  if (entries.length === 0) return
+  const rows = entries.map(({ position, data }) => ({ ...data, journal_id: journalId, position }))
+  const { error } = await supabase.from('journal_entries').insert(rows)
+  if (error) throw new Error(error.message)
+}
+
 export async function updateEntryRow(
   entryId: string,
   data: JournalEntryInput,

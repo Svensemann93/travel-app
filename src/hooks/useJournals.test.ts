@@ -4,6 +4,7 @@ import {
   deleteEntryRow,
   deleteJournalRow,
   insertEntryRow,
+  insertEntryRows,
   insertJournalRow,
   updateEntryRow,
   updateJournalRow,
@@ -13,12 +14,16 @@ import {
   makeJournalEntry,
   makeJournalEntryWithPlace,
   makeJournalWithEntries,
+  makePlace,
+  makeTripPlaceWithPlace,
+  makeTripWithPlaces,
 } from '../test/fixtures'
 import { createTestQueryWrapper } from '../test/utils'
 import {
   journalsKeys,
   useAddEntry,
   useCreateJournal,
+  useCreateJournalFromTrip,
   useDeleteEntry,
   useDeleteJournal,
   useUpdateEntry,
@@ -32,6 +37,7 @@ vi.mock('../lib/journalsApi', () => ({
   updateJournalRow: vi.fn(),
   deleteJournalRow: vi.fn(),
   insertEntryRow: vi.fn(),
+  insertEntryRows: vi.fn(),
   updateEntryRow: vi.fn(),
   deleteEntryRow: vi.fn(),
 }))
@@ -200,5 +206,72 @@ describe('useDeleteEntry', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
     expect(deleteEntryRow).toHaveBeenCalledWith('entry-1')
+  })
+})
+
+describe('useCreateJournalFromTrip', () => {
+  const trip = makeTripWithPlaces({
+    id: 'trip-1',
+    name: 'Trip X',
+    trip_places: [
+      makeTripPlaceWithPlace({
+        place_id: 'a',
+        position: 0,
+        planned_date: '2025-06-01',
+        notes: 'Note A',
+        place: makePlace({ id: 'a', name: 'Place A' }),
+      }),
+      makeTripPlaceWithPlace({
+        place_id: 'b',
+        position: 1,
+        planned_date: null,
+        notes: null,
+        place: makePlace({ id: 'b', name: 'Place B' }),
+      }),
+    ],
+  })
+
+  it('creates a journal with trip_id and maps trip places to ordered entries', async () => {
+    const { wrapper, queryClient } = createTestQueryWrapper()
+    queryClient.setQueryData(journalsKeys.list('test-user-id'), [makeJournal({ id: 'journal-0' })])
+    vi.mocked(insertJournalRow).mockResolvedValue(
+      makeJournal({ id: 'journal-1', trip_id: 'trip-1' }),
+    )
+    vi.mocked(insertEntryRows).mockResolvedValue(undefined)
+
+    const { result } = renderHook(() => useCreateJournalFromTrip(), { wrapper })
+    result.current.mutate({ trip, title: 'My Journal', description: 'My desc' })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(insertJournalRow).toHaveBeenCalledWith('test-user-id', {
+      title: 'My Journal',
+      description: 'My desc',
+      trip_id: 'trip-1',
+    })
+    expect(insertEntryRows).toHaveBeenCalledWith('journal-1', [
+      {
+        position: 0,
+        data: { entry_date: '2025-06-01', title: 'Place A', body: 'Note A', place_id: 'a' },
+      },
+      { position: 1, data: { entry_date: null, title: 'Place B', body: null, place_id: 'b' } },
+    ])
+
+    const list = queryClient.getQueryData<Journal[]>(journalsKeys.list('test-user-id'))
+    expect(list?.map((j) => j.id)).toEqual(['journal-1', 'journal-0'])
+  })
+
+  it('rolls back the created journal when entry insert fails', async () => {
+    const { wrapper } = createTestQueryWrapper()
+    vi.mocked(insertJournalRow).mockResolvedValue(makeJournal({ id: 'journal-1' }))
+    vi.mocked(insertEntryRows).mockRejectedValue(new Error('insert failed'))
+    vi.mocked(deleteJournalRow).mockResolvedValue(undefined)
+
+    const { result } = renderHook(() => useCreateJournalFromTrip(), { wrapper })
+    result.current.mutate({ trip, title: 'My Journal', description: null })
+
+    await waitFor(() => expect(result.current.isError).toBe(true))
+
+    expect(deleteJournalRow).toHaveBeenCalledWith('journal-1')
   })
 })
