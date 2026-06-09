@@ -3,6 +3,7 @@ import type { Trip, TripPlace, TripPlaceWithPlace, TripWithPlaces } from '../typ
 import type {
   Journal,
   JournalEntry,
+  JournalEntryPhoto,
   JournalEntryWithPlace,
   JournalWithEntries,
 } from '../types/journal'
@@ -88,6 +89,21 @@ export function makeJournal(overrides: Partial<Journal> = {}): Journal {
   }
 }
 
+export function makeJournalEntryPhoto(
+  overrides: Partial<JournalEntryPhoto> = {},
+): JournalEntryPhoto {
+  return {
+    id: 'entry-photo-1',
+    entry_id: 'entry-1',
+    user_id: 'test-user-id',
+    url: 'test-user-id/entry-1/full.jpg',
+    thumb_url: 'test-user-id/entry-1/thumb.jpg',
+    position: 0,
+    created_at: '2025-01-15T00:00:00.000Z',
+    ...overrides,
+  }
+}
+
 export function makeJournalEntry(overrides: Partial<JournalEntry> = {}): JournalEntry {
   return {
     id: 'entry-1',
@@ -97,7 +113,9 @@ export function makeJournalEntry(overrides: Partial<JournalEntry> = {}): Journal
     title: null,
     body: null,
     position: 0,
+    place_photo_ids: null,
     created_at: '2025-01-15T00:00:00.000Z',
+    photos: [],
     ...overrides,
   }
 }

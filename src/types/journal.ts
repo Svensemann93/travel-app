@@ -10,7 +10,7 @@ export type Journal = {
   updated_at: string
 }
 
-export type JournalEntry = {
+export type JournalEntryRow = {
   id: string
   journal_id: string
   place_id: string | null
@@ -18,7 +18,22 @@ export type JournalEntry = {
   title: string | null
   body: string | null
   position: number
+  place_photo_ids: string[] | null
   created_at: string
+}
+
+export type JournalEntryPhoto = {
+  id: string
+  entry_id: string
+  user_id: string
+  url: string
+  thumb_url: string | null
+  position: number
+  created_at: string
+}
+
+export type JournalEntry = JournalEntryRow & {
+  photos: JournalEntryPhoto[]
 }
 
 export type JournalEntryWithPlace = JournalEntry & {
@@ -40,4 +55,5 @@ export type JournalEntryInput = {
   title: string | null
   body: string | null
   place_id: string | null
+  place_photo_ids: string[] | null
 }

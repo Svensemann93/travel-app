@@ -3,15 +3,18 @@ import type { Journal, JournalEntryInput, JournalWithEntries } from '../types/jo
 import {
   deleteEntryRow,
   deleteJournalRow,
+  insertEntryPhotoRows,
   insertEntryRow,
   insertEntryRows,
   insertJournalRow,
+  removeEntryPhotos,
   updateEntryRow,
   updateJournalRow,
 } from '../lib/journalsApi'
 import {
   makeJournal,
   makeJournalEntry,
+  makeJournalEntryPhoto,
   makeJournalEntryWithPlace,
   makeJournalWithEntries,
   makePlace,
@@ -40,6 +43,8 @@ vi.mock('../lib/journalsApi', () => ({
   insertEntryRows: vi.fn(),
   updateEntryRow: vi.fn(),
   deleteEntryRow: vi.fn(),
+  insertEntryPhotoRows: vi.fn(),
+  removeEntryPhotos: vi.fn(),
 }))
 
 vi.mock('./useAuth', () => ({
@@ -51,6 +56,7 @@ const entryInput: JournalEntryInput = {
   title: 'Day 1',
   body: 'Arrived',
   place_id: null,
+  place_photo_ids: null,
 }
 
 beforeEach(() => {
@@ -130,16 +136,18 @@ describe('useDeleteJournal', () => {
 })
 
 describe('useAddEntry', () => {
-  it('uses position 0 when no detail cache exists', async () => {
+  it('uses position 0 when no detail cache exists and uploads photos', async () => {
     const { wrapper } = createTestQueryWrapper()
     vi.mocked(insertEntryRow).mockResolvedValue(makeJournalEntry())
+    vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
 
     const { result } = renderHook(() => useAddEntry(), { wrapper })
-    result.current.mutate({ journalId: 'journal-1', data: entryInput })
+    result.current.mutate({ journalId: 'journal-1', data: entryInput, photos: [] })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
     expect(insertEntryRow).toHaveBeenCalledWith('journal-1', 0, entryInput)
+    expect(insertEntryPhotoRows).toHaveBeenCalledWith('test-user-id', 'entry-1', [], 0)
   })
 
   it('uses position 0 when the cached journal has no entries', async () => {
@@ -149,9 +157,10 @@ describe('useAddEntry', () => {
       makeJournalWithEntries({ journal_entries: [] }),
     )
     vi.mocked(insertEntryRow).mockResolvedValue(makeJournalEntry())
+    vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
 
     const { result } = renderHook(() => useAddEntry(), { wrapper })
-    result.current.mutate({ journalId: 'journal-1', data: entryInput })
+    result.current.mutate({ journalId: 'journal-1', data: entryInput, photos: [] })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -171,9 +180,10 @@ describe('useAddEntry', () => {
       }),
     )
     vi.mocked(insertEntryRow).mockResolvedValue(makeJournalEntry({ position: 6 }))
+    vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
 
     const { result } = renderHook(() => useAddEntry(), { wrapper })
-    result.current.mutate({ journalId: 'journal-1', data: entryInput })
+    result.current.mutate({ journalId: 'journal-1', data: entryInput, photos: [] })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -182,16 +192,50 @@ describe('useAddEntry', () => {
 })
 
 describe('useUpdateEntry', () => {
-  it('calls updateEntryRow with the entry id and data', async () => {
+  it('updates the entry row with id and data', async () => {
     const { wrapper } = createTestQueryWrapper()
     vi.mocked(updateEntryRow).mockResolvedValue(makeJournalEntry())
+    vi.mocked(removeEntryPhotos).mockResolvedValue(undefined)
+    vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
 
     const { result } = renderHook(() => useUpdateEntry(), { wrapper })
-    result.current.mutate({ entryId: 'entry-1', journalId: 'journal-1', data: entryInput })
+    result.current.mutate({
+      entryId: 'entry-1',
+      journalId: 'journal-1',
+      data: entryInput,
+      photos: [],
+      photosToDelete: [],
+      photoStartPosition: 0,
+    })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
     expect(updateEntryRow).toHaveBeenCalledWith('entry-1', entryInput)
+  })
+
+  it('removes flagged photos and uploads new ones', async () => {
+    const { wrapper } = createTestQueryWrapper()
+    vi.mocked(updateEntryRow).mockResolvedValue(makeJournalEntry())
+    vi.mocked(removeEntryPhotos).mockResolvedValue(undefined)
+    vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
+
+    const toDelete = [makeJournalEntryPhoto({ id: 'p1' })]
+    const file = new File(['x'], 'photo.jpg', { type: 'image/jpeg' })
+
+    const { result } = renderHook(() => useUpdateEntry(), { wrapper })
+    result.current.mutate({
+      entryId: 'entry-1',
+      journalId: 'journal-1',
+      data: entryInput,
+      photos: [file],
+      photosToDelete: toDelete,
+      photoStartPosition: 1,
+    })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(removeEntryPhotos).toHaveBeenCalledWith(toDelete)
+    expect(insertEntryPhotoRows).toHaveBeenCalledWith('test-user-id', 'entry-1', [file], 1)
   })
 })
 
@@ -252,9 +296,24 @@ describe('useCreateJournalFromTrip', () => {
     expect(insertEntryRows).toHaveBeenCalledWith('journal-1', [
       {
         position: 0,
-        data: { entry_date: '2025-06-01', title: 'Place A', body: 'Note A', place_id: 'a' },
+        data: {
+          entry_date: '2025-06-01',
+          title: 'Place A',
+          body: 'Note A',
+          place_id: 'a',
+          place_photo_ids: null,
+        },
       },
-      { position: 1, data: { entry_date: null, title: 'Place B', body: null, place_id: 'b' } },
+      {
+        position: 1,
+        data: {
+          entry_date: null,
+          title: 'Place B',
+          body: null,
+          place_id: 'b',
+          place_photo_ids: null,
+        },
+      },
     ])
 
     const list = queryClient.getQueryData<Journal[]>(journalsKeys.list('test-user-id'))

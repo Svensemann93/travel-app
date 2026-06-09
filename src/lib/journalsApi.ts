@@ -1,11 +1,17 @@
 import { supabase } from './supabase'
+import { uploadPhoto, deletePhotos as deletePhotoFiles } from './photoStorage'
 import type {
   Journal,
-  JournalEntry,
   JournalEntryInput,
+  JournalEntryPhoto,
+  JournalEntryRow,
   JournalInput,
   JournalWithEntries,
 } from '../types/journal'
+
+function collectStoragePaths(photos: JournalEntryPhoto[]): string[] {
+  return photos.flatMap((p) => (p.thumb_url ? [p.url, p.thumb_url] : [p.url]))
+}
 
 export async function fetchJournalsForUser(signal?: AbortSignal): Promise<Journal[]> {
   let query = supabase.from('journals').select('*').order('created_at', { ascending: false })
@@ -21,7 +27,9 @@ export async function fetchJournalWithEntries(
 ): Promise<JournalWithEntries | null> {
   let query = supabase
     .from('journals')
-    .select('*, journal_entries(*, place:places(*, photos:place_photos(*)))')
+    .select(
+      '*, journal_entries(*, photos:journal_entry_photos(*), place:places(*, photos:place_photos(*)))',
+    )
     .eq('id', journalId)
     .order('position', { referencedTable: 'journal_entries', ascending: true })
   if (signal) query = query.abortSignal(signal)
@@ -60,7 +68,7 @@ export async function insertEntryRow(
   journalId: string,
   position: number,
   data: JournalEntryInput,
-): Promise<JournalEntry> {
+): Promise<JournalEntryRow> {
   const { data: row, error } = await supabase
     .from('journal_entries')
     .insert({ ...data, journal_id: journalId, position })
@@ -83,7 +91,7 @@ export async function insertEntryRows(
 export async function updateEntryRow(
   entryId: string,
   data: JournalEntryInput,
-): Promise<JournalEntry> {
+): Promise<JournalEntryRow> {
   const { data: row, error } = await supabase
     .from('journal_entries')
     .update(data)
@@ -96,5 +104,50 @@ export async function updateEntryRow(
 
 export async function deleteEntryRow(entryId: string): Promise<void> {
   const { error } = await supabase.from('journal_entries').delete().eq('id', entryId)
+  if (error) throw new Error(error.message)
+}
+
+export async function insertEntryPhotoRows(
+  userId: string,
+  entryId: string,
+  files: File[],
+  startPosition: number,
+): Promise<JournalEntryPhoto[]> {
+  if (files.length === 0) return []
+  return Promise.all(
+    files.map(async (file, i) => {
+      const { fullPath, thumbPath } = await uploadPhoto(userId, entryId, file)
+      const { data, error } = await supabase
+        .from('journal_entry_photos')
+        .insert({
+          entry_id: entryId,
+          user_id: userId,
+          url: fullPath,
+          thumb_url: thumbPath,
+          position: startPosition + i,
+        })
+        .select('*')
+        .single()
+      if (error) throw new Error(error.message)
+      return data
+    }),
+  )
+}
+
+export async function removeEntryPhotos(photos: JournalEntryPhoto[]): Promise<void> {
+  if (photos.length === 0) return
+  const paths = collectStoragePaths(photos)
+  try {
+    await deletePhotoFiles(paths)
+  } catch (err) {
+    console.error('Storage cleanup failed:', err)
+  }
+  const { error } = await supabase
+    .from('journal_entry_photos')
+    .delete()
+    .in(
+      'id',
+      photos.map((p) => p.id),
+    )
   if (error) throw new Error(error.message)
 }
