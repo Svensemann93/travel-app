@@ -10,11 +10,11 @@ export type UploadedPhoto = {
 
 export async function uploadPhoto(
   userId: string,
-  placeId: string,
+  entityId: string,
   file: File,
 ): Promise<UploadedPhoto> {
   const id = crypto.randomUUID()
-  const baseDir = `${userId}/${placeId}`
+  const baseDir = `${userId}/${entityId}`
   const fullPath = `${baseDir}/${id}_full.jpg`
   const thumbPath = `${baseDir}/${id}_thumb.jpg`
 

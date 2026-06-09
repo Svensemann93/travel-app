@@ -5,13 +5,21 @@ import {
   deleteJournalRow,
   fetchJournalWithEntries,
   fetchJournalsForUser,
+  insertEntryPhotoRows,
   insertEntryRow,
   insertEntryRows,
   insertJournalRow,
+  removeEntryPhotos,
   updateEntryRow,
   updateJournalRow,
 } from '../lib/journalsApi'
-import type { Journal, JournalEntryInput, JournalInput, JournalWithEntries } from '../types/journal'
+import type {
+  Journal,
+  JournalEntryInput,
+  JournalEntryPhoto,
+  JournalInput,
+  JournalWithEntries,
+} from '../types/journal'
 import type { TripWithPlaces } from '../types/trip'
 
 export const journalsKeys = {
@@ -112,8 +120,19 @@ export function useDeleteJournal() {
 
 export function useAddEntry() {
   const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const userId = user?.id
   return useMutation({
-    mutationFn: ({ journalId, data }: { journalId: string; data: JournalEntryInput }) => {
+    mutationFn: async ({
+      journalId,
+      data,
+      photos,
+    }: {
+      journalId: string
+      data: JournalEntryInput
+      photos: File[]
+    }) => {
+      if (!userId) throw new Error('Not authenticated')
       const cached = queryClient.getQueryData<JournalWithEntries | null>(
         journalsKeys.detail(journalId),
       )
@@ -121,7 +140,9 @@ export function useAddEntry() {
         cached && cached.journal_entries.length > 0
           ? Math.max(...cached.journal_entries.map((e) => e.position)) + 1
           : 0
-      return insertEntryRow(journalId, position, data)
+      const entry = await insertEntryRow(journalId, position, data)
+      await insertEntryPhotoRows(userId, entry.id, photos, 0)
+      return entry
     },
     onSuccess: (_e, { journalId }) =>
       queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
@@ -132,15 +153,28 @@ export function useAddEntry() {
 
 export function useUpdateEntry() {
   const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const userId = user?.id
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       entryId,
       data,
+      photos,
+      photosToDelete,
+      photoStartPosition,
     }: {
       entryId: string
       journalId: string
       data: JournalEntryInput
-    }) => updateEntryRow(entryId, data),
+      photos: File[]
+      photosToDelete: JournalEntryPhoto[]
+      photoStartPosition: number
+    }) => {
+      if (!userId) throw new Error('Not authenticated')
+      await updateEntryRow(entryId, data)
+      await removeEntryPhotos(photosToDelete)
+      await insertEntryPhotoRows(userId, entryId, photos, photoStartPosition)
+    },
     onSuccess: (_e, { journalId }) =>
       queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
     onError: (_e, { journalId }) =>
@@ -183,6 +217,7 @@ export function useCreateJournalFromTrip() {
             title: tp.place.name,
             body: tp.notes,
             place_id: tp.place_id,
+            place_photo_ids: null,
           },
         }))
         await insertEntryRows(journal.id, entries)

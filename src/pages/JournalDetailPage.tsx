@@ -4,6 +4,8 @@ import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 import JournalFormModal from '../components/JournalFormModal'
 import JournalEntryModal from '../components/JournalEntryModal'
+import type { JournalEntrySavePayload } from '../components/JournalEntryModal'
+import SignedImage from '../components/SignedImage'
 import {
   useAddEntry,
   useDeleteEntry,
@@ -13,7 +15,14 @@ import {
   useUpdateJournal,
 } from '../hooks/useJournals'
 import { formatDate } from '../lib/dateFormat'
-import type { JournalEntryInput, JournalEntryWithPlace, JournalInput } from '../types/journal'
+import type { JournalEntryWithPlace, JournalInput } from '../types/journal'
+
+function visiblePlacePhotos(entry: JournalEntryWithPlace) {
+  const all = entry.place?.photos ?? []
+  if (entry.place_photo_ids === null) return all
+  const ids = new Set(entry.place_photo_ids)
+  return all.filter((p) => ids.has(p.id))
+}
 
 function JournalDetailPage() {
   const { journalId = '' } = useParams<{ journalId: string }>()
@@ -41,11 +50,18 @@ function JournalDetailPage() {
     navigate('/journal')
   }
 
-  function handleSaveEntry(data: JournalEntryInput) {
+  function handleSaveEntry(payload: JournalEntrySavePayload) {
     if (editingEntry) {
-      updateEntry.mutate({ entryId: editingEntry.id, journalId, data })
+      updateEntry.mutate({
+        entryId: editingEntry.id,
+        journalId,
+        data: payload.data,
+        photos: payload.newPhotos,
+        photosToDelete: payload.photosToDelete,
+        photoStartPosition: payload.photoStartPosition,
+      })
     } else {
-      addEntry.mutate({ journalId, data })
+      addEntry.mutate({ journalId, data: payload.data, photos: payload.newPhotos })
     }
     setEntryModalOpen(false)
     setEditingEntry(null)
@@ -111,44 +127,68 @@ function JournalDetailPage() {
               </div>
             ) : (
               <ul className="space-y-3">
-                {journal.journal_entries.map((entry) => (
-                  <li key={entry.id} className="rounded-lg bg-white p-4 shadow-sm">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        {entry.entry_date && (
-                          <p className="text-xs font-medium text-blue-700">
-                            {formatDate(entry.entry_date)}
-                          </p>
-                        )}
-                        {entry.title && (
-                          <h3 className="font-semibold text-slate-800">{entry.title}</h3>
-                        )}
-                        {entry.body && (
-                          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-600">
-                            {entry.body}
-                          </p>
-                        )}
+                {journal.journal_entries.map((entry) => {
+                  const placePhotos = visiblePlacePhotos(entry)
+                  const hasPhotos = placePhotos.length > 0 || entry.photos.length > 0
+                  return (
+                    <li key={entry.id} className="rounded-lg bg-white p-4 shadow-sm">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          {entry.entry_date && (
+                            <p className="text-xs font-medium text-blue-700">
+                              {formatDate(entry.entry_date)}
+                            </p>
+                          )}
+                          {entry.title && (
+                            <h3 className="font-semibold text-slate-800">{entry.title}</h3>
+                          )}
+                          {entry.body && (
+                            <p className="mt-1 whitespace-pre-wrap text-sm text-slate-600">
+                              {entry.body}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex shrink-0 gap-3">
+                          <button
+                            onClick={() => {
+                              setEditingEntry(entry)
+                              setEntryModalOpen(true)
+                            }}
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            Bearbeiten
+                          </button>
+                          <button
+                            onClick={() => setDeletingEntryId(entry.id)}
+                            className="text-sm text-red-600 hover:underline"
+                          >
+                            Löschen
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex shrink-0 gap-3">
-                        <button
-                          onClick={() => {
-                            setEditingEntry(entry)
-                            setEntryModalOpen(true)
-                          }}
-                          className="text-sm text-blue-600 hover:underline"
-                        >
-                          Bearbeiten
-                        </button>
-                        <button
-                          onClick={() => setDeletingEntryId(entry.id)}
-                          className="text-sm text-red-600 hover:underline"
-                        >
-                          Löschen
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                      {hasPhotos && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {placePhotos.map((photo) => (
+                            <SignedImage
+                              key={`place-${photo.id}`}
+                              path={photo.thumb_url ?? photo.url}
+                              alt=""
+                              className="h-20 w-20 rounded-md object-cover"
+                            />
+                          ))}
+                          {entry.photos.map((photo) => (
+                            <SignedImage
+                              key={`own-${photo.id}`}
+                              path={photo.thumb_url ?? photo.url}
+                              alt=""
+                              className="h-20 w-20 rounded-md object-cover"
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </li>
+                  )
+                })}
               </ul>
             )}
           </>
@@ -177,6 +217,10 @@ function JournalDetailPage() {
                 entry_date: editingEntry.entry_date ?? '',
                 title: editingEntry.title ?? '',
                 body: editingEntry.body ?? '',
+                place_id: editingEntry.place_id,
+                photos: editingEntry.photos,
+                place_photos: editingEntry.place?.photos ?? [],
+                place_photo_ids: editingEntry.place_photo_ids,
               }
             : undefined
         }
