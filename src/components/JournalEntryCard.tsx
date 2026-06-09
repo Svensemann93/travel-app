@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import SignedImage from './SignedImage'
+import Lightbox from './Lightbox'
 import { formatDate } from '../lib/dateFormat'
 import { visiblePlacePhotos } from '../lib/journalPhotos'
 import type { JournalEntryWithPlace } from '../types/journal'
@@ -9,6 +11,8 @@ type Props = {
 }
 
 function JournalEntryCard({ entry, number }: Props) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
   const placePhotos = visiblePlacePhotos(entry)
   const photos = [
     ...placePhotos.map((p) => ({ key: `place-${p.id}`, full: p.url, thumb: p.thumb_url ?? p.url })),
@@ -39,17 +43,31 @@ function JournalEntryCard({ entry, number }: Props) {
 
       {photos.length > 0 && (
         <div className={`mt-4 grid gap-2 ${single ? 'grid-cols-1' : 'grid-cols-2'}`}>
-          {photos.map((photo) => (
-            <SignedImage
+          {photos.map((photo, i) => (
+            <button
               key={photo.key}
-              path={single ? photo.full : photo.thumb}
-              alt=""
-              className={
-                single ? 'w-full rounded-lg' : 'aspect-[4/3] w-full rounded-lg object-cover'
-              }
-            />
+              type="button"
+              onClick={() => setOpenIndex(i)}
+              className="block w-full cursor-zoom-in rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              <SignedImage
+                path={single ? photo.full : photo.thumb}
+                alt=""
+                className={
+                  single ? 'w-full rounded-lg' : 'aspect-[4/3] w-full rounded-lg object-cover'
+                }
+              />
+            </button>
           ))}
         </div>
+      )}
+
+      {openIndex !== null && (
+        <Lightbox
+          photos={photos.map((p) => ({ id: p.key, url: p.full }))}
+          initialIndex={openIndex}
+          onClose={() => setOpenIndex(null)}
+        />
       )}
     </article>
   )
