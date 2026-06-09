@@ -15,14 +15,8 @@ import {
   useUpdateJournal,
 } from '../hooks/useJournals'
 import { formatDate } from '../lib/dateFormat'
+import { visiblePlacePhotos } from '../lib/journalPhotos'
 import type { JournalEntryWithPlace, JournalInput } from '../types/journal'
-
-function visiblePlacePhotos(entry: JournalEntryWithPlace) {
-  const all = entry.place?.photos ?? []
-  if (entry.place_photo_ids === null) return all
-  const ids = new Set(entry.place_photo_ids)
-  return all.filter((p) => ids.has(p.id))
-}
 
 function JournalDetailPage() {
   const { journalId = '' } = useParams<{ journalId: string }>()
@@ -108,8 +102,13 @@ function JournalDetailPage() {
                 </button>
               </div>
             </div>
-
-            <div className="mb-4 flex justify-end">
+            <div className="mb-4 flex items-center justify-start gap-2 md:justify-end">
+              <Link
+                to={`/journal/${journalId}/lesen`}
+                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                Lesemodus
+              </Link>
               <button
                 onClick={() => {
                   setEditingEntry(null)

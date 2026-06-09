@@ -14,6 +14,7 @@ const TripsListPage = lazy(() => import('./pages/TripsListPage'))
 const TripDetailPage = lazy(() => import('./pages/TripDetailPage'))
 const JournalsListPage = lazy(() => import('./pages/JournalsListPage'))
 const JournalDetailPage = lazy(() => import('./pages/JournalDetailPage'))
+const JournalReadPage = lazy(() => import('./pages/JournalReadPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 
 function App() {
@@ -67,6 +68,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <JournalDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/journal/:journalId/lesen"
+              element={
+                <ProtectedRoute>
+                  <JournalReadPage />
                 </ProtectedRoute>
               }
             />
