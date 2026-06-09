@@ -16,6 +16,7 @@ const JournalsListPage = lazy(() => import('./pages/JournalsListPage'))
 const JournalDetailPage = lazy(() => import('./pages/JournalDetailPage'))
 const JournalReadPage = lazy(() => import('./pages/JournalReadPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
+const JournalSharePage = lazy(() => import('./pages/JournalSharePage'))
 
 function App() {
   return (
@@ -87,8 +88,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/share/:token" element={<JournalSharePage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/register" element={<RegisterPage />} />{' '}
           </Routes>
         </Suspense>
       </CategoryFilterProvider>
