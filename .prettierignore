@@ -4,3 +4,4 @@ build
 .vite
 *.lock
 package-lock.json
+supabase

@@ -7,7 +7,7 @@ import pluginQuery from '@tanstack/eslint-plugin-query'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'supabase']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
