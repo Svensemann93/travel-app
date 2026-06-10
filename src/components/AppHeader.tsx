@@ -14,7 +14,11 @@ const NAV_ITEMS = [
   { to: '/profile', label: 'Profil', match: (path: string) => path === '/profile' },
 ]
 
-function AppHeader() {
+type Props = {
+  sticky?: boolean
+}
+
+function AppHeader({ sticky = false }: Props) {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -30,9 +34,13 @@ function AppHeader() {
     navigate('/login')
   }
 
+  const headerClass = `flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:px-6${
+    sticky ? ' sticky top-0 z-30' : ''
+  }`
+
   return (
     <>
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:px-6">
+      <header className={headerClass}>
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2.5">
             <img src="/logo.png" alt="" className="h-9 w-auto" />

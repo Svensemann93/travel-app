@@ -9,7 +9,7 @@ function JournalReadPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <AppHeader />
+      <AppHeader sticky />
       <main className="mx-auto max-w-5xl p-4 md:p-8">
         <Link
           to={`/journal/${journalId}`}
@@ -24,7 +24,7 @@ function JournalReadPage() {
           <p className="text-slate-500">Tagebuch nicht gefunden.</p>
         )}
 
-        {journal && <JournalReadView journal={journal} />}
+        {journal && <JournalReadView journal={journal} stickyHeader />}
       </main>
     </div>
   )

@@ -1,27 +1,50 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import JournalReadView from '../components/JournalReadView'
 import { useSharedJournal } from '../hooks/useSharedJournal'
+
+function StateCard({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="mx-auto mt-16 max-w-md rounded-xl bg-white p-8 text-center shadow-sm">
+      <h1 className="text-lg font-semibold text-slate-800">{title}</h1>
+      <p className="mt-2 text-sm text-slate-600">{message}</p>
+    </div>
+  )
+}
 
 function JournalSharePage() {
   const { token = '' } = useParams<{ token: string }>()
   const { data: journal, isLoading, error } = useSharedJournal(token)
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <main className="mx-auto max-w-5xl p-4 md:p-8">
-        {isLoading && <p className="text-slate-500">Lädt…</p>}
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <main className="mx-auto w-full max-w-5xl flex-1 p-4 md:p-8">
+        {isLoading && (
+          <p className="mt-16 text-center text-slate-500">Reisetagebuch wird geladen…</p>
+        )}
         {error && (
-          <p className="rounded-lg bg-white p-8 text-center text-slate-600 shadow-sm">
-            Dieser Link konnte nicht geladen werden.
-          </p>
+          <StateCard
+            title="Konnte nicht geladen werden"
+            message="Beim Laden ist etwas schiefgelaufen. Bitte versuche es später erneut."
+          />
         )}
         {!isLoading && !error && !journal && (
-          <p className="rounded-lg bg-white p-8 text-center text-slate-600 shadow-sm">
-            Dieser Link ist ungültig oder abgelaufen.
-          </p>
+          <StateCard
+            title="Link nicht verfügbar"
+            message="Dieser Link ist ungültig oder abgelaufen. Frag die Person, die ihn geteilt hat, nach einem aktuellen Link."
+          />
         )}
         {journal && <JournalReadView journal={journal} />}
       </main>
+
+      <footer className="border-t border-slate-200 py-6 text-center">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-slate-600"
+        >
+          <img src="/logo.png" alt="" className="h-5 w-auto opacity-70" />
+          Erstellt mit Travel App
+        </Link>
+      </footer>
     </div>
   )
 }
