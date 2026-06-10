@@ -57,3 +57,12 @@ export type JournalEntryInput = {
   place_id: string | null
   place_photo_ids: string[] | null
 }
+
+export type JournalShare = {
+  id: string
+  journal_id: string
+  token: string
+  created_at: string
+  expires_at: string
+  last_accessed_at: string | null
+}
