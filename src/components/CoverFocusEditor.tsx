@@ -49,7 +49,7 @@ function CoverFocusEditor({ path, focusX, focusY, onCancel, onSave }: Props) {
           </p>
         </div>
 
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div
             onClick={handlePick}
             className="relative mx-auto w-fit cursor-crosshair select-none overflow-hidden rounded-lg bg-slate-100"
@@ -59,7 +59,7 @@ function CoverFocusEditor({ path, focusX, focusY, onCancel, onSave }: Props) {
                 src={src}
                 alt=""
                 draggable={false}
-                className="block max-h-[45vh] w-auto max-w-full"
+                className="block max-h-[38vh] w-auto max-w-full"
               />
             )}
             <span
@@ -70,7 +70,7 @@ function CoverFocusEditor({ path, focusX, focusY, onCancel, onSave }: Props) {
 
           <div>
             <p className="mb-1 text-xs font-medium text-slate-500">Vorschau Titelbild</p>
-            <div className="h-32 w-full overflow-hidden rounded-lg bg-slate-100 sm:h-40">
+            <div className="h-24 w-full overflow-hidden rounded-lg bg-slate-100 sm:h-28">
               {src && (
                 <img
                   src={src}

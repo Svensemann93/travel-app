@@ -24,6 +24,9 @@ type Entry = {
 type SharedJournal = {
   title: string
   description: string | null
+  cover_photo_path: string | null
+  cover_focus_x: number | null
+  cover_focus_y: number | null
   entries: Entry[]
 }
 
@@ -48,6 +51,7 @@ Deno.serve(async (req) => {
     const shared = data as SharedJournal
 
     const paths = new Set<string>()
+    if (shared.cover_photo_path) paths.add(shared.cover_photo_path)
     for (const entry of shared.entries ?? []) {
       for (const p of [...(entry.place_photos ?? []), ...(entry.entry_photos ?? [])]) {
         if (p.url) paths.add(p.url)
@@ -74,6 +78,9 @@ Deno.serve(async (req) => {
     const journal = {
       title: shared.title,
       description: shared.description,
+      cover_photo_path: sign(shared.cover_photo_path),
+      cover_focus_x: shared.cover_focus_x,
+      cover_focus_y: shared.cover_focus_y,
       entries: (shared.entries ?? []).map((e) => ({
         id: e.id,
         entry_date: e.entry_date,
