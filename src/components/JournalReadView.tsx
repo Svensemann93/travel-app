@@ -2,6 +2,7 @@ import { useState } from 'react'
 import JournalMap from './JournalMap'
 import JournalMapOverlay from './JournalMapOverlay'
 import JournalEntryCard from './JournalEntryCard'
+import SignedImage from './SignedImage'
 import { formatDate } from '../lib/dateFormat'
 import { visiblePlacePhotos } from '../lib/journalPhotos'
 import type { NumberedPlace } from './TripPlaceMarkers'
@@ -48,37 +49,55 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
   ].filter(Boolean)
   const metaLine = [span, ...stats].filter(Boolean).join('  ·  ')
   const panelTop = stickyHeader ? 'lg:top-20' : 'lg:top-8'
+  const coverPosition = `${journal.cover_focus_x ?? 50}% ${journal.cover_focus_y ?? 50}%`
 
   return (
-    <div className="lg:flex lg:items-start lg:gap-8">
-      <div className={`lg:sticky ${panelTop} lg:w-[42%] lg:shrink-0`}>
-        <header className="mb-5">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">{journal.title}</h1>
-          {metaLine && <p className="mt-2 text-sm text-slate-500">{metaLine}</p>}
-          {journal.description && (
-            <p className="mt-3 leading-relaxed text-slate-600">{journal.description}</p>
+    <div>
+      {journal.cover_photo_path && (
+        <div className="mb-6 overflow-hidden rounded-xl shadow-sm">
+          <SignedImage
+            path={journal.cover_photo_path}
+            alt={journal.title}
+            className="h-48 w-full object-cover sm:h-60 lg:h-72"
+            style={{ objectPosition: coverPosition }}
+          />
+        </div>
+      )}
+
+      <div className="lg:flex lg:items-start lg:gap-8">
+        <div className={`lg:sticky ${panelTop} lg:w-[42%] lg:shrink-0`}>
+          <header className="mb-5">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">{journal.title}</h1>
+            {metaLine && <p className="mt-2 text-sm text-slate-500">{metaLine}</p>}
+            {journal.description && (
+              <p className="mt-3 leading-relaxed text-slate-600">{journal.description}</p>
+            )}
+          </header>
+
+          {mapped.length > 0 && (
+            <div className="hidden h-[60vh] overflow-hidden rounded-xl shadow-sm lg:block">
+              <JournalMap places={mapped} />
+            </div>
           )}
-        </header>
+        </div>
 
-        {mapped.length > 0 && (
-          <div className="hidden h-[60vh] overflow-hidden rounded-xl shadow-sm lg:block">
-            <JournalMap places={mapped} />
-          </div>
-        )}
-      </div>
-
-      <div className="min-w-0 lg:flex-1">
-        {entries.length === 0 ? (
-          <p className="rounded-lg bg-white p-8 text-center text-slate-600 shadow-sm">
-            Dieses Tagebuch hat noch keine Einträge.
-          </p>
-        ) : (
-          <div className="space-y-6">
-            {entries.map((entry) => (
-              <JournalEntryCard key={entry.id} entry={entry} number={entryNumbers.get(entry.id)} />
-            ))}
-          </div>
-        )}
+        <div className="min-w-0 lg:flex-1">
+          {entries.length === 0 ? (
+            <p className="rounded-lg bg-white p-8 text-center text-slate-600 shadow-sm">
+              Dieses Tagebuch hat noch keine Einträge.
+            </p>
+          ) : (
+            <div className="space-y-6">
+              {entries.map((entry) => (
+                <JournalEntryCard
+                  key={entry.id}
+                  entry={entry}
+                  number={entryNumbers.get(entry.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {mapped.length > 0 && (

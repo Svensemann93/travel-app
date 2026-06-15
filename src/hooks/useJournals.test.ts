@@ -38,6 +38,7 @@ vi.mock('../lib/journalsApi', () => ({
   fetchJournalWithEntries: vi.fn(),
   insertJournalRow: vi.fn(),
   updateJournalRow: vi.fn(),
+  updateJournalCover: vi.fn(),
   deleteJournalRow: vi.fn(),
   insertEntryRow: vi.fn(),
   insertEntryRows: vi.fn(),
@@ -142,7 +143,11 @@ describe('useAddEntry', () => {
     vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
 
     const { result } = renderHook(() => useAddEntry(), { wrapper })
-    result.current.mutate({ journalId: 'journal-1', data: entryInput, photos: [] })
+    result.current.mutate({
+      journalId: 'journal-1',
+      data: entryInput,
+      photos: [],
+    })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -160,7 +165,11 @@ describe('useAddEntry', () => {
     vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
 
     const { result } = renderHook(() => useAddEntry(), { wrapper })
-    result.current.mutate({ journalId: 'journal-1', data: entryInput, photos: [] })
+    result.current.mutate({
+      journalId: 'journal-1',
+      data: entryInput,
+      photos: [],
+    })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -183,7 +192,11 @@ describe('useAddEntry', () => {
     vi.mocked(insertEntryPhotoRows).mockResolvedValue([])
 
     const { result } = renderHook(() => useAddEntry(), { wrapper })
-    result.current.mutate({ journalId: 'journal-1', data: entryInput, photos: [] })
+    result.current.mutate({
+      journalId: 'journal-1',
+      data: entryInput,
+      photos: [],
+    })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -283,8 +296,14 @@ describe('useCreateJournalFromTrip', () => {
     )
     vi.mocked(insertEntryRows).mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useCreateJournalFromTrip(), { wrapper })
-    result.current.mutate({ trip, title: 'My Journal', description: 'My desc' })
+    const { result } = renderHook(() => useCreateJournalFromTrip(), {
+      wrapper,
+    })
+    result.current.mutate({
+      trip,
+      title: 'My Journal',
+      description: 'My desc',
+    })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -326,7 +345,9 @@ describe('useCreateJournalFromTrip', () => {
     vi.mocked(insertEntryRows).mockRejectedValue(new Error('insert failed'))
     vi.mocked(deleteJournalRow).mockResolvedValue(undefined)
 
-    const { result } = renderHook(() => useCreateJournalFromTrip(), { wrapper })
+    const { result } = renderHook(() => useCreateJournalFromTrip(), {
+      wrapper,
+    })
     result.current.mutate({ trip, title: 'My Journal', description: null })
 
     await waitFor(() => expect(result.current.isError).toBe(true))
