@@ -18,6 +18,9 @@ type SharedEntry = {
 type SharedJournal = {
   title: string
   description: string | null
+  cover_photo_path: string | null
+  cover_focus_x: number | null
+  cover_focus_y: number | null
   entries: SharedEntry[]
 }
 
@@ -28,6 +31,9 @@ function toJournalWithEntries(data: SharedJournal): JournalWithEntries {
     trip_id: null,
     title: data.title,
     description: data.description,
+    cover_photo_path: data.cover_photo_path,
+    cover_focus_x: data.cover_focus_x,
+    cover_focus_y: data.cover_focus_y,
     created_at: '',
     updated_at: '',
     journal_entries: data.entries.map((e, i) => ({
