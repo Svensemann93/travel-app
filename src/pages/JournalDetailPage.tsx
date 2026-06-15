@@ -2,10 +2,18 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
+import CoverPicker from '../components/CoverPicker'
+import CoverFocusEditor from '../components/CoverFocusEditor'
 import JournalFormModal from '../components/JournalFormModal'
 import JournalShareSection from '../components/JournalShareSection'
 import JournalEntriesSection from '../components/JournalEntriesSection'
-import { useDeleteJournal, useJournalWithEntries, useUpdateJournal } from '../hooks/useJournals'
+import SignedImage from '../components/SignedImage'
+import {
+  useDeleteJournal,
+  useJournalWithEntries,
+  useSetJournalCover,
+  useUpdateJournal,
+} from '../hooks/useJournals'
 import type { JournalInput } from '../types/journal'
 
 function JournalDetailPage() {
@@ -14,9 +22,12 @@ function JournalDetailPage() {
   const { data: journal, isLoading, error } = useJournalWithEntries(journalId)
   const updateJournal = useUpdateJournal()
   const deleteJournal = useDeleteJournal()
+  const setCover = useSetJournalCover()
 
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const [focusState, setFocusState] = useState<{ path: string; x: number; y: number } | null>(null)
 
   async function handleUpdate(data: JournalInput) {
     await updateJournal.mutateAsync({ id: journalId, data })
@@ -26,6 +37,36 @@ function JournalDetailPage() {
   async function handleDelete() {
     await deleteJournal.mutateAsync(journalId)
     navigate('/journal')
+  }
+
+  function handlePick(path: string) {
+    setIsPickerOpen(false)
+    const same = path === journal?.cover_photo_path
+    setFocusState({
+      path,
+      x: same ? (journal?.cover_focus_x ?? 50) : 50,
+      y: same ? (journal?.cover_focus_y ?? 50) : 50,
+    })
+  }
+
+  function openFocusForCurrent() {
+    if (!journal?.cover_photo_path) return
+    setFocusState({
+      path: journal.cover_photo_path,
+      x: journal.cover_focus_x ?? 50,
+      y: journal.cover_focus_y ?? 50,
+    })
+  }
+
+  function handleFocusSave(x: number, y: number) {
+    if (!focusState) return
+    setCover.mutate({ id: journalId, coverPhotoPath: focusState.path, focusX: x, focusY: y })
+    setFocusState(null)
+  }
+
+  function handleRemoveCover() {
+    setCover.mutate({ id: journalId, coverPhotoPath: null, focusX: 50, focusY: 50 })
+    setIsPickerOpen(false)
   }
 
   return (
@@ -70,8 +111,65 @@ function JournalDetailPage() {
               </div>
             </div>
 
+            <div className="mb-6">
+              {journal.cover_photo_path ? (
+                <div className="flex items-center gap-3">
+                  <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg shadow-sm">
+                    <SignedImage
+                      path={journal.cover_photo_path}
+                      alt="Titelbild"
+                      className="h-full w-full object-cover"
+                      style={{
+                        objectPosition: `${journal.cover_focus_x ?? 50}% ${journal.cover_focus_y ?? 50}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-col items-start gap-1">
+                    <button
+                      onClick={() => setIsPickerOpen(true)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Titelbild ändern
+                    </button>
+                    <button
+                      onClick={openFocusForCurrent}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Ausschnitt anpassen
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsPickerOpen(true)}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  + Titelbild wählen
+                </button>
+              )}
+            </div>
+
             <JournalShareSection journalId={journalId} />
             <JournalEntriesSection journalId={journalId} entries={journal.journal_entries} />
+
+            <CoverPicker
+              isOpen={isPickerOpen}
+              journal={journal}
+              currentPath={journal.cover_photo_path ?? null}
+              onPick={handlePick}
+              onRemove={handleRemoveCover}
+              onClose={() => setIsPickerOpen(false)}
+            />
+
+            {focusState && (
+              <CoverFocusEditor
+                path={focusState.path}
+                focusX={focusState.x}
+                focusY={focusState.y}
+                onCancel={() => setFocusState(null)}
+                onSave={handleFocusSave}
+              />
+            )}
           </>
         )}
       </main>

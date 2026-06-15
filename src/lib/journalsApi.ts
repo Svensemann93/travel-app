@@ -59,6 +59,22 @@ export async function updateJournalRow(id: string, data: JournalInput): Promise<
   return row
 }
 
+export async function updateJournalCover(
+  id: string,
+  coverPhotoPath: string | null,
+  focusX: number,
+  focusY: number,
+): Promise<Journal> {
+  const { data: row, error } = await supabase
+    .from('journals')
+    .update({ cover_photo_path: coverPhotoPath, cover_focus_x: focusX, cover_focus_y: focusY })
+    .eq('id', id)
+    .select('*')
+    .single()
+  if (error) throw new Error(error.message)
+  return row
+}
+
 export async function deleteJournalRow(id: string): Promise<void> {
   const { error } = await supabase.from('journals').delete().eq('id', id)
   if (error) throw new Error(error.message)

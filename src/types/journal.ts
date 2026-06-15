@@ -6,6 +6,9 @@ export type Journal = {
   trip_id: string | null
   title: string
   description: string | null
+  cover_photo_path?: string | null
+  cover_focus_x?: number | null
+  cover_focus_y?: number | null
   created_at: string
   updated_at: string
 }

@@ -3,14 +3,15 @@ import { useAuth } from './useAuth'
 import {
   deleteEntryRow,
   deleteJournalRow,
-  fetchJournalWithEntries,
   fetchJournalsForUser,
+  fetchJournalWithEntries,
   insertEntryPhotoRows,
   insertEntryRow,
   insertEntryRows,
   insertJournalRow,
   removeEntryPhotos,
   updateEntryRow,
+  updateJournalCover,
   updateJournalRow,
 } from '../lib/journalsApi'
 import type {
@@ -66,7 +67,9 @@ export function useCreateJournal() {
       ])
     },
     onError: () => {
-      if (userId) queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+      }
     },
   })
 }
@@ -90,7 +93,45 @@ export function useUpdateJournal() {
       )
     },
     onError: () => {
-      if (userId) queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+      }
+    },
+  })
+}
+
+export function useSetJournalCover() {
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const userId = user?.id
+  return useMutation({
+    mutationFn: ({
+      id,
+      coverPhotoPath,
+      focusX,
+      focusY,
+    }: {
+      id: string
+      coverPhotoPath: string | null
+      focusX: number
+      focusY: number
+    }): Promise<Journal> => {
+      if (!userId) throw new Error('Not authenticated')
+      return updateJournalCover(id, coverPhotoPath, focusX, focusY)
+    },
+    onSuccess: (updated) => {
+      if (!userId) return
+      queryClient.setQueryData<Journal[]>(journalsKeys.list(userId), (old = []) =>
+        old.map((j) => (j.id === updated.id ? updated : j)),
+      )
+      queryClient.setQueryData<JournalWithEntries | null>(journalsKeys.detail(updated.id), (old) =>
+        old ? { ...old, ...updated } : old,
+      )
+    },
+    onError: () => {
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+      }
     },
   })
 }
@@ -145,9 +186,13 @@ export function useAddEntry() {
       return entry
     },
     onSuccess: (_e, { journalId }) =>
-      queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
+      queryClient.invalidateQueries({
+        queryKey: journalsKeys.detail(journalId),
+      }),
     onError: (_e, { journalId }) =>
-      queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
+      queryClient.invalidateQueries({
+        queryKey: journalsKeys.detail(journalId),
+      }),
   })
 }
 
@@ -176,9 +221,13 @@ export function useUpdateEntry() {
       await insertEntryPhotoRows(userId, entryId, photos, photoStartPosition)
     },
     onSuccess: (_e, { journalId }) =>
-      queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
+      queryClient.invalidateQueries({
+        queryKey: journalsKeys.detail(journalId),
+      }),
     onError: (_e, { journalId }) =>
-      queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
+      queryClient.invalidateQueries({
+        queryKey: journalsKeys.detail(journalId),
+      }),
   })
 }
 
@@ -187,9 +236,13 @@ export function useDeleteEntry() {
   return useMutation({
     mutationFn: ({ entryId }: { entryId: string; journalId: string }) => deleteEntryRow(entryId),
     onSuccess: (_e, { journalId }) =>
-      queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
+      queryClient.invalidateQueries({
+        queryKey: journalsKeys.detail(journalId),
+      }),
     onError: (_e, { journalId }) =>
-      queryClient.invalidateQueries({ queryKey: journalsKeys.detail(journalId) }),
+      queryClient.invalidateQueries({
+        queryKey: journalsKeys.detail(journalId),
+      }),
   })
 }
 
@@ -208,7 +261,11 @@ export function useCreateJournalFromTrip() {
       description: string | null
     }): Promise<Journal> => {
       if (!userId) throw new Error('Not authenticated')
-      const journal = await insertJournalRow(userId, { title, description, trip_id: trip.id })
+      const journal = await insertJournalRow(userId, {
+        title,
+        description,
+        trip_id: trip.id,
+      })
       try {
         const entries = trip.trip_places.map((tp) => ({
           position: tp.position,
@@ -235,7 +292,9 @@ export function useCreateJournalFromTrip() {
       ])
     },
     onError: () => {
-      if (userId) queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: journalsKeys.lists() })
+      }
     },
   })
 }

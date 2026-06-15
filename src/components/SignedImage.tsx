@@ -1,30 +1,17 @@
-import { useQuery } from '@tanstack/react-query'
-import { getSignedUrl } from '../lib/photoStorage'
+import type { CSSProperties } from 'react'
+import { useSignedUrl } from '../hooks/useSignedUrl'
 
 type Props = {
   path: string
   alt: string
   className?: string
+  style?: CSSProperties
 }
 
-function isFullUrl(value: string) {
-  return value.startsWith('http://') || value.startsWith('https://')
-}
-
-function SignedImage({ path, alt, className }: Props) {
-  const alreadySigned = isFullUrl(path)
-
-  const { data: signed } = useQuery({
-    queryKey: ['signed-url', path],
-    queryFn: () => getSignedUrl(path),
-    enabled: !!path && !alreadySigned,
-    staleTime: 50 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
-  })
-
-  const src = alreadySigned ? path : signed
-  if (!src) return <div className={`bg-slate-100 animate-pulse ${className ?? ''}`} />
-  return <img src={src} alt={alt} className={className} />
+function SignedImage({ path, alt, className, style }: Props) {
+  const src = useSignedUrl(path)
+  if (!src) return <div className={`bg-slate-100 animate-pulse ${className ?? ''}`} style={style} />
+  return <img src={src} alt={alt} className={className} style={style} />
 }
 
 export default SignedImage
