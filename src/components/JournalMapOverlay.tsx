@@ -2,13 +2,17 @@ import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import JournalMap from './JournalMap'
 import type { NumberedPlace } from './TripPlaceMarkers'
+import type { Place } from '../types/place'
 
 type Props = {
   places: NumberedPlace[]
+  activeId?: string | null
+  onSelect?: (id: string) => void
+  focus?: { place: Place; n: number } | null
   onClose: () => void
 }
 
-function JournalMapOverlay({ places, onClose }: Props) {
+function JournalMapOverlay({ places, activeId = null, onSelect, focus = null, onClose }: Props) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -25,7 +29,7 @@ function JournalMapOverlay({ places, onClose }: Props) {
   return createPortal(
     <div className="fixed inset-0 z-[1500] overflow-hidden bg-white">
       <div className="absolute inset-0 z-0">
-        <JournalMap places={places} />
+        <JournalMap places={places} activeId={activeId} onSelect={onSelect} focus={focus} />
       </div>
       <button
         onClick={onClose}

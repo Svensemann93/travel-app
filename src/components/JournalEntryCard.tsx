@@ -8,9 +8,10 @@ import type { JournalEntryWithPlace } from '../types/journal'
 type Props = {
   entry: JournalEntryWithPlace
   number?: number
+  onFocus?: (id: string) => void
 }
 
-function JournalEntryCard({ entry, number }: Props) {
+function JournalEntryCard({ entry, number, onFocus }: Props) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   const placePhotos = visiblePlacePhotos(entry)
@@ -23,11 +24,21 @@ function JournalEntryCard({ entry, number }: Props) {
   return (
     <article className="rounded-lg bg-white p-5 shadow-sm md:p-6">
       <div className="flex items-center gap-3">
-        {number !== undefined && (
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
-            {number}
-          </span>
-        )}
+        {number !== undefined &&
+          (onFocus ? (
+            <button
+              type="button"
+              onClick={() => onFocus(entry.id)}
+              aria-label="Auf Karte zeigen"
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              {number}
+            </button>
+          ) : (
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
+              {number}
+            </span>
+          ))}
         {entry.entry_date && (
           <p className="text-sm font-medium text-blue-700">{formatDate(entry.entry_date)}</p>
         )}
