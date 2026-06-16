@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import LeafletMap from './Map'
 import MapFitBounds from './MapFitBounds'
 import MapFocuser from './MapFocuser'
@@ -12,9 +13,11 @@ type Props = {
 }
 
 function JournalMap({ places, activeId = null, onSelect, focus = null }: Props) {
+  const boundsPlaces = useMemo(() => places.map((m) => m.place), [places])
+
   return (
     <LeafletMap scrollWheelZoom={false}>
-      <MapFitBounds places={places.map((m) => m.place)} />
+      <MapFitBounds places={boundsPlaces} />
       {focus && <MapFocuser key={focus.n} place={focus.place} />}
       <TripPlaceMarkers places={places} activeId={activeId} onSelect={onSelect} />
     </LeafletMap>

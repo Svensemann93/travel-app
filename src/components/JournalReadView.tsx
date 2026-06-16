@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import JournalMap from './JournalMap'
 import JournalMapOverlay from './JournalMapOverlay'
 import JournalEntryCard from './JournalEntryCard'
@@ -33,15 +33,18 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
   const entryRefs = useRef(new Map<string, HTMLDivElement>())
   const focusCount = useRef(0)
 
-  const mapped: NumberedPlace[] = []
-  const entryNumbers = new Map<string, number>()
-  for (const entry of entries) {
-    if (entry.place) {
-      const number = mapped.length + 1
-      mapped.push({ id: entry.id, place: entry.place, number })
-      entryNumbers.set(entry.id, number)
+  const { mapped, entryNumbers } = useMemo(() => {
+    const places: NumberedPlace[] = []
+    const numbers = new Map<string, number>()
+    for (const entry of entries) {
+      if (entry.place) {
+        const number = places.length + 1
+        places.push({ id: entry.id, place: entry.place, number })
+        numbers.set(entry.id, number)
+      }
     }
-  }
+    return { mapped: places, entryNumbers: numbers }
+  }, [entries])
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
