@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import JournalMap from './JournalMap'
 import JournalMapOverlay from './JournalMapOverlay'
 import JournalEntryCard from './JournalEntryCard'
@@ -7,6 +7,7 @@ import { formatDate } from '../lib/dateFormat'
 import { visiblePlacePhotos } from '../lib/journalPhotos'
 import type { NumberedPlace } from './TripPlaceMarkers'
 import type { JournalWithEntries } from '../types/journal'
+import type { Place } from '../types/place'
 
 type Props = {
   journal: JournalWithEntries
@@ -27,15 +28,55 @@ function dateSpan(entries: JournalWithEntries['journal_entries']) {
 function JournalReadView({ journal, stickyHeader = false }: Props) {
   const entries = journal.journal_entries
   const [mapOpen, setMapOpen] = useState(false)
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [focus, setFocus] = useState<{ place: Place; n: number } | null>(null)
+  const entryRefs = useRef(new Map<string, HTMLDivElement>())
+  const focusCount = useRef(0)
 
   const mapped: NumberedPlace[] = []
   const entryNumbers = new Map<string, number>()
   for (const entry of entries) {
     if (entry.place) {
       const number = mapped.length + 1
-      mapped.push({ place: entry.place, number })
+      mapped.push({ id: entry.id, place: entry.place, number })
       entryNumbers.set(entry.id, number)
     }
+  }
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver(
+      (obs) => {
+        const top = obs
+          .filter((o) => o.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+        if (top) setActiveId(top.target.getAttribute('data-entry-id'))
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: [0, 1] },
+    )
+    entryRefs.current.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [entries])
+
+  function scrollToEntry(id: string) {
+    setActiveId(id)
+    entryRefs.current.get(id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+
+  function focusEntry(id: string) {
+    const entry = entries.find((e) => e.id === id)
+    if (!entry?.place) return
+    setActiveId(id)
+    focusCount.current += 1
+    setFocus({ place: entry.place, n: focusCount.current })
+    const desktop =
+      typeof window !== 'undefined' && window.matchMedia?.('(min-width: 1024px)').matches
+    if (!desktop) setMapOpen(true)
+  }
+
+  function handleOverlaySelect(id: string) {
+    setMapOpen(false)
+    requestAnimationFrame(() => scrollToEntry(id))
   }
 
   const span = dateSpan(entries)
@@ -76,7 +117,12 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
 
           {mapped.length > 0 && (
             <div className="hidden h-[60vh] overflow-hidden rounded-xl shadow-sm lg:block">
-              <JournalMap places={mapped} />
+              <JournalMap
+                places={mapped}
+                activeId={activeId}
+                onSelect={scrollToEntry}
+                focus={focus}
+              />
             </div>
           )}
         </div>
@@ -89,11 +135,20 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
           ) : (
             <div className="space-y-6">
               {entries.map((entry) => (
-                <JournalEntryCard
+                <div
                   key={entry.id}
-                  entry={entry}
-                  number={entryNumbers.get(entry.id)}
-                />
+                  data-entry-id={entry.id}
+                  ref={(el) => {
+                    if (el) entryRefs.current.set(entry.id, el)
+                    else entryRefs.current.delete(entry.id)
+                  }}
+                >
+                  <JournalEntryCard
+                    entry={entry}
+                    number={entryNumbers.get(entry.id)}
+                    onFocus={focusEntry}
+                  />
+                </div>
               ))}
             </div>
           )}
@@ -122,7 +177,15 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
         </button>
       )}
 
-      {mapOpen && <JournalMapOverlay places={mapped} onClose={() => setMapOpen(false)} />}
+      {mapOpen && (
+        <JournalMapOverlay
+          places={mapped}
+          activeId={activeId}
+          onSelect={handleOverlaySelect}
+          focus={focus}
+          onClose={() => setMapOpen(false)}
+        />
+      )}
     </div>
   )
 }

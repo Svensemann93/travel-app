@@ -10,9 +10,9 @@ function MapFocuser({ place }: Props) {
   const map = useMap()
 
   useEffect(() => {
-    if (place) {
-      map.flyTo([place.latitude, place.longitude], 15)
-    }
+    if (!place) return
+    if (map.getContainer().offsetParent === null) return
+    map.flyTo([place.latitude, place.longitude], 15)
   }, [place, map])
 
   return null
