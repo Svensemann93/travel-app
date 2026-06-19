@@ -1,6 +1,6 @@
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']
 
-export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10 MB
+export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 export const MAX_FILE_SIZE_LABEL = '10 MB'
 
 export function validateImageFile(file: File): string | null {
@@ -15,7 +15,7 @@ export function validateImageFile(file: File): string | null {
 
 type ResizeOptions = {
   maxDimension: number
-  quality: number // 0..1
+  quality: number
 }
 
 export async function resizeImage(file: File, options: ResizeOptions): Promise<Blob> {
