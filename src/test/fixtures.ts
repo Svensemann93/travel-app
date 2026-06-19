@@ -1,4 +1,4 @@
-import type { Place } from '../types/place'
+import type { Place, PlacePhoto } from '../types/place'
 import type { Trip, TripPlace, TripPlaceWithPlace, TripWithPlaces } from '../types/trip'
 import type {
   Journal,
@@ -22,7 +22,19 @@ export function makePlace(overrides: Partial<Place> = {}): Place {
     website_url: null,
     created_at: '2025-01-15T00:00:00.000Z',
     photos: [],
+    ...overrides,
+  }
+}
 
+export function makePlacePhoto(overrides: Partial<PlacePhoto> = {}): PlacePhoto {
+  return {
+    id: 'place-photo-1',
+    place_id: 'place-1',
+    user_id: 'test-user-id',
+    url: 'test-user-id/place-1/full.jpg',
+    thumb_url: 'test-user-id/place-1/thumb.jpg',
+    position: 0,
+    created_at: '2025-01-15T00:00:00.000Z',
     ...overrides,
   }
 }
