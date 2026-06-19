@@ -1,7 +1,12 @@
+import { useCallback, useRef, useState } from 'react'
 import { Popup } from 'react-leaflet'
+import type { Popup as LeafletPopup } from 'leaflet'
 import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
+import PopupDescription from './PopupDescription'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
+
+const CONTENT_MAX = 372
 
 type Props = {
   place: Place
@@ -18,82 +23,108 @@ function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Prop
     : ''
   const category = CATEGORY_MAP[place.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
 
+  const popupRef = useRef<LeafletPopup>(null)
+  const [expanded, setExpanded] = useState(false)
+  const reflow = useCallback(() => popupRef.current?.update(), [])
+
   return (
-    <Popup
-      minWidth={280}
-      maxHeight={400}
-      autoPanPaddingTopLeft={[16, 90]}
-      autoPanPaddingBottomRight={[16, 16]}
-    >
-      <div className="min-w-280px space-y-2">
-        {photos.length > 0 ? (
-          <div className="flex gap-1 overflow-x-auto pb-1">
-            {photos.map((p, i) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onPhotoClick(place, i)
-                }}
-                className="shrink-0 cursor-zoom-in"
-              >
-                <SignedImage
-                  path={p.thumb_url ?? p.url}
-                  alt={place.name}
-                  className="h-40 w-56 object-cover rounded"
-                />
-              </button>
-            ))}
+    <Popup ref={popupRef} minWidth={280} autoPan={false}>
+      <div
+        data-popup-content
+        className="flex min-w-[280px] flex-col gap-2"
+        style={expanded ? { maxHeight: CONTENT_MAX } : undefined}
+      >
+        <div className="shrink-0 space-y-2">
+          {photos.length > 0 ? (
+            <div className="flex gap-1 overflow-x-auto pb-0.5">
+              {photos.map((p, i) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onPhotoClick(place, i)
+                  }}
+                  className="shrink-0 cursor-zoom-in"
+                >
+                  <SignedImage
+                    path={p.thumb_url ?? p.url}
+                    alt={place.name}
+                    className="h-40 w-56 rounded object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          <strong className="block text-base leading-tight">{place.name}</strong>
+
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category.color }} />
+              {category.label}
+            </span>
           </div>
-        ) : null}
 
-        <strong className="text-base block">{place.name}</strong>
+          {place.rating ? (
+            <div className="text-sm leading-none">
+              <span className="text-yellow-400">{'★'.repeat(place.rating)}</span>
+              <span className="text-slate-300">{'★'.repeat(5 - place.rating)}</span>
+            </div>
+          ) : null}
 
-        <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category.color }} />
-            {category.label}
-          </span>
+          {place.price_level ? (
+            <div className="text-sm font-medium leading-none text-green-700">
+              {'$'.repeat(place.price_level)}
+            </div>
+          ) : null}
         </div>
 
-        {place.rating ? (
-          <div className="text-sm">
-            <span className="text-yellow-400">{'★'.repeat(place.rating)}</span>
-            <span className="text-slate-300">{'★'.repeat(5 - place.rating)}</span>
+        {place.description ? (
+          <PopupDescription
+            text={place.description}
+            expanded={expanded}
+            maxHeight={CONTENT_MAX}
+            onToggle={() => setExpanded((v) => !v)}
+            onReflow={reflow}
+          />
+        ) : null}
+
+        <div className="shrink-0 space-y-2">
+          {place.website_url ? (
+            <a
+              href={place.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block truncate text-sm leading-tight text-blue-600 hover:underline"
+            >
+              {websiteText}
+            </a>
+          ) : null}
+
+          <div className="flex flex-wrap gap-x-3 gap-y-1 border-t border-slate-100 pt-1">
+            <button
+              type="button"
+              onClick={() => onAddToTrip(place)}
+              className="text-sm leading-tight text-green-700 hover:underline"
+            >
+              + Zu Trip
+            </button>
+            <button
+              type="button"
+              onClick={() => onEdit(place)}
+              className="text-sm leading-tight text-blue-600 hover:underline"
+            >
+              Bearbeiten
+            </button>
+            <button
+              type="button"
+              onClick={() => onDelete(place)}
+              className="text-sm leading-tight text-red-600 hover:underline"
+            >
+              Löschen
+            </button>
           </div>
-        ) : null}
-
-        {place.price_level ? (
-          <div className="text-sm font-medium text-green-700">{'$'.repeat(place.price_level)}</div>
-        ) : null}
-
-        {place.description ? <p className="text-sm text-slate-600">{place.description}</p> : null}
-
-        {place.website_url ? (
-          <a
-            href={place.website_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-blue-600 hover:underline block truncate"
-          >
-            {websiteText}
-          </a>
-        ) : null}
-
-        <div className="flex gap-3 pt-1 border-t border-slate-100 flex-wrap">
-          <button
-            onClick={() => onAddToTrip(place)}
-            className="text-sm text-green-700 hover:underline"
-          >
-            + Zu Trip
-          </button>
-          <button onClick={() => onEdit(place)} className="text-sm text-blue-600 hover:underline">
-            Bearbeiten
-          </button>
-          <button onClick={() => onDelete(place)} className="text-sm text-red-600 hover:underline">
-            Löschen
-          </button>
         </div>
       </div>
     </Popup>

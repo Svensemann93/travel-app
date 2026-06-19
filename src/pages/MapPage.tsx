@@ -23,6 +23,7 @@ import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 import LocateControl from '../components/LocateControl'
 import type { Place } from '../types/place'
+import PopupAutoCenter from '../components/PopupAutoCenter'
 
 function MapPage() {
   const { data: places = [], isLoading } = usePlaces()
@@ -121,6 +122,7 @@ function MapPage() {
             />
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace} />
+            <PopupAutoCenter />{' '}
           </Map>
         )}
         {!isEntryLoading && isLoading && <MapLoadingIndicator />}

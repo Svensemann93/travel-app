@@ -11,7 +11,8 @@ function MapFocuser({ place }: Props) {
 
   useEffect(() => {
     if (!place) return
-    if (map.getContainer().offsetParent === null) return
+    const el = map.getContainer()
+    if (el.offsetWidth === 0 || el.offsetHeight === 0) return
     map.flyTo([place.latitude, place.longitude], 15)
   }, [place, map])
 
