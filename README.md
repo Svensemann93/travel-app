@@ -1,73 +1,91 @@
-# React + TypeScript + Vite
+# Travel App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal, mobile-first travel app built around a **place-first** philosophy: every
+memory is pinned to an exact spot, not just a city. The core workflow is
+**plan → document → share** — drop pins for places worth visiting, capture trips and
+photos in a travel journal, and share read-only journals via private links.
 
-Currently, two official plugins are available:
+> Status: private project, not yet publicly available.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Place-first map** — categorized pins (restaurants, cafés, sights, nature, …) with
+  color-coded markers, ratings, prices, photos, and per-category filtering.
+- **Travel journal ("Reisetagebuch")** — full CRUD entries, trip import, and photos
+  referenced from your places (no duplicate storage).
+- **Journal cover & focal point** — pick a cover image and frame it with a focal point.
+- **Interactive read view** — map and timeline are linked: scrolling highlights the
+  active pin, clicking a pin jumps to its entry.
+- **Private share links** — share a read-only journal via an unguessable link with a
+  sliding 30-day expiry.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4
+- **Map:** Leaflet / react-leaflet with OpenStreetMap tiles
+- **Routing & data:** react-router-dom v7, TanStack Query
+- **Backend:** Supabase (Auth, Postgres, Storage, Edge Functions on Deno, pg_cron)
+- **Monitoring:** Sentry
+- **Testing:** Vitest
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The UI language is German. Photos live in a private Supabase Storage bucket and are
+served via signed URLs.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js **>= 22**
+- A Supabase project (Auth, Postgres, Storage)
+
+### Setup
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Create a `.env` file in the project root with your Supabase project values:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### Run
+
+```bash
+npm run dev
+```
+
+The app runs on the Vite dev server (default `http://localhost:5173`).
+
+## Scripts
+
+| Script                 | Description                          |
+| ---------------------- | ------------------------------------ |
+| `npm run dev`          | Start the dev server                 |
+| `npm run build`        | Type-check and build for production  |
+| `npm run preview`      | Preview the production build locally |
+| `npm run lint`         | Run ESLint                           |
+| `npm run typecheck`    | Type-check the project               |
+| `npm test`             | Run the test suite (Vitest)          |
+| `npm run format`       | Format with Prettier                 |
+| `npm run format:check` | Check formatting                     |
+
+## Supabase
+
+Database schema and Edge Functions are versioned under `supabase/`.
+
+- **Migrations** are the source of truth — apply them with `supabase db push`.
+- **Edge Functions** run on Deno and deploy with `supabase functions deploy <name>`.
+- Syncing the remote schema (`supabase db pull`) and creating snapshots
+  (`supabase db dump`) require a running Docker engine; `db push` and
+  `functions deploy` do not.
+
+The `supabase/` folder is excluded from ESLint and Prettier.
+
+## Deployment
+
+The app is deployed on **Vercel**. Before going live, the deployed URL must be added to
+the Supabase **URL Configuration** (Site URL + Redirect Allowlist) so authentication
+works on the production domain.
