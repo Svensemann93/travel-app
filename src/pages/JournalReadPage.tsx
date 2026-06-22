@@ -1,11 +1,12 @@
 import { Link, useParams } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import JournalReadView from '../components/JournalReadView'
+import DetailStatus from '../components/DetailStatus'
 import { useJournalWithEntries } from '../hooks/useJournals'
 
 function JournalReadPage() {
   const { journalId = '' } = useParams<{ journalId: string }>()
-  const { data: journal, isLoading, error } = useJournalWithEntries(journalId)
+  const { data: journal, isLoading, error, refetch } = useJournalWithEntries(journalId)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -18,11 +19,13 @@ function JournalReadPage() {
           ← Zurück zur Bearbeitung
         </Link>
 
-        {isLoading && <p className="text-slate-500">Lädt…</p>}
-        {error && <p className="text-red-700">{error.message}</p>}
-        {!isLoading && !error && !journal && (
-          <p className="text-slate-500">Tagebuch nicht gefunden.</p>
-        )}
+        <DetailStatus
+          isLoading={isLoading}
+          error={error}
+          isMissing={!isLoading && !error && !journal}
+          onRetry={() => void refetch()}
+          notFoundLabel="Tagebuch nicht gefunden"
+        />
 
         {journal && <JournalReadView journal={journal} stickyHeader />}
       </main>

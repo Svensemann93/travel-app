@@ -8,6 +8,7 @@ import JournalFormModal from '../components/JournalFormModal'
 import JournalShareSection from '../components/JournalShareSection'
 import JournalEntriesSection from '../components/JournalEntriesSection'
 import SignedImage from '../components/SignedImage'
+import DetailStatus from '../components/DetailStatus'
 import {
   useDeleteJournal,
   useJournalWithEntries,
@@ -19,7 +20,7 @@ import type { JournalInput } from '../types/journal'
 function JournalDetailPage() {
   const { journalId = '' } = useParams<{ journalId: string }>()
   const navigate = useNavigate()
-  const { data: journal, isLoading, error } = useJournalWithEntries(journalId)
+  const { data: journal, isLoading, error, refetch } = useJournalWithEntries(journalId)
   const updateJournal = useUpdateJournal()
   const deleteJournal = useDeleteJournal()
   const setCover = useSetJournalCover()
@@ -80,11 +81,13 @@ function JournalDetailPage() {
           ← Zurück zu meinen Tagebüchern
         </Link>
 
-        {isLoading && <p className="text-slate-500">Lädt…</p>}
-        {error && <p className="text-red-700">{error.message}</p>}
-        {!isLoading && !error && !journal && (
-          <p className="text-slate-500">Tagebuch nicht gefunden.</p>
-        )}
+        <DetailStatus
+          isLoading={isLoading}
+          error={error}
+          isMissing={!isLoading && !error && !journal}
+          onRetry={() => void refetch()}
+          notFoundLabel="Tagebuch nicht gefunden"
+        />
 
         {journal && (
           <>
