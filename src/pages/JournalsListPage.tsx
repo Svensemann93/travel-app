@@ -2,11 +2,14 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import JournalFormModal from '../components/JournalFormModal'
+import QueryBoundary from '../components/QueryBoundary'
+import ListSkeleton from '../components/ListSkeleton'
+import EmptyState from '../components/EmptyState'
 import { useCreateJournal, useJournals } from '../hooks/useJournals'
 import type { JournalInput } from '../types/journal'
 
 function JournalsListPage() {
-  const { data: journals = [], isLoading, error } = useJournals()
+  const { data: journals = [], isLoading, isError, error, refetch } = useJournals()
   const createJournal = useCreateJournal()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
 
@@ -14,6 +17,15 @@ function JournalsListPage() {
     await createJournal.mutateAsync(data)
     setIsCreateOpen(false)
   }
+
+  const newJournalButton = (
+    <button
+      onClick={() => setIsCreateOpen(true)}
+      className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+    >
+      + Neues Tagebuch
+    </button>
+  )
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -29,38 +41,21 @@ function JournalsListPage() {
           </button>
         </div>
 
-        {isLoading && (
-          <div className="space-y-3">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="animate-pulse rounded-lg bg-white p-6 shadow-sm">
-                <div className="mb-2 h-4 w-1/3 rounded bg-slate-200" />
-                <div className="h-3 w-2/3 rounded bg-slate-100" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-            {error.message}
-          </div>
-        )}
-
-        {!isLoading && journals.length === 0 && (
-          <div className="rounded-lg bg-white p-8 text-center shadow-sm">
-            <p className="mb-4 text-slate-600">
-              Du hast noch kein Tagebuch. Starte deine erste Reisegeschichte!
-            </p>
-            <button
-              onClick={() => setIsCreateOpen(true)}
-              className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-            >
-              + Neues Tagebuch
-            </button>
-          </div>
-        )}
-
-        {journals.length > 0 && (
+        <QueryBoundary
+          isLoading={isLoading}
+          isError={isError}
+          error={error}
+          isEmpty={journals.length === 0}
+          onRetry={() => void refetch()}
+          loading={<ListSkeleton />}
+          empty={
+            <EmptyState
+              title="Noch kein Tagebuch"
+              message="Starte deine erste Reisegeschichte!"
+              action={newJournalButton}
+            />
+          }
+        >
           <ul className="space-y-3">
             {journals.map((journal) => (
               <li key={journal.id}>
@@ -78,7 +73,7 @@ function JournalsListPage() {
               </li>
             ))}
           </ul>
-        )}
+        </QueryBoundary>
       </main>
 
       <JournalFormModal
