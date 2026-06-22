@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
         org: env.SENTRY_ORG,
         project: env.SENTRY_PROJECT,
         authToken: env.SENTRY_AUTH_TOKEN,
-        disable: !env.SENTRY_AUTH_TOKEN,
+        disable: !env.SENTRY_AUTH_TOKEN || !env.VERCEL,
         sourcemaps: {
           filesToDeleteAfterUpload: ['./dist/**/*.map'],
         },
