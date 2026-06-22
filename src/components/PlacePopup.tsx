@@ -1,6 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
 import { Popup } from 'react-leaflet'
-import type { Popup as LeafletPopup } from 'leaflet'
 import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
 import PopupDescription from './PopupDescription'
@@ -23,16 +21,12 @@ function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Prop
     : ''
   const category = CATEGORY_MAP[place.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
 
-  const popupRef = useRef<LeafletPopup>(null)
-  const [expanded, setExpanded] = useState(false)
-  const reflow = useCallback(() => popupRef.current?.update(), [])
-
   return (
-    <Popup ref={popupRef} minWidth={280} autoPan={false}>
+    <Popup minWidth={280} autoPan={false}>
       <div
         data-popup-content
         className="flex min-w-[280px] flex-col gap-2"
-        style={expanded ? { maxHeight: CONTENT_MAX } : undefined}
+        style={{ maxHeight: CONTENT_MAX }}
       >
         <div className="shrink-0 space-y-2">
           {photos.length > 0 ? (
@@ -80,15 +74,7 @@ function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Prop
           ) : null}
         </div>
 
-        {place.description ? (
-          <PopupDescription
-            text={place.description}
-            expanded={expanded}
-            maxHeight={CONTENT_MAX}
-            onToggle={() => setExpanded((v) => !v)}
-            onReflow={reflow}
-          />
-        ) : null}
+        {place.description ? <PopupDescription text={place.description} /> : null}
 
         <div className="shrink-0 space-y-2">
           {place.website_url ? (
