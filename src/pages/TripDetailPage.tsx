@@ -7,7 +7,8 @@ import MapFocuser from '../components/MapFocuser'
 import CategoryFilter from '../components/CategoryFilter'
 import TripDetailHeader from '../components/TripDetailHeader'
 import TripDetailModals from '../components/TripDetailModals'
-import TripDetailStatus from '../components/TripDetailStatus'
+import DetailStatus from '../components/DetailStatus'
+import EmptyState from '../components/EmptyState'
 import TripPlaceList from '../components/TripPlaceList'
 import TripPlaceMarkers from '../components/TripPlaceMarkers'
 import { useCategoryFilter } from '../contexts/categoryFilter'
@@ -26,7 +27,7 @@ import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../typ
 function TripDetailPage() {
   const { tripId = '' } = useParams<{ tripId: string }>()
   const navigate = useNavigate()
-  const { data: trip, isLoading, error } = useTripWithPlaces(tripId)
+  const { data: trip, isLoading, error, refetch } = useTripWithPlaces(tripId)
   const updateTrip = useUpdateTrip()
   const deleteTrip = useDeleteTrip()
   const removePlaceFromTrip = useRemovePlaceFromTrip()
@@ -116,10 +117,12 @@ function TripDetailPage() {
           ← Zurück zu meinen Trips
         </Link>
 
-        <TripDetailStatus
+        <DetailStatus
           isLoading={isLoading}
           error={error}
           isMissing={!isLoading && !error && !trip}
+          onRetry={() => void refetch()}
+          notFoundLabel="Trip nicht gefunden"
         />
 
         {trip && (
@@ -134,12 +137,7 @@ function TripDetailPage() {
             />
 
             {trip.trip_places.length === 0 ? (
-              <div className="rounded-lg bg-white p-8 text-center shadow-sm">
-                <p className="text-slate-600">
-                  Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und wähle
-                  diesen Trip aus, um Orte hinzuzufügen.
-                </p>
-              </div>
+              <EmptyState message="Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und wähle diesen Trip aus, um Orte hinzuzufügen." />
             ) : (
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div>
