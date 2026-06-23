@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 import EntryPointSetting from '../components/EntryPointSetting'
+import ErrorState from '../components/ErrorState'
 
 function ProfilePage() {
   const { user, profile } = useAuth()
@@ -69,8 +70,8 @@ function ProfilePage() {
           </p>
 
           {errorMessage && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm mb-4">
-              {errorMessage}
+            <div className="mb-4">
+              <ErrorState message={errorMessage} />
             </div>
           )}
 
