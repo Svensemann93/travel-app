@@ -1,24 +1,26 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import MobileMenu from './MobileMenu'
 import CategoryFilter from './CategoryFilter'
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Karte', match: (path: string) => path === '/' },
-  { to: '/places', label: 'Meine Orte', match: (path: string) => path === '/places' },
-  { to: '/trips', label: 'Trips', match: (path: string) => path.startsWith('/trips') },
-  { to: '/journal', label: 'Tagebuch', match: (path: string) => path.startsWith('/journal') },
-  { to: '/profile', label: 'Profil', match: (path: string) => path === '/profile' },
-]
+  { to: '/', labelKey: 'nav.map', match: (path: string) => path === '/' },
+  { to: '/places', labelKey: 'nav.places', match: (path: string) => path === '/places' },
+  { to: '/trips', labelKey: 'nav.trips', match: (path: string) => path.startsWith('/trips') },
+  { to: '/journal', labelKey: 'nav.journal', match: (path: string) => path.startsWith('/journal') },
+  { to: '/profile', labelKey: 'nav.profile', match: (path: string) => path === '/profile' },
+] as const
 
 type Props = {
   sticky?: boolean
 }
 
 function AppHeader({ sticky = false }: Props) {
+  const { t } = useTranslation()
   const { user, profile } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -26,6 +28,12 @@ function AppHeader({ sticky = false }: Props) {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const userLabel = profile?.username ?? user?.email ?? ''
+
+  const navItems = NAV_ITEMS.map((item) => ({
+    to: item.to,
+    label: t(item.labelKey),
+    match: item.match,
+  }))
 
   async function handleLogout() {
     setIsMobileOpen(false)
@@ -47,7 +55,7 @@ function AppHeader({ sticky = false }: Props) {
             <span className="text-lg font-bold tracking-tight text-slate-900">Travel App</span>
           </Link>
           <nav className="hidden gap-1 md:flex">
-            {NAV_ITEMS.map(({ to, label, match }) => (
+            {navItems.map(({ to, label, match }) => (
               <Link
                 key={to}
                 to={to}
@@ -73,14 +81,14 @@ function AppHeader({ sticky = false }: Props) {
               onClick={handleLogout}
               className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
             >
-              Abmelden
+              {t('auth.logout')}
             </button>
           </div>
 
           <button
             type="button"
             onClick={() => setIsMobileOpen(true)}
-            aria-label="Menü öffnen"
+            aria-label={t('menu.open')}
             aria-expanded={isMobileOpen}
             aria-controls="mobile-menu"
             className="rounded-lg p-2 text-slate-700 transition-colors hover:bg-slate-100 md:hidden"
@@ -103,7 +111,7 @@ function AppHeader({ sticky = false }: Props) {
       <MobileMenu
         isOpen={isMobileOpen}
         onClose={() => setIsMobileOpen(false)}
-        navItems={NAV_ITEMS}
+        navItems={navItems}
         currentPath={location.pathname}
         userLabel={userLabel}
         onLogout={handleLogout}
