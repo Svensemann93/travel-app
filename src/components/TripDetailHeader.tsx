@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 type Props = {
   name: string
   description: string | null
@@ -15,6 +17,8 @@ function TripDetailHeader({
   onDelete,
   onCreateJournal,
 }: Props) {
+  const { t } = useTranslation(['trips', 'common'])
+
   return (
     <div className="mb-6 rounded-lg bg-white p-6 shadow-sm">
       <div className="mb-2 flex items-start justify-between gap-4">
@@ -25,13 +29,13 @@ function TripDetailHeader({
             onClick={onCreateJournal}
             className="text-sm text-emerald-600 hover:underline"
           >
-            Tagebuch erstellen
+            {t('createJournal')}
           </button>
           <button type="button" onClick={onEdit} className="text-sm text-blue-600 hover:underline">
-            Bearbeiten
+            {t('common:action.edit')}
           </button>
           <button type="button" onClick={onDelete} className="text-sm text-red-600 hover:underline">
-            Löschen
+            {t('common:action.delete')}
           </button>
         </div>
       </div>
