@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import SignedImage from './SignedImage'
 import { validateImageFile, MAX_FILE_SIZE_LABEL } from '../lib/imageResize'
 
@@ -20,6 +21,8 @@ function PhotoUploader<T extends UploaderPhoto>({
   onRemoveExistingPhoto,
   onError,
 }: Props<T>) {
+  const { t } = useTranslation()
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
     const accepted: File[] = []
@@ -47,7 +50,7 @@ function PhotoUploader<T extends UploaderPhoto>({
   return (
     <div>
       <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500 transition-colors hover:border-blue-400 hover:text-blue-500">
-        <span>+ Fotos hinzufügen</span>
+        <span>{t('photo.add')}</span>
         <input
           type="file"
           accept="image/*"
@@ -57,7 +60,7 @@ function PhotoUploader<T extends UploaderPhoto>({
         />
       </label>
       <p className="mt-1 text-xs text-slate-500">
-        JPG, PNG, WebP oder HEIC, max. {MAX_FILE_SIZE_LABEL} pro Datei.
+        {t('photo.constraints', { size: MAX_FILE_SIZE_LABEL })}
       </p>
 
       {hasAnyPhotos && (
@@ -66,14 +69,14 @@ function PhotoUploader<T extends UploaderPhoto>({
             <div key={photo.id} className="group relative">
               <SignedImage
                 path={photo.thumb_url ?? photo.url}
-                alt="Hochgeladenes Foto"
+                alt={t('photo.remove')}
                 className="h-20 w-full rounded-md object-cover"
               />
               <button
                 type="button"
                 onClick={() => onRemoveExistingPhoto(photo)}
                 className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
-                aria-label="Foto entfernen"
+                aria-label={t('photo.remove')}
               >
                 ✕
               </button>
@@ -90,7 +93,7 @@ function PhotoUploader<T extends UploaderPhoto>({
                 type="button"
                 onClick={() => onRemoveNewPhoto(index)}
                 className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
-                aria-label="Foto entfernen"
+                aria-label={t('photo.remove')}
               >
                 ✕
               </button>

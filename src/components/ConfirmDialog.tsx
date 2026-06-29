@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 
 type Props = {
@@ -15,12 +16,14 @@ function ConfirmDialog({
   isOpen,
   title,
   message,
-  confirmLabel = 'Bestätigen',
-  cancelLabel = 'Abbrechen',
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   onCancel,
   isProcessing = false,
 }: Props) {
+  const { t } = useTranslation()
+
   return (
     <Modal isOpen={isOpen} onClose={onCancel} fullscreenOnMobile={false}>
       <h2 className="text-xl font-bold text-slate-800 mb-2">{title}</h2>
@@ -33,7 +36,7 @@ function ConfirmDialog({
           disabled={isProcessing}
           className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
         >
-          {cancelLabel}
+          {cancelLabel ?? t('action.cancel')}
         </button>
         <button
           type="button"
@@ -41,7 +44,7 @@ function ConfirmDialog({
           disabled={isProcessing}
           className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors disabled:bg-slate-400"
         >
-          {isProcessing ? 'Wird ausgeführt...' : confirmLabel}
+          {isProcessing ? t('action.processing') : (confirmLabel ?? t('action.confirm'))}
         </button>
       </div>
     </Modal>

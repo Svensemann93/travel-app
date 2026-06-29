@@ -33,6 +33,14 @@
   "action": {
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "save": "Speichern",
+    "processing": "Wird ausgeführt…"
+  },
+  "photo": {
+    "add": "+ Fotos hinzufügen",
+    "constraints": "JPG, PNG, WebP oder HEIC, max. {{size}} pro Datei.",
+    "remove": "Foto entfernen"
   }
 }
