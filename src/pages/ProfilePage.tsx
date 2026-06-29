@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 import EntryPointSetting from '../components/EntryPointSetting'
+import LanguageSwitcher from '../components/LanguageSwitcher'
 import ErrorState from '../components/ErrorState'
 
 function ProfilePage() {
@@ -60,6 +61,8 @@ function ProfilePage() {
             </p>
           </div>
         </div>
+
+        <LanguageSwitcher />
 
         <EntryPointSetting />
 
