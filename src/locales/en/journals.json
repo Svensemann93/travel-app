@@ -1,0 +1,8 @@
+{
+  "title": "Journal",
+  "new": "+ New journal",
+  "empty": {
+    "title": "No journal yet",
+    "message": "Start your first travel story!"
+  }
+}

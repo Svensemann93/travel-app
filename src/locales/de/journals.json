@@ -1,0 +1,8 @@
+{
+  "title": "Reisetagebuch",
+  "new": "+ Neues Tagebuch",
+  "empty": {
+    "title": "Noch kein Tagebuch",
+    "message": "Starte deine erste Reisegeschichte!"
+  }
+}

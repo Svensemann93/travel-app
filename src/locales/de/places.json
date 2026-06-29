@@ -1,0 +1,8 @@
+{
+  "title": "Meine Orte",
+  "empty": {
+    "title": "Noch keine Orte gespeichert",
+    "toMap": "Zur Karte"
+  },
+  "noFilterMatch": "Keine Orte in den gewählten Kategorien."
+}

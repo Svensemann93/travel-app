@@ -1,0 +1,8 @@
+{
+  "title": "My Places",
+  "empty": {
+    "title": "No places saved yet",
+    "toMap": "Go to map"
+  },
+  "noFilterMatch": "No places in the selected categories."
+}

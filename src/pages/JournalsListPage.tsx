@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppHeader from '../components/AppHeader'
 import JournalFormModal from '../components/JournalFormModal'
 import QueryBoundary from '../components/QueryBoundary'
@@ -9,6 +10,7 @@ import { useCreateJournal, useJournals } from '../hooks/useJournals'
 import type { JournalInput } from '../types/journal'
 
 function JournalsListPage() {
+  const { t } = useTranslation('journals')
   const { data: journals = [], isLoading, isError, error, refetch } = useJournals()
   const createJournal = useCreateJournal()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -23,7 +25,7 @@ function JournalsListPage() {
       onClick={() => setIsCreateOpen(true)}
       className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
     >
-      + Neues Tagebuch
+      {t('new')}
     </button>
   )
 
@@ -32,12 +34,12 @@ function JournalsListPage() {
       <AppHeader />
       <main className="mx-auto max-w-4xl p-8">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-slate-800">Reisetagebuch</h2>
+          <h2 className="text-2xl font-bold text-slate-800">{t('title')}</h2>
           <button
             onClick={() => setIsCreateOpen(true)}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700"
           >
-            + Neues Tagebuch
+            {t('new')}
           </button>
         </div>
 
@@ -50,8 +52,8 @@ function JournalsListPage() {
           loading={<ListSkeleton />}
           empty={
             <EmptyState
-              title="Noch kein Tagebuch"
-              message="Starte deine erste Reisegeschichte!"
+              title={t('empty.title')}
+              message={t('empty.message')}
               action={newJournalButton}
             />
           }

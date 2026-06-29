@@ -23,5 +23,11 @@
     "loading": "Lädt…",
     "error": "Etwas ist schiefgelaufen.",
     "retry": "Erneut versuchen"
+  },
+  "filter": {
+    "label": "Kategorien filtern",
+    "button": "Filter",
+    "selectAll": "Alle auswählen",
+    "clearAll": "Alle abwählen"
   }
 }
