@@ -66,13 +66,14 @@ function PhotoUploader<T extends UploaderPhoto>({
             <div key={photo.id} className="group relative">
               <SignedImage
                 path={photo.thumb_url ?? photo.url}
-                alt=""
+                alt="Hochgeladenes Foto"
                 className="h-20 w-full rounded-md object-cover"
               />
               <button
                 type="button"
                 onClick={() => onRemoveExistingPhoto(photo)}
                 className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
+                aria-label="Foto entfernen"
               >
                 ✕
               </button>
@@ -89,6 +90,7 @@ function PhotoUploader<T extends UploaderPhoto>({
                 type="button"
                 onClick={() => onRemoveNewPhoto(index)}
                 className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
+                aria-label="Foto entfernen"
               >
                 ✕
               </button>
