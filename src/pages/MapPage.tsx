@@ -21,12 +21,13 @@ import RepositionBar from '../components/RepositionBar'
 import CategoryFilter from '../components/CategoryFilter'
 import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
+import MapErrorOverlay from '../components/MapErrorOverlay'
 import LocateControl from '../components/LocateControl'
 import type { Place } from '../types/place'
 import PopupAutoCenter from '../components/PopupAutoCenter'
 
 function MapPage() {
-  const { data: places = [], isLoading } = usePlaces()
+  const { data: places = [], isLoading, isError, refetch } = usePlaces()
   const { data: entryPoint, isLoading: isEntryLoading } = useEntryPoint()
   const createPlace = useCreatePlace()
   const updatePlace = useUpdatePlace()
@@ -122,11 +123,14 @@ function MapPage() {
             />
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace} />
-            <PopupAutoCenter />{' '}
+            <PopupAutoCenter />
           </Map>
         )}
         {!isEntryLoading && isLoading && <MapLoadingIndicator />}
-        {!isEntryLoading && !isLoading && places.length === 0 && <MapEmptyState />}
+        {!isEntryLoading && !isLoading && isError && (
+          <MapErrorOverlay onRetry={() => void refetch()} />
+        )}
+        {!isEntryLoading && !isLoading && !isError && places.length === 0 && <MapEmptyState />}
 
         {!isEntryLoading && places.length > 0 && (
           <CategoryFilter className="absolute right-4 top-4 z-[1000] hidden md:block" />
