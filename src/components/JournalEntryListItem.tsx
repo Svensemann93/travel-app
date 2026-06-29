@@ -12,6 +12,7 @@ type Props = {
 function JournalEntryListItem({ entry, onEdit, onDelete }: Props) {
   const placePhotos = visiblePlacePhotos(entry)
   const hasPhotos = placePhotos.length > 0 || entry.photos.length > 0
+  const photoAlt = entry.title ? `Foto zu ${entry.title}` : 'Foto zum Eintrag'
 
   return (
     <li className="rounded-lg bg-white p-4 shadow-sm">
@@ -40,7 +41,7 @@ function JournalEntryListItem({ entry, onEdit, onDelete }: Props) {
             <SignedImage
               key={`place-${photo.id}`}
               path={photo.thumb_url ?? photo.url}
-              alt=""
+              alt={photoAlt}
               className="h-20 w-20 rounded-md object-cover"
             />
           ))}
@@ -48,7 +49,7 @@ function JournalEntryListItem({ entry, onEdit, onDelete }: Props) {
             <SignedImage
               key={`own-${photo.id}`}
               path={photo.thumb_url ?? photo.url}
-              alt=""
+              alt={photoAlt}
               className="h-20 w-20 rounded-md object-cover"
             />
           ))}
