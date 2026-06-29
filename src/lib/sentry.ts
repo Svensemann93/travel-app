@@ -25,3 +25,7 @@ export function initSentry(): void {
     ],
   })
 }
+
+export function captureException(error: unknown, context?: Record<string, unknown>): void {
+  Sentry.captureException(error, context ? { extra: context } : undefined)
+}
