@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CATEGORIES } from '../lib/categories'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 
@@ -7,6 +8,7 @@ type Props = {
 }
 
 function CategoryFilter({ className = '' }: Props) {
+  const { t } = useTranslation()
   const { selected, isSelected, toggle, selectAll, clear, allSelected } = useCategoryFilter()
   const [open, setOpen] = useState(false)
 
@@ -16,7 +18,7 @@ function CategoryFilter({ className = '' }: Props) {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Kategorien filtern"
+          aria-label={t('filter.label')}
           aria-expanded={open}
           className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 md:bg-white md:shadow-sm md:ring-1 md:ring-slate-200 md:hover:bg-slate-50"
         >
@@ -33,7 +35,7 @@ function CategoryFilter({ className = '' }: Props) {
           >
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
-          <span className="hidden md:inline">Filter</span>
+          <span className="hidden md:inline">{t('filter.button')}</span>
           {!allSelected && (
             <span className="rounded-full bg-blue-600 px-1.5 text-xs font-semibold leading-5 text-white">
               {selected.size}
@@ -51,14 +53,14 @@ function CategoryFilter({ className = '' }: Props) {
                   onClick={selectAll}
                   className="text-xs font-medium text-blue-600 hover:underline"
                 >
-                  Alle auswählen
+                  {t('filter.selectAll')}
                 </button>
                 <button
                   type="button"
                   onClick={clear}
                   className="text-xs font-medium text-slate-500 hover:underline"
                 >
-                  Alle abwählen
+                  {t('filter.clearAll')}
                 </button>
               </div>
               <div className="flex flex-col gap-0.5">

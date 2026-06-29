@@ -23,5 +23,11 @@
     "loading": "Loading…",
     "error": "Something went wrong.",
     "retry": "Try again"
+  },
+  "filter": {
+    "label": "Filter categories",
+    "button": "Filter",
+    "selectAll": "Select all",
+    "clearAll": "Deselect all"
   }
 }

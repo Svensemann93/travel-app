@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { usePlaces } from '../hooks/usePlaces'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 import { filterPlacesByCategory } from '../lib/filterPlaces'
@@ -11,6 +12,7 @@ import EmptyState from '../components/EmptyState'
 import PlaceListItem from '../components/PlaceListItem'
 
 function PlacesListPage() {
+  const { t } = useTranslation('places')
   const { data: places = [], isLoading, isError, error, refetch } = usePlaces()
   const { selected } = useCategoryFilter()
   const navigate = useNavigate()
@@ -27,7 +29,7 @@ function PlacesListPage() {
 
       <main className="max-w-4xl mx-auto p-8">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <h2 className="text-2xl font-bold text-slate-800">Meine Orte</h2>
+          <h2 className="text-2xl font-bold text-slate-800">{t('title')}</h2>
           {places.length > 0 && <CategoryFilter className="hidden md:block" />}
         </div>
 
@@ -40,20 +42,20 @@ function PlacesListPage() {
           loading={<ListSkeleton />}
           empty={
             <EmptyState
-              title="Noch keine Orte gespeichert"
+              title={t('empty.title')}
               action={
                 <Link
                   to="/"
                   className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  Zur Karte
+                  {t('empty.toMap')}
                 </Link>
               }
             />
           }
         >
           {visiblePlaces.length === 0 ? (
-            <EmptyState message="Keine Orte in den gewählten Kategorien." />
+            <EmptyState message={t('noFilterMatch')} />
           ) : (
             <ul className="space-y-3">
               {visiblePlaces.map((place) => (
