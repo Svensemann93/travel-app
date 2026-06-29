@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 
 type Props = {
   isOpen: boolean
@@ -18,6 +19,8 @@ function Modal({
   maxWidth = 'md',
   fullscreenOnMobile = true,
 }: Props) {
+  const containerRef = useFocusTrap<HTMLDivElement>(isOpen)
+
   useEffect(() => {
     if (!isOpen) return
     function handleEscape(event: KeyboardEvent) {
@@ -50,8 +53,10 @@ function Modal({
   return (
     <div className={wrapperClass} onClick={onClose}>
       <div
+        ref={containerRef}
         role="dialog"
         aria-modal="true"
+        tabIndex={-1}
         className={containerClass}
         onClick={(e) => e.stopPropagation()}
       >
