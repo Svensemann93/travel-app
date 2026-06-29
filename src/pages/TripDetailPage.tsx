@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
 import MapFitBounds from '../components/MapFitBounds'
@@ -25,6 +26,7 @@ import type { JournalInput } from '../types/journal'
 import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../types/trip'
 
 function TripDetailPage() {
+  const { t } = useTranslation('trips')
   const { tripId = '' } = useParams<{ tripId: string }>()
   const navigate = useNavigate()
   const { data: trip, isLoading, error, refetch } = useTripWithPlaces(tripId)
@@ -114,7 +116,7 @@ function TripDetailPage() {
       <AppHeader />
       <main className="mx-auto max-w-7xl p-4 md:p-8">
         <Link to="/trips" className="mb-4 inline-block text-sm text-slate-600 hover:text-slate-900">
-          ← Zurück zu meinen Trips
+          ← {t('back')}
         </Link>
 
         <DetailStatus
@@ -122,7 +124,7 @@ function TripDetailPage() {
           error={error}
           isMissing={!isLoading && !error && !trip}
           onRetry={() => void refetch()}
-          notFoundLabel="Trip nicht gefunden"
+          notFoundLabel={t('notFound')}
         />
 
         {trip && (
@@ -137,15 +139,13 @@ function TripDetailPage() {
             />
 
             {trip.trip_places.length === 0 ? (
-              <EmptyState message="Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und wähle diesen Trip aus, um Orte hinzuzufügen." />
+              <EmptyState message={t('noPlaces')} />
             ) : (
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div>
                   <h3 className="mb-3 text-lg font-semibold text-slate-800">
-                    Orte{' '}
-                    <span className="text-sm font-normal text-slate-500">
-                      (ziehen zum Sortieren)
-                    </span>
+                    {t('placesHeading')}{' '}
+                    <span className="text-sm font-normal text-slate-500">{t('dragToSort')}</span>
                   </h3>
                   <TripPlaceList
                     tripId={trip.id}

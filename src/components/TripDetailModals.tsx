@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import ConfirmDialog from './ConfirmDialog'
 import JournalFormModal from './JournalFormModal'
 import TripFormModal from './TripFormModal'
@@ -47,6 +48,8 @@ function TripDetailModals({
   onConfirmDelete,
   onCreateJournal,
 }: Props) {
+  const { t } = useTranslation(['trips', 'common'])
+
   return (
     <>
       <TripFormModal
@@ -84,9 +87,10 @@ function TripDetailModals({
       />
       <ConfirmDialog
         isOpen={isDeleteOpen}
-        title="Trip löschen"
-        message={`Möchtest du "${trip.name}" wirklich löschen? Die einzelnen Orte bleiben erhalten, nur der Trip wird entfernt.`}
-        confirmLabel="Löschen"
+        title={t('deleteTitle')}
+        message={t('deleteMessage', { name: trip.name })}
+        confirmLabel={t('common:action.delete')}
+        cancelLabel={t('common:action.cancel')}
         isProcessing={isDeleting}
         onConfirm={onConfirmDelete}
         onCancel={onCloseDelete}

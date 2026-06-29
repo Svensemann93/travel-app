@@ -4,5 +4,13 @@
   "empty": {
     "title": "Noch keine Trips",
     "message": "Plane deine erste Reise!"
-  }
+  },
+  "back": "Zurück zu meinen Trips",
+  "notFound": "Trip nicht gefunden",
+  "createJournal": "Tagebuch erstellen",
+  "noPlaces": "Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und wähle diesen Trip aus, um Orte hinzuzufügen.",
+  "placesHeading": "Orte",
+  "dragToSort": "(ziehen zum Sortieren)",
+  "deleteTitle": "Trip löschen",
+  "deleteMessage": "Möchtest du \"{{name}}\" wirklich löschen? Die einzelnen Orte bleiben erhalten, nur der Trip wird entfernt."
 }

@@ -29,5 +29,10 @@
     "button": "Filter",
     "selectAll": "Alle auswählen",
     "clearAll": "Alle abwählen"
+  },
+  "action": {
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "cancel": "Abbrechen"
   }
 }

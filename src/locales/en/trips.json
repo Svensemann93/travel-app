@@ -4,5 +4,13 @@
   "empty": {
     "title": "No trips yet",
     "message": "Plan your first journey!"
-  }
+  },
+  "back": "Back to my trips",
+  "notFound": "Trip not found",
+  "createJournal": "Create journal",
+  "noPlaces": "No places in this trip yet. Click a marker on the map and choose this trip to add places.",
+  "placesHeading": "Places",
+  "dragToSort": "(drag to reorder)",
+  "deleteTitle": "Delete trip",
+  "deleteMessage": "Do you really want to delete \"{{name}}\"? The individual places are kept; only the trip is removed."
 }
