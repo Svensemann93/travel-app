@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import SignedImage from './SignedImage'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 
 type LightboxPhoto = { id: string; url: string }
 
@@ -12,6 +13,7 @@ type Props = {
 
 function Lightbox({ photos, initialIndex, onClose }: Props) {
   const [index, setIndex] = useState(initialIndex)
+  const containerRef = useFocusTrap<HTMLDivElement>(true)
 
   const touchStartX = useRef<number | null>(null)
 
@@ -46,12 +48,13 @@ function Lightbox({ photos, initialIndex, onClose }: Props) {
 
   return createPortal(
     <div
+      ref={containerRef}
+      tabIndex={-1}
       className="fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center"
       onClick={onClose}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {' '}
       <button
         onClick={(e) => {
           e.stopPropagation()
