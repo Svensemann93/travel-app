@@ -1,0 +1,19 @@
+{
+  "places_one": "{{count}} place",
+  "places_other": "{{count}} places",
+  "photos_one": "{{count}} photo",
+  "photos_other": "{{count}} photos",
+  "noEntries": "This journal has no entries yet.",
+  "map": "Map",
+  "showOnMap": "Show on map",
+  "closeMap": "Close map",
+  "close": "Close",
+  "share": {
+    "loading": "Loading journal…",
+    "errorTitle": "Could not be loaded",
+    "errorMessage": "Something went wrong while loading. Please try again later.",
+    "unavailableTitle": "Link unavailable",
+    "unavailableMessage": "This link is invalid or has expired. Ask the person who shared it for a current link.",
+    "madeWith": "Made with Travel App"
+  }
+}

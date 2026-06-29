@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import JournalMap from './JournalMap'
 import JournalMapOverlay from './JournalMapOverlay'
 import JournalEntryCard from './JournalEntryCard'
@@ -26,6 +27,7 @@ function dateSpan(entries: JournalWithEntries['journal_entries']) {
 }
 
 function JournalReadView({ journal, stickyHeader = false }: Props) {
+  const { t } = useTranslation('read')
   const entries = journal.journal_entries
   const [mapOpen, setMapOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -88,8 +90,8 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
     0,
   )
   const stats = [
-    mapped.length > 0 ? `${mapped.length} ${mapped.length === 1 ? 'Ort' : 'Orte'}` : null,
-    photoCount > 0 ? `${photoCount} ${photoCount === 1 ? 'Foto' : 'Fotos'}` : null,
+    mapped.length > 0 ? t('places', { count: mapped.length }) : null,
+    photoCount > 0 ? t('photos', { count: photoCount }) : null,
   ].filter(Boolean)
   const metaLine = [span, ...stats].filter(Boolean).join('  ·  ')
   const panelTop = stickyHeader ? 'lg:top-20' : 'lg:top-8'
@@ -133,7 +135,7 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
         <div className="min-w-0 lg:flex-1">
           {entries.length === 0 ? (
             <p className="rounded-lg bg-white p-8 text-center text-slate-600 shadow-sm">
-              Dieses Tagebuch hat noch keine Einträge.
+              {t('noEntries')}
             </p>
           ) : (
             <div className="space-y-6">
@@ -176,7 +178,7 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
             <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          Karte
+          {t('map')}
         </button>
       )}
 
