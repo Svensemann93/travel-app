@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppHeader from '../components/AppHeader'
 import TripFormModal from '../components/TripFormModal'
 import QueryBoundary from '../components/QueryBoundary'
@@ -10,6 +11,7 @@ import { formatDateRange } from '../lib/dateFormat'
 import type { TripInput } from '../types/trip'
 
 function TripsListPage() {
+  const { t } = useTranslation('trips')
   const { data: trips = [], isLoading, isError, error, refetch } = useTrips()
   const createTrip = useCreateTrip()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -23,7 +25,7 @@ function TripsListPage() {
       onClick={() => setIsCreateOpen(true)}
       className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
     >
-      + Neuer Trip
+      {t('new')}
     </button>
   )
 
@@ -32,12 +34,12 @@ function TripsListPage() {
       <AppHeader />
       <main className="max-w-4xl mx-auto p-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-slate-800">Meine Trips</h2>
+          <h2 className="text-2xl font-bold text-slate-800">{t('title')}</h2>
           <button
             onClick={() => setIsCreateOpen(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
           >
-            + Neuer Trip
+            {t('new')}
           </button>
         </div>
 
@@ -50,8 +52,8 @@ function TripsListPage() {
           loading={<ListSkeleton />}
           empty={
             <EmptyState
-              title="Noch keine Trips"
-              message="Plane deine erste Reise!"
+              title={t('empty.title')}
+              message={t('empty.message')}
               action={newTripButton}
             />
           }

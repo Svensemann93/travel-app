@@ -1,0 +1,8 @@
+{
+  "title": "Meine Trips",
+  "new": "+ Neuer Trip",
+  "empty": {
+    "title": "Noch keine Trips",
+    "message": "Plane deine erste Reise!"
+  }
+}
