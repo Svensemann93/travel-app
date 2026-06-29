@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import JournalReadView from '../components/JournalReadView'
 import { useSharedJournal } from '../hooks/useSharedJournal'
 
@@ -23,6 +24,7 @@ function StateCard({
 }
 
 function JournalSharePage() {
+  const { t } = useTranslation('read')
   const { token = '' } = useParams<{ token: string }>()
   const { data: journal, isLoading, error } = useSharedJournal(token)
 
@@ -31,20 +33,16 @@ function JournalSharePage() {
       <main className="mx-auto w-full max-w-5xl flex-1 p-4 md:p-8">
         {isLoading && (
           <p className="mt-16 text-center text-slate-500" role="status">
-            Reisetagebuch wird geladen…
+            {t('share.loading')}
           </p>
         )}
         {error && (
-          <StateCard
-            title="Konnte nicht geladen werden"
-            message="Beim Laden ist etwas schiefgelaufen. Bitte versuche es später erneut."
-            role="alert"
-          />
+          <StateCard title={t('share.errorTitle')} message={t('share.errorMessage')} role="alert" />
         )}
         {!isLoading && !error && !journal && (
           <StateCard
-            title="Link nicht verfügbar"
-            message="Dieser Link ist ungültig oder abgelaufen. Frag die Person, die ihn geteilt hat, nach einem aktuellen Link."
+            title={t('share.unavailableTitle')}
+            message={t('share.unavailableMessage')}
             role="alert"
           />
         )}
@@ -57,7 +55,7 @@ function JournalSharePage() {
           className="inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-slate-600"
         >
           <img src="/logo.png" alt="" className="h-5 w-auto opacity-70" />
-          Erstellt mit Travel App
+          {t('share.madeWith')}
         </Link>
       </footer>
     </div>

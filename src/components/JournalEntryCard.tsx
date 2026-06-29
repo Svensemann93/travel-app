@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import SignedImage from './SignedImage'
 import Lightbox from './Lightbox'
 import { formatDate } from '../lib/dateFormat'
@@ -12,6 +13,7 @@ type Props = {
 }
 
 function JournalEntryCard({ entry, number, onFocus }: Props) {
+  const { t } = useTranslation('read')
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   const placePhotos = visiblePlacePhotos(entry)
@@ -29,7 +31,7 @@ function JournalEntryCard({ entry, number, onFocus }: Props) {
             <button
               type="button"
               onClick={() => onFocus(entry.id)}
-              aria-label="Auf Karte zeigen"
+              aria-label={t('showOnMap')}
               className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               {number}

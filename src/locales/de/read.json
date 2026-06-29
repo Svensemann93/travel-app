@@ -1,0 +1,19 @@
+{
+  "places_one": "{{count}} Ort",
+  "places_other": "{{count}} Orte",
+  "photos_one": "{{count}} Foto",
+  "photos_other": "{{count}} Fotos",
+  "noEntries": "Dieses Tagebuch hat noch keine Einträge.",
+  "map": "Karte",
+  "showOnMap": "Auf Karte zeigen",
+  "closeMap": "Karte schließen",
+  "close": "Schließen",
+  "share": {
+    "loading": "Reisetagebuch wird geladen…",
+    "errorTitle": "Konnte nicht geladen werden",
+    "errorMessage": "Beim Laden ist etwas schiefgelaufen. Bitte versuche es später erneut.",
+    "unavailableTitle": "Link nicht verfügbar",
+    "unavailableMessage": "Dieser Link ist ungültig oder abgelaufen. Frag die Person, die ihn geteilt hat, nach einem aktuellen Link.",
+    "madeWith": "Erstellt mit Travel App"
+  }
+}

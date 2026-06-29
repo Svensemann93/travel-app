@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import JournalMap from './JournalMap'
 import type { NumberedPlace } from './TripPlaceMarkers'
 import type { Place } from '../types/place'
@@ -13,6 +14,8 @@ type Props = {
 }
 
 function JournalMapOverlay({ places, activeId = null, onSelect, focus = null, onClose }: Props) {
+  const { t } = useTranslation('read')
+
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -33,7 +36,7 @@ function JournalMapOverlay({ places, activeId = null, onSelect, focus = null, on
       </div>
       <button
         onClick={onClose}
-        aria-label="Karte schließen"
+        aria-label={t('closeMap')}
         className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-lg ring-1 ring-slate-200"
       >
         <svg
@@ -49,7 +52,7 @@ function JournalMapOverlay({ places, activeId = null, onSelect, focus = null, on
           <path d="M18 6 6 18" />
           <path d="m6 6 12 12" />
         </svg>
-        Schließen
+        {t('close')}
       </button>
     </div>,
     document.body,
