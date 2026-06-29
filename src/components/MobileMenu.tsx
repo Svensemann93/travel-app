@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 interface NavItem {
   to: string
@@ -24,6 +25,8 @@ function MobileMenu({
   userLabel,
   onLogout,
 }: MobileMenuProps) {
+  const { t } = useTranslation()
+
   useEffect(() => {
     if (!isOpen) return
     function handleEscape(event: KeyboardEvent) {
@@ -50,7 +53,7 @@ function MobileMenu({
         id="mobile-menu"
         role="dialog"
         aria-modal="true"
-        aria-label="Hauptnavigation"
+        aria-label={t('nav.label')}
         className={`fixed top-0 right-0 z-[1200] flex h-full w-72 max-w-[80vw] flex-col bg-white shadow-xl transition-transform md:hidden ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -58,7 +61,7 @@ function MobileMenu({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Menü schließen"
+          aria-label={t('menu.close')}
           className="self-end p-4 text-slate-600 hover:text-slate-900"
         >
           <svg
@@ -97,7 +100,7 @@ function MobileMenu({
             onClick={onLogout}
             className="w-full rounded-md bg-slate-200 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-300"
           >
-            Abmelden
+            {t('auth.logout')}
           </button>
         </div>
       </aside>

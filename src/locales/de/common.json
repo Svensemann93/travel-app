@@ -3,5 +3,25 @@
     "label": "Sprache",
     "german": "Deutsch",
     "english": "English"
+  },
+  "nav": {
+    "map": "Karte",
+    "places": "Meine Orte",
+    "trips": "Trips",
+    "journal": "Tagebuch",
+    "profile": "Profil",
+    "label": "Hauptnavigation"
+  },
+  "auth": {
+    "logout": "Abmelden"
+  },
+  "menu": {
+    "open": "Menü öffnen",
+    "close": "Menü schließen"
+  },
+  "state": {
+    "loading": "Lädt…",
+    "error": "Etwas ist schiefgelaufen.",
+    "retry": "Erneut versuchen"
   }
 }

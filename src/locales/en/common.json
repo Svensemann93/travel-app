@@ -3,5 +3,25 @@
     "label": "Language",
     "german": "Deutsch",
     "english": "English"
+  },
+  "nav": {
+    "map": "Map",
+    "places": "My Places",
+    "trips": "Trips",
+    "journal": "Journal",
+    "profile": "Profile",
+    "label": "Main navigation"
+  },
+  "auth": {
+    "logout": "Sign out"
+  },
+  "menu": {
+    "open": "Open menu",
+    "close": "Close menu"
+  },
+  "state": {
+    "loading": "Loading…",
+    "error": "Something went wrong.",
+    "retry": "Try again"
   }
 }
