@@ -4,5 +4,14 @@
   "empty": {
     "title": "Noch kein Tagebuch",
     "message": "Starte deine erste Reisegeschichte!"
-  }
+  },
+  "back": "Zurück zu meinen Tagebüchern",
+  "notFound": "Tagebuch nicht gefunden",
+  "cover": {
+    "change": "Titelbild ändern",
+    "adjust": "Ausschnitt anpassen",
+    "choose": "+ Titelbild wählen"
+  },
+  "deleteTitle": "Tagebuch löschen",
+  "deleteMessage": "Möchtest du \"{{title}}\" wirklich löschen? Alle Einträge gehen verloren."
 }

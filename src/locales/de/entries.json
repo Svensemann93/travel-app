@@ -1,0 +1,23 @@
+{
+  "readMode": "Lesemodus",
+  "new": "+ Neuer Eintrag",
+  "empty": "Noch keine Einträge. Halte deinen ersten Moment fest!",
+  "deleteTitle": "Eintrag löschen",
+  "deleteMessage": "Diesen Eintrag wirklich löschen?",
+  "photoAlt": "Foto zu {{title}}",
+  "photoAltFallback": "Foto zum Eintrag",
+  "share": {
+    "heading": "Teilen",
+    "intro": "Erstelle einen Link, um deine Reise mit anderen zu teilen, welche kein Konto haben.",
+    "create": "Link erzeugen",
+    "warning": "Wer diesen Link hat, kann das Tagebuch sehen. Teile ihn nur mit Personen, denen du vertraust.",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "rotate": "Neuen Link erzeugen",
+    "revoke": "Link deaktivieren",
+    "rotateMessage": "Der bisherige Link wird damit ungültig. Fortfahren?",
+    "revokeTitle": "Link deaktivieren",
+    "revokeConfirm": "Deaktivieren",
+    "revokeMessage": "Der Link funktioniert danach nicht mehr. Fortfahren?"
+  }
+}

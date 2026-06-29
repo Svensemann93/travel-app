@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import SignedImage from './SignedImage'
 import { formatDate } from '../lib/dateFormat'
 import { visiblePlacePhotos } from '../lib/journalPhotos'
@@ -10,9 +11,10 @@ type Props = {
 }
 
 function JournalEntryListItem({ entry, onEdit, onDelete }: Props) {
+  const { t } = useTranslation(['entries', 'common'])
   const placePhotos = visiblePlacePhotos(entry)
   const hasPhotos = placePhotos.length > 0 || entry.photos.length > 0
-  const photoAlt = entry.title ? `Foto zu ${entry.title}` : 'Foto zum Eintrag'
+  const photoAlt = entry.title ? t('photoAlt', { title: entry.title }) : t('photoAltFallback')
 
   return (
     <li className="rounded-lg bg-white p-4 shadow-sm">
@@ -28,10 +30,10 @@ function JournalEntryListItem({ entry, onEdit, onDelete }: Props) {
         </div>
         <div className="flex shrink-0 gap-3">
           <button onClick={onEdit} className="text-sm text-blue-600 hover:underline">
-            Bearbeiten
+            {t('common:action.edit')}
           </button>
           <button onClick={onDelete} className="text-sm text-red-600 hover:underline">
-            Löschen
+            {t('common:action.delete')}
           </button>
         </div>
       </div>
