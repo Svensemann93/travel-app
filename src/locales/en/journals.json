@@ -4,5 +4,14 @@
   "empty": {
     "title": "No journal yet",
     "message": "Start your first travel story!"
-  }
+  },
+  "back": "Back to my journals",
+  "notFound": "Journal not found",
+  "cover": {
+    "change": "Change cover image",
+    "adjust": "Adjust crop",
+    "choose": "+ Choose cover image"
+  },
+  "deleteTitle": "Delete journal",
+  "deleteMessage": "Do you really want to delete \"{{title}}\"? All entries will be lost."
 }

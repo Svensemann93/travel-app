@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ConfirmDialog from './ConfirmDialog'
 import {
   useCreateJournalShare,
@@ -9,6 +10,7 @@ import {
 type Props = { journalId: string }
 
 function JournalShareSection({ journalId }: Props) {
+  const { t } = useTranslation(['entries', 'common'])
   const { data: share } = useJournalShare(journalId)
   const createShare = useCreateJournalShare()
   const deleteShare = useDeleteJournalShare()
@@ -29,27 +31,22 @@ function JournalShareSection({ journalId }: Props) {
 
   return (
     <div className="mb-6 rounded-lg bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-800">Teilen</h2>
+      <h2 className="text-sm font-semibold text-slate-800">{t('share.heading')}</h2>
 
       {!share ? (
         <div className="mt-2">
-          <p className="text-sm text-slate-600">
-            Erstelle einen Link, um deine Reise mit anderen zu teilen, welche kein Konto haben.
-          </p>
+          <p className="text-sm text-slate-600">{t('share.intro')}</p>
           <button
             onClick={() => createShare.mutate(journalId)}
             disabled={createShare.isPending}
             className="mt-3 rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
-            Link erzeugen
+            {t('share.create')}
           </button>
         </div>
       ) : (
         <div className="mt-2 space-y-3">
-          <p className="text-xs text-slate-500">
-            Wer diesen Link hat, kann das Tagebuch sehen. Teile ihn nur mit Personen, denen du
-            vertraust.
-          </p>
+          <p className="text-xs text-slate-500">{t('share.warning')}</p>
           <div className="flex flex-col gap-2 sm:flex-row">
             <input
               readOnly
@@ -61,15 +58,15 @@ function JournalShareSection({ journalId }: Props) {
               onClick={copy}
               className="shrink-0 rounded-md bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700"
             >
-              {copied ? 'Kopiert' : 'Kopieren'}
+              {copied ? t('share.copied') : t('share.copy')}
             </button>
           </div>
           <div className="flex gap-4 text-sm">
             <button onClick={() => setConfirm('rotate')} className="text-blue-600 hover:underline">
-              Neuen Link erzeugen
+              {t('share.rotate')}
             </button>
             <button onClick={() => setConfirm('revoke')} className="text-red-600 hover:underline">
-              Link deaktivieren
+              {t('share.revoke')}
             </button>
           </div>
         </div>
@@ -77,9 +74,10 @@ function JournalShareSection({ journalId }: Props) {
 
       <ConfirmDialog
         isOpen={confirm === 'rotate'}
-        title="Neuen Link erzeugen"
-        message="Der bisherige Link wird damit ungültig. Fortfahren?"
-        confirmLabel="Neuen Link erzeugen"
+        title={t('share.rotate')}
+        message={t('share.rotateMessage')}
+        confirmLabel={t('share.rotate')}
+        cancelLabel={t('common:action.cancel')}
         isProcessing={createShare.isPending}
         onConfirm={() => {
           createShare.mutate(journalId)
@@ -89,9 +87,10 @@ function JournalShareSection({ journalId }: Props) {
       />
       <ConfirmDialog
         isOpen={confirm === 'revoke'}
-        title="Link deaktivieren"
-        message="Der Link funktioniert danach nicht mehr. Fortfahren?"
-        confirmLabel="Deaktivieren"
+        title={t('share.revokeTitle')}
+        message={t('share.revokeMessage')}
+        confirmLabel={t('share.revokeConfirm')}
+        cancelLabel={t('common:action.cancel')}
         isProcessing={deleteShare.isPending}
         onConfirm={() => {
           deleteShare.mutate(journalId)

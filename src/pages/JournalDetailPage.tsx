@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppHeader from '../components/AppHeader'
 import ConfirmDialog from '../components/ConfirmDialog'
 import CoverPicker from '../components/CoverPicker'
@@ -18,6 +19,7 @@ import {
 import type { JournalInput } from '../types/journal'
 
 function JournalDetailPage() {
+  const { t } = useTranslation(['journals', 'common'])
   const { journalId = '' } = useParams<{ journalId: string }>()
   const navigate = useNavigate()
   const { data: journal, isLoading, error, refetch } = useJournalWithEntries(journalId)
@@ -78,7 +80,7 @@ function JournalDetailPage() {
           to="/journal"
           className="mb-4 inline-block text-sm text-slate-600 hover:text-slate-900"
         >
-          ← Zurück zu meinen Tagebüchern
+          ← {t('back')}
         </Link>
 
         <DetailStatus
@@ -86,7 +88,7 @@ function JournalDetailPage() {
           error={error}
           isMissing={!isLoading && !error && !journal}
           onRetry={() => void refetch()}
-          notFoundLabel="Tagebuch nicht gefunden"
+          notFoundLabel={t('notFound')}
         />
 
         {journal && (
@@ -103,13 +105,13 @@ function JournalDetailPage() {
                   onClick={() => setIsEditOpen(true)}
                   className="text-sm text-blue-600 hover:underline"
                 >
-                  Bearbeiten
+                  {t('common:action.edit')}
                 </button>
                 <button
                   onClick={() => setIsDeleteOpen(true)}
                   className="text-sm text-red-600 hover:underline"
                 >
-                  Löschen
+                  {t('common:action.delete')}
                 </button>
               </div>
             </div>
@@ -132,13 +134,13 @@ function JournalDetailPage() {
                       onClick={() => setIsPickerOpen(true)}
                       className="text-sm text-blue-600 hover:underline"
                     >
-                      Titelbild ändern
+                      {t('cover.change')}
                     </button>
                     <button
                       onClick={openFocusForCurrent}
                       className="text-sm text-blue-600 hover:underline"
                     >
-                      Ausschnitt anpassen
+                      {t('cover.adjust')}
                     </button>
                   </div>
                 </div>
@@ -147,7 +149,7 @@ function JournalDetailPage() {
                   onClick={() => setIsPickerOpen(true)}
                   className="text-sm text-blue-600 hover:underline"
                 >
-                  + Titelbild wählen
+                  {t('cover.choose')}
                 </button>
               )}
             </div>
@@ -190,9 +192,10 @@ function JournalDetailPage() {
 
       <ConfirmDialog
         isOpen={isDeleteOpen}
-        title="Tagebuch löschen"
-        message={`Möchtest du "${journal?.title}" wirklich löschen? Alle Einträge gehen verloren.`}
-        confirmLabel="Löschen"
+        title={t('deleteTitle')}
+        message={t('deleteMessage', { title: journal?.title ?? '' })}
+        confirmLabel={t('common:action.delete')}
+        cancelLabel={t('common:action.cancel')}
         isProcessing={deleteJournal.isPending}
         onConfirm={handleDelete}
         onCancel={() => setIsDeleteOpen(false)}

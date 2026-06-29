@@ -1,0 +1,23 @@
+{
+  "readMode": "Reading mode",
+  "new": "+ New entry",
+  "empty": "No entries yet. Capture your first moment!",
+  "deleteTitle": "Delete entry",
+  "deleteMessage": "Delete this entry?",
+  "photoAlt": "Photo for {{title}}",
+  "photoAltFallback": "Photo for the entry",
+  "share": {
+    "heading": "Share",
+    "intro": "Create a link to share your trip with people who don't have an account.",
+    "create": "Create link",
+    "warning": "Anyone with this link can view the journal. Only share it with people you trust.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "rotate": "Create new link",
+    "revoke": "Disable link",
+    "rotateMessage": "The previous link becomes invalid. Continue?",
+    "revokeTitle": "Disable link",
+    "revokeConfirm": "Disable",
+    "revokeMessage": "The link will no longer work afterwards. Continue?"
+  }
+}
