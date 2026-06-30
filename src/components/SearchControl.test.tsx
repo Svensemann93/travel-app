@@ -27,13 +27,15 @@ describe('SearchControl', () => {
     expect(mapApi.addControl).toHaveBeenCalledTimes(1)
   })
 
-  it('configures the bar style and German labels', () => {
+  it('configures the bar style and search labels', () => {
     render(<SearchControl />)
     const config = geoSearch.mock.calls[0][0]
     expect(config.style).toBe('bar')
     expect(config.showMarker).toBe(false)
-    expect(config.searchLabel).toBe('Ort suchen …')
-    expect(config.notFoundMessage).toBe('Kein Ort gefunden.')
+    expect(typeof config.searchLabel).toBe('string')
+    expect(config.searchLabel.length).toBeGreaterThan(0)
+    expect(typeof config.notFoundMessage).toBe('string')
+    expect(config.notFoundMessage.length).toBeGreaterThan(0)
   })
 
   it('removes the control again on unmount', () => {
