@@ -19,5 +19,15 @@
     "revokeTitle": "Link deaktivieren",
     "revokeConfirm": "Deaktivieren",
     "revokeMessage": "Der Link funktioniert danach nicht mehr. Fortfahren?"
+  },
+  "form": {
+    "createTitle": "Neuer Eintrag",
+    "editTitle": "Eintrag bearbeiten",
+    "date": "Datum",
+    "title": "Titel",
+    "body": "Text",
+    "placePhotos": "Fotos vom Ort",
+    "placePhotosHint": "Tippe an, um auszuwählen, welche im Tagebuch erscheinen.",
+    "ownPhotos": "Eigene Fotos"
   }
 }

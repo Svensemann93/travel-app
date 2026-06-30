@@ -122,7 +122,7 @@ function JournalDetailPage() {
                   <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg shadow-sm">
                     <SignedImage
                       path={journal.cover_photo_path}
-                      alt="Titelbild"
+                      alt={t('cover.alt')}
                       className="h-full w-full object-cover"
                       style={{
                         objectPosition: `${journal.cover_focus_x ?? 50}% ${journal.cover_focus_y ?? 50}%`,
@@ -182,6 +182,7 @@ function JournalDetailPage() {
       <JournalFormModal
         key={journal ? `edit-${journal.id}` : 'edit-closed'}
         isOpen={isEditOpen}
+        mode="edit"
         initialData={
           journal ? { title: journal.title, description: journal.description ?? '' } : undefined
         }

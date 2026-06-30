@@ -19,5 +19,15 @@
     "revokeTitle": "Disable link",
     "revokeConfirm": "Disable",
     "revokeMessage": "The link will no longer work afterwards. Continue?"
+  },
+  "form": {
+    "createTitle": "New entry",
+    "editTitle": "Edit entry",
+    "date": "Date",
+    "title": "Title",
+    "body": "Text",
+    "placePhotos": "Photos from the place",
+    "placePhotosHint": "Tap to choose which ones appear in the journal.",
+    "ownPhotos": "Own photos"
   }
 }

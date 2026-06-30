@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
-import { formatDateRange } from '../lib/dateFormat'
+import { useFormatDate } from '../hooks/useFormatDate'
 import type { TripPlaceUpdateInput } from '../types/trip'
 
 type Props = {
@@ -27,6 +27,7 @@ function TripPlaceEditModal({
   onClose,
 }: Props) {
   const { t } = useTranslation(['trips', 'common'])
+  const { formatDateRange } = useFormatDate()
   const [plannedDate, setPlannedDate] = useState(initialData.planned_date ?? '')
   const [notes, setNotes] = useState(initialData.notes ?? '')
 

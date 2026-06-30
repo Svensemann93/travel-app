@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import SignedImage from './SignedImage'
 import Lightbox from './Lightbox'
-import { formatDate } from '../lib/dateFormat'
+import { useFormatDate } from '../hooks/useFormatDate'
 import { visiblePlacePhotos } from '../lib/journalPhotos'
 import type { JournalEntryWithPlace } from '../types/journal'
 
@@ -14,6 +14,7 @@ type Props = {
 
 function JournalEntryCard({ entry, number, onFocus }: Props) {
   const { t } = useTranslation('read')
+  const { formatDate } = useFormatDate()
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   const placePhotos = visiblePlacePhotos(entry)

@@ -42,5 +42,9 @@
     "add": "+ Add photos",
     "constraints": "JPG, PNG, WebP or HEIC, max. {{size}} per file.",
     "remove": "Remove photo"
+  },
+  "date": {
+    "from": "from",
+    "until": "until"
   }
 }

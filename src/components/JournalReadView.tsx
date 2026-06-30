@@ -4,7 +4,7 @@ import JournalMap from './JournalMap'
 import JournalMapOverlay from './JournalMapOverlay'
 import JournalEntryCard from './JournalEntryCard'
 import SignedImage from './SignedImage'
-import { formatDate } from '../lib/dateFormat'
+import { useFormatDate } from '../hooks/useFormatDate'
 import { visiblePlacePhotos } from '../lib/journalPhotos'
 import type { NumberedPlace } from './TripPlaceMarkers'
 import type { JournalWithEntries } from '../types/journal'
@@ -15,7 +15,10 @@ type Props = {
   stickyHeader?: boolean
 }
 
-function dateSpan(entries: JournalWithEntries['journal_entries']) {
+function dateSpan(
+  entries: JournalWithEntries['journal_entries'],
+  formatDate: (dateString: string) => string,
+) {
   const dates = entries
     .map((e) => e.entry_date)
     .filter((d): d is string => Boolean(d))
@@ -28,6 +31,7 @@ function dateSpan(entries: JournalWithEntries['journal_entries']) {
 
 function JournalReadView({ journal, stickyHeader = false }: Props) {
   const { t } = useTranslation('read')
+  const { formatDate } = useFormatDate()
   const entries = journal.journal_entries
   const [mapOpen, setMapOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -84,7 +88,7 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
     requestAnimationFrame(() => scrollToEntry(id))
   }
 
-  const span = dateSpan(entries)
+  const span = dateSpan(entries, formatDate)
   const photoCount = entries.reduce(
     (sum, e) => sum + visiblePlacePhotos(e).length + e.photos.length,
     0,

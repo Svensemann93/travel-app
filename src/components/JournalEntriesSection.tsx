@@ -96,6 +96,7 @@ function JournalEntriesSection({ journalId, entries }: Props) {
       <JournalEntryModal
         key={editing ? `entry-${editing.id}` : modalOpen ? 'entry-new' : 'entry-closed'}
         isOpen={modalOpen}
+        mode={editing ? 'edit' : 'create'}
         initialData={
           editing
             ? {

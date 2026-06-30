@@ -80,6 +80,7 @@ function TripDetailModals({
       <JournalFormModal
         key={isJournalOpen ? 'journal-open' : 'journal-closed'}
         isOpen={isJournalOpen}
+        mode="create"
         initialData={{ title: trip.name, description: trip.description ?? '' }}
         isSaving={isCreatingJournal}
         onClose={onCloseJournal}

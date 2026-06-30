@@ -42,5 +42,9 @@
     "add": "+ Fotos hinzufügen",
     "constraints": "JPG, PNG, WebP oder HEIC, max. {{size}} pro Datei.",
     "remove": "Foto entfernen"
+  },
+  "date": {
+    "from": "ab",
+    "until": "bis"
   }
 }
