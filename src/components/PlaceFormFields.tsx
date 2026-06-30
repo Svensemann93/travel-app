@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import PhotoUploader from './PhotoUploader'
 import PriceLevel from './PriceLevel'
 import StarRating from './StarRating'
@@ -11,11 +12,13 @@ type Props = {
 }
 
 function PlaceFormFields({ form, onError }: Props) {
+  const { t } = useTranslation('places')
+
   return (
     <>
       <div>
         <label htmlFor="place-name" className="block text-sm font-medium text-slate-700 mb-1">
-          Name
+          {t('form.name')}
         </label>
         <input
           id="place-name"
@@ -33,7 +36,7 @@ function PlaceFormFields({ form, onError }: Props) {
           htmlFor="place-description"
           className="block text-sm font-medium text-slate-700 mb-1"
         >
-          Beschreibung
+          {t('form.description')}
         </label>
         <textarea
           id="place-description"
@@ -45,7 +48,7 @@ function PlaceFormFields({ form, onError }: Props) {
       </div>
 
       <div>
-        <p className="block text-sm font-medium text-slate-700 mb-1">Kategorie</p>
+        <p className="block text-sm font-medium text-slate-700 mb-1">{t('form.category')}</p>
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => {
             const isSelected = form.category === cat.id
@@ -73,19 +76,19 @@ function PlaceFormFields({ form, onError }: Props) {
         </div>
       </div>
 
-      <CollapsibleSection title="Bewertung">
+      <CollapsibleSection title={t('form.rating')}>
         <StarRating value={form.rating} onChange={form.setRating} />
       </CollapsibleSection>
 
-      <CollapsibleSection title="Preis">
+      <CollapsibleSection title={t('form.price')}>
         <PriceLevel value={form.priceLevel} onChange={form.setPriceLevel} />
       </CollapsibleSection>
 
-      <CollapsibleSection title="Website">
+      <CollapsibleSection title={t('form.website')}>
         <input
           id="place-website"
           type="url"
-          aria-label="Website"
+          aria-label={t('form.website')}
           value={form.websiteUrl}
           onChange={(e) => form.setWebsiteUrl(e.target.value)}
           placeholder="https://..."
@@ -93,7 +96,7 @@ function PlaceFormFields({ form, onError }: Props) {
         />
       </CollapsibleSection>
 
-      <CollapsibleSection title="Fotos">
+      <CollapsibleSection title={t('form.photos')}>
         <PhotoUploader
           newPhotos={form.photos}
           existingPhotos={form.existingPhotos}

@@ -4,5 +4,19 @@
     "title": "No places saved yet",
     "toMap": "Go to map"
   },
-  "noFilterMatch": "No places in the selected categories."
+  "noFilterMatch": "No places in the selected categories.",
+  "form": {
+    "createTitle": "Add new place",
+    "editTitle": "Edit place",
+    "position": "Position: {{lat}}, {{lng}}",
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "rating": "Rating",
+    "price": "Price",
+    "website": "Website",
+    "photos": "Photos",
+    "reposition": "Move location",
+    "unknownError": "Unknown error"
+  }
 }

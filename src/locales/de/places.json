@@ -4,5 +4,19 @@
     "title": "Noch keine Orte gespeichert",
     "toMap": "Zur Karte"
   },
-  "noFilterMatch": "Keine Orte in den gewählten Kategorien."
+  "noFilterMatch": "Keine Orte in den gewählten Kategorien.",
+  "form": {
+    "createTitle": "Neuen Ort hinzufügen",
+    "editTitle": "Ort bearbeiten",
+    "position": "Position: {{lat}}, {{lng}}",
+    "name": "Name",
+    "description": "Beschreibung",
+    "category": "Kategorie",
+    "rating": "Bewertung",
+    "price": "Preis",
+    "website": "Website",
+    "photos": "Fotos",
+    "reposition": "Standort verschieben",
+    "unknownError": "Unbekannter Fehler"
+  }
 }
