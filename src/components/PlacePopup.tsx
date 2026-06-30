@@ -1,4 +1,5 @@
 import { Popup } from 'react-leaflet'
+import { useTranslation } from 'react-i18next'
 import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
 import PopupDescription from './PopupDescription'
@@ -15,6 +16,7 @@ type Props = {
 }
 
 function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Props) {
+  const { t } = useTranslation(['map', 'common'])
   const photos = (place.photos ?? []).slice().sort((a, b) => a.position - b.position)
   const websiteText = place.website_url
     ? place.website_url.replace('https://', '').replace('http://', '')
@@ -94,21 +96,21 @@ function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Prop
               onClick={() => onAddToTrip(place)}
               className="text-sm leading-tight text-green-700 hover:underline"
             >
-              + Zu Trip
+              {t('addToTrip')}
             </button>
             <button
               type="button"
               onClick={() => onEdit(place)}
               className="text-sm leading-tight text-blue-600 hover:underline"
             >
-              Bearbeiten
+              {t('common:action.edit')}
             </button>
             <button
               type="button"
               onClick={() => onDelete(place)}
               className="text-sm leading-tight text-red-600 hover:underline"
             >
-              Löschen
+              {t('common:action.delete')}
             </button>
           </div>
         </div>
