@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import type { TripInput } from '../types/trip'
 
@@ -10,6 +11,7 @@ type Props = {
 }
 
 function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
+  const { t } = useTranslation(['trips', 'common'])
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
   const [startDate, setStartDate] = useState(initialData?.start_date ?? '')
@@ -24,7 +26,7 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
     setErrorMessage('')
 
     if (startDate && endDate && endDate < startDate) {
-      setErrorMessage('Das Enddatum darf nicht vor dem Startdatum liegen.')
+      setErrorMessage(t('form.endBeforeStart'))
       return
     }
 
@@ -38,7 +40,7 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
       })
       onClose()
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Unbekannter Fehler')
+      setErrorMessage(err instanceof Error ? err.message : t('form.unknownError'))
     } finally {
       setIsSaving(false)
     }
@@ -47,13 +49,13 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold text-slate-800 mb-4">
-        {isEditMode ? 'Trip bearbeiten' : 'Neuen Trip anlegen'}
+        {isEditMode ? t('form.editTitle') : t('form.createTitle')}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="trip-name" className="block text-sm font-medium text-slate-700 mb-1">
-            Name
+            {t('form.name')}
           </label>
           <input
             id="trip-name"
@@ -72,7 +74,7 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
             htmlFor="trip-description"
             className="block text-sm font-medium text-slate-700 mb-1"
           >
-            Beschreibung
+            {t('form.description')}
           </label>
           <textarea
             id="trip-description"
@@ -86,7 +88,7 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="trip-start" className="block text-sm font-medium text-slate-700 mb-1">
-              Von
+              {t('form.from')}
             </label>
             <input
               id="trip-start"
@@ -98,7 +100,7 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
           </div>
           <div>
             <label htmlFor="trip-end" className="block text-sm font-medium text-slate-700 mb-1">
-              Bis
+              {t('form.to')}
             </label>
             <input
               id="trip-end"
@@ -123,14 +125,14 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
             disabled={isSaving}
             className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
           >
-            Abbrechen
+            {t('common:action.cancel')}
           </button>
           <button
             type="submit"
             disabled={isSaving}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400"
           >
-            {isSaving ? 'Speichert...' : 'Speichern'}
+            {isSaving ? t('common:action.processing') : t('common:action.save')}
           </button>
         </div>
       </form>
