@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Circle, Marker, useMap } from 'react-leaflet'
+import { useTranslation } from 'react-i18next'
 import L from 'leaflet'
 import './LocateControl.css'
 
@@ -15,6 +16,7 @@ const locationIcon = L.divIcon({
 
 function LocateControl() {
   const map = useMap()
+  const { t } = useTranslation('map')
   const containerRef = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<Status>('idle')
   const [errorMessage, setErrorMessage] = useState('')
@@ -30,7 +32,7 @@ function LocateControl() {
   function handleLocate() {
     if (!('geolocation' in navigator)) {
       setStatus('error')
-      setErrorMessage('Dein Browser unterstützt keine Standortbestimmung.')
+      setErrorMessage(t('locate.unsupported'))
       return
     }
     setStatus('locating')
@@ -50,9 +52,7 @@ function LocateControl() {
       (err) => {
         setStatus('error')
         setErrorMessage(
-          err.code === err.PERMISSION_DENIED
-            ? 'Standortzugriff ist blockiert. Du kannst ihn in den Browser-Einstellungen erlauben.'
-            : 'Dein Standort konnte nicht ermittelt werden.',
+          err.code === err.PERMISSION_DENIED ? t('locate.denied') : t('locate.failed'),
         )
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
@@ -83,7 +83,7 @@ function LocateControl() {
             <button
               type="button"
               onClick={() => setStatus('idle')}
-              aria-label="Meldung schließen"
+              aria-label={t('locate.dismiss')}
               className="shrink-0 text-slate-400 transition-colors hover:text-slate-700"
             >
               ✕
@@ -94,7 +94,7 @@ function LocateControl() {
           type="button"
           onClick={handleLocate}
           disabled={status === 'locating'}
-          aria-label="Zu meinem Standort springen"
+          aria-label={t('locate.button')}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-slate-700 shadow-md transition-colors hover:bg-slate-50 disabled:opacity-60"
         >
           {status === 'locating' ? (

@@ -1,0 +1,26 @@
+{
+  "search": {
+    "label": "Search location …",
+    "notFound": "No location found."
+  },
+  "addToTrip": "+ To trip",
+  "empty": {
+    "title": "Welcome!",
+    "message": "Click anywhere on the map to add your first place."
+  },
+  "loading": "Loading places …",
+  "error": {
+    "title": "Places couldn't be loaded",
+    "message": "Something went wrong while loading your places."
+  },
+  "reposition": {
+    "hint": "Drag the pin of <0>{{name}}</0> to its new position"
+  },
+  "locate": {
+    "button": "Jump to my location",
+    "dismiss": "Dismiss message",
+    "unsupported": "Your browser doesn't support location detection.",
+    "denied": "Location access is blocked. You can allow it in your browser settings.",
+    "failed": "Your location couldn't be determined."
+  }
+}

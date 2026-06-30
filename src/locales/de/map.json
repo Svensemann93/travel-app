@@ -1,0 +1,26 @@
+{
+  "search": {
+    "label": "Ort suchen …",
+    "notFound": "Kein Ort gefunden."
+  },
+  "addToTrip": "+ Zu Trip",
+  "empty": {
+    "title": "Willkommen!",
+    "message": "Klicke irgendwo auf die Karte, um deinen ersten Ort hinzuzufügen."
+  },
+  "loading": "Lädt Orte …",
+  "error": {
+    "title": "Orte konnten nicht geladen werden",
+    "message": "Beim Laden deiner Orte ist etwas schiefgelaufen."
+  },
+  "reposition": {
+    "hint": "Ziehe den Pin von <0>{{name}}</0> an die neue Position"
+  },
+  "locate": {
+    "button": "Zu meinem Standort springen",
+    "dismiss": "Meldung schließen",
+    "unsupported": "Dein Browser unterstützt keine Standortbestimmung.",
+    "denied": "Standortzugriff ist blockiert. Du kannst ihn in den Browser-Einstellungen erlauben.",
+    "failed": "Dein Standort konnte nicht ermittelt werden."
+  }
+}

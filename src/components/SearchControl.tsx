@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
+import { useTranslation } from 'react-i18next'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
 import './SearchControl.css'
 
 function SearchControl() {
   const map = useMap()
+  const { t, i18n } = useTranslation('map')
 
   useEffect(() => {
     const provider = new OpenStreetMapProvider()
@@ -19,15 +21,15 @@ function SearchControl() {
       autoClose: true,
       keepResult: false,
       retainZoomLevel: false,
-      searchLabel: 'Ort suchen …',
-      notFoundMessage: 'Kein Ort gefunden.',
+      searchLabel: t('search.label'),
+      notFoundMessage: t('search.notFound'),
     })
 
     map.addControl(searchControl)
     return () => {
       map.removeControl(searchControl)
     }
-  }, [map])
+  }, [map, t, i18n.language])
 
   return null
 }

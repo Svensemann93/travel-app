@@ -7,12 +7,14 @@ import dePlaces from '../locales/de/places.json'
 import deJournals from '../locales/de/journals.json'
 import deEntries from '../locales/de/entries.json'
 import deRead from '../locales/de/read.json'
+import deMap from '../locales/de/map.json'
 import enCommon from '../locales/en/common.json'
 import enTrips from '../locales/en/trips.json'
 import enPlaces from '../locales/en/places.json'
 import enJournals from '../locales/en/journals.json'
 import enEntries from '../locales/en/entries.json'
 import enRead from '../locales/en/read.json'
+import enMap from '../locales/en/map.json'
 
 export const defaultNS = 'common'
 
@@ -24,6 +26,7 @@ export const resources = {
     journals: deJournals,
     entries: deEntries,
     read: deRead,
+    map: deMap,
   },
   en: {
     common: enCommon,
@@ -32,6 +35,7 @@ export const resources = {
     journals: enJournals,
     entries: enEntries,
     read: enRead,
+    map: enMap,
   },
 } as const
 
