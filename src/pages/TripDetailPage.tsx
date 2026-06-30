@@ -21,9 +21,9 @@ import {
   useUpdateTripPlace,
 } from '../hooks/useTrips'
 import { useCreateJournalFromTrip } from '../hooks/useJournals'
-import { formatDateRange } from '../lib/dateFormat'
 import type { JournalInput } from '../types/journal'
 import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../types/trip'
+import { useFormatDate } from '../hooks/useFormatDate'
 
 function TripDetailPage() {
   const { t } = useTranslation('trips')
@@ -42,6 +42,7 @@ function TripDetailPage() {
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
   const [editingTripPlace, setEditingTripPlace] = useState<TripPlaceWithPlace | null>(null)
+  const { formatDateRange } = useFormatDate()
 
   const places = useMemo(() => trip?.trip_places.map((tp) => tp.place) ?? [], [trip?.trip_places])
   const numbered = useMemo(

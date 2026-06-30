@@ -3,7 +3,7 @@ import type { Place } from '../types/place'
 import DragHandle from './DragHandle'
 import SignedImage from './SignedImage'
 import TripPlaceItemActions from './TripPlaceItemActions'
-import { formatDate } from '../lib/dateFormat'
+import { useFormatDate } from '../hooks/useFormatDate'
 
 type Props = {
   place: Place
@@ -30,6 +30,7 @@ function TripPlaceItem({
   dragHandleProps,
   isDragging,
 }: Props) {
+  const { formatDate } = useFormatDate()
   const firstPhoto = place.photos?.slice().sort((a, b) => a.position - b.position)[0]
   const formattedDate = plannedDate ? formatDate(plannedDate) : null
   const hasDetails = formattedDate || notes

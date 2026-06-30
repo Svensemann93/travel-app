@@ -10,8 +10,15 @@
   "cover": {
     "change": "Titelbild ändern",
     "adjust": "Ausschnitt anpassen",
-    "choose": "+ Titelbild wählen"
+    "choose": "+ Titelbild wählen",
+    "alt": "Titelbild"
   },
   "deleteTitle": "Tagebuch löschen",
-  "deleteMessage": "Möchtest du \"{{title}}\" wirklich löschen? Alle Einträge gehen verloren."
+  "deleteMessage": "Möchtest du \"{{title}}\" wirklich löschen? Alle Einträge gehen verloren.",
+  "form": {
+    "createTitle": "Neues Tagebuch",
+    "editTitle": "Tagebuch bearbeiten",
+    "title": "Titel",
+    "description": "Beschreibung"
+  }
 }

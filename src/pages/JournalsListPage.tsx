@@ -81,6 +81,7 @@ function JournalsListPage() {
       <JournalFormModal
         key={isCreateOpen ? 'create-open' : 'create-closed'}
         isOpen={isCreateOpen}
+        mode="create"
         isSaving={createJournal.isPending}
         onClose={() => setIsCreateOpen(false)}
         onSave={handleCreate}

@@ -7,19 +7,40 @@ export function parseLocalDate(dateString: string): Date {
   return new Date(dateString)
 }
 
-export function formatDateRange(start: string | null, end: string | null): string | null {
-  if (!start && !end) return null
-  const fmt = (d: string) => parseLocalDate(d).toLocaleDateString('de-CH')
-  if (start && end) return `${fmt(start)} – ${fmt(end)}`
-  if (start) return `ab ${fmt(start)}`
-  return `bis ${fmt(end!)}`
+type RangePrefixes = {
+  from: string
+  until: string
 }
 
-export function formatDate(dateString: string): string {
-  return new Intl.DateTimeFormat('de-CH', {
+export function formatDate(dateString: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   }).format(parseLocalDate(dateString))
+}
+
+export function formatDateLong(dateString: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(parseLocalDate(dateString))
+}
+
+export function formatDateRange(
+  start: string | null,
+  end: string | null,
+  locale: string,
+  prefixes: RangePrefixes,
+): string | null {
+  if (!start && !end) return null
+  const fmt = (d: string) => formatDateLong(d, locale)
+  if (start && end) {
+    if (start === end) return fmt(start)
+    return `${fmt(start)} – ${fmt(end)}`
+  }
+  if (start) return `${prefixes.from} ${fmt(start)}`
+  return `${prefixes.until} ${fmt(end!)}`
 }

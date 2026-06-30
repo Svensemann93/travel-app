@@ -1,20 +1,22 @@
 import { useId, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import type { JournalInput } from '../types/journal'
 
 type Props = {
   isOpen: boolean
+  mode: 'create' | 'edit'
   initialData?: { title: string; description: string }
   isSaving: boolean
   onClose: () => void
   onSave: (data: JournalInput) => void
 }
 
-function JournalFormModal({ isOpen, initialData, isSaving, onClose, onSave }: Props) {
+function JournalFormModal({ isOpen, mode, initialData, isSaving, onClose, onSave }: Props) {
+  const { t } = useTranslation(['journals', 'common'])
   const formId = useId()
   const [title, setTitle] = useState(initialData?.title ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
-  const isEdit = initialData !== undefined
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -33,7 +35,7 @@ function JournalFormModal({ isOpen, initialData, isSaving, onClose, onSave }: Pr
             disabled={isSaving}
             className="rounded-md px-4 py-2 text-slate-700 transition-colors hover:bg-slate-100"
           >
-            Abbrechen
+            {t('common:action.cancel')}
           </button>
           <button
             type="submit"
@@ -41,18 +43,18 @@ function JournalFormModal({ isOpen, initialData, isSaving, onClose, onSave }: Pr
             disabled={isSaving}
             className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:bg-slate-400"
           >
-            {isSaving ? 'Speichert...' : 'Speichern'}
+            {isSaving ? t('common:action.processing') : t('common:action.save')}
           </button>
         </div>
       }
     >
       <h2 className="mb-4 text-xl font-bold text-slate-800">
-        {isEdit ? 'Tagebuch bearbeiten' : 'Neues Tagebuch'}
+        {mode === 'edit' ? t('form.editTitle') : t('form.createTitle')}
       </h2>
       <form id={formId} onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="journal-title" className="mb-1 block text-sm font-medium text-slate-700">
-            Titel
+            {t('form.title')}
           </label>
           <input
             id="journal-title"
@@ -66,7 +68,7 @@ function JournalFormModal({ isOpen, initialData, isSaving, onClose, onSave }: Pr
         </div>
         <div>
           <label htmlFor="journal-desc" className="mb-1 block text-sm font-medium text-slate-700">
-            Beschreibung
+            {t('form.description')}
           </label>
           <textarea
             id="journal-desc"

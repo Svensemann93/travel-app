@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import PhotoUploader from './PhotoUploader'
 import SignedImage from './SignedImage'
@@ -14,6 +15,7 @@ export type JournalEntrySavePayload = {
 
 type Props = {
   isOpen: boolean
+  mode: 'create' | 'edit'
   initialData?: {
     entry_date: string
     title: string
@@ -28,7 +30,8 @@ type Props = {
   onSave: (payload: JournalEntrySavePayload) => void
 }
 
-function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: Props) {
+function JournalEntryModal({ isOpen, mode, initialData, isSaving, onClose, onSave }: Props) {
+  const { t } = useTranslation(['entries', 'common'])
   const formId = useId()
   const [entryDate, setEntryDate] = useState(initialData?.entry_date ?? '')
   const [title, setTitle] = useState(initialData?.title ?? '')
@@ -45,7 +48,6 @@ function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: P
     () => new Set(initialData?.place_photo_ids ?? placePhotos.map((p) => p.id)),
   )
 
-  const isEdit = initialData !== undefined
   const placeId = initialData?.place_id ?? null
 
   function removeExistingPhoto(photo: JournalEntryPhoto) {
@@ -94,7 +96,7 @@ function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: P
             disabled={isSaving}
             className="rounded-md px-4 py-2 text-slate-700 transition-colors hover:bg-slate-100"
           >
-            Abbrechen
+            {t('common:action.cancel')}
           </button>
           <button
             type="submit"
@@ -102,18 +104,18 @@ function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: P
             disabled={isSaving}
             className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:bg-slate-400"
           >
-            {isSaving ? 'Speichert...' : 'Speichern'}
+            {isSaving ? t('common:action.processing') : t('common:action.save')}
           </button>
         </div>
       }
     >
       <h2 className="mb-4 text-xl font-bold text-slate-800">
-        {isEdit ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
+        {mode === 'edit' ? t('form.editTitle') : t('form.createTitle')}
       </h2>
       <form id={formId} onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="entry-date" className="mb-1 block text-sm font-medium text-slate-700">
-            Datum
+            {t('form.date')}
           </label>
           <input
             id="entry-date"
@@ -125,7 +127,7 @@ function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: P
         </div>
         <div>
           <label htmlFor="entry-title" className="mb-1 block text-sm font-medium text-slate-700">
-            Titel
+            {t('form.title')}
           </label>
           <input
             id="entry-title"
@@ -137,7 +139,7 @@ function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: P
         </div>
         <div>
           <label htmlFor="entry-body" className="mb-1 block text-sm font-medium text-slate-700">
-            Text
+            {t('form.body')}
           </label>
           <textarea
             id="entry-body"
@@ -150,10 +152,10 @@ function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: P
 
         {placePhotos.length > 0 && (
           <div>
-            <span className="mb-1 block text-sm font-medium text-slate-700">Fotos vom Ort</span>
-            <p className="mb-2 text-xs text-slate-500">
-              Tippe an, um auszuwählen, welche im Tagebuch erscheinen.
-            </p>
+            <span className="mb-1 block text-sm font-medium text-slate-700">
+              {t('form.placePhotos')}
+            </span>
+            <p className="mb-2 text-xs text-slate-500">{t('form.placePhotosHint')}</p>
             <div className="grid grid-cols-3 gap-2">
               {placePhotos.map((photo) => {
                 const isSelected = selectedPlaceIds.has(photo.id)
@@ -184,7 +186,9 @@ function JournalEntryModal({ isOpen, initialData, isSaving, onClose, onSave }: P
         )}
 
         <div>
-          <span className="mb-1 block text-sm font-medium text-slate-700">Eigene Fotos</span>
+          <span className="mb-1 block text-sm font-medium text-slate-700">
+            {t('form.ownPhotos')}
+          </span>
           <PhotoUploader
             newPhotos={newPhotos}
             existingPhotos={existingPhotos}

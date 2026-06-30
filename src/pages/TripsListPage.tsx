@@ -7,11 +7,12 @@ import QueryBoundary from '../components/QueryBoundary'
 import ListSkeleton from '../components/ListSkeleton'
 import EmptyState from '../components/EmptyState'
 import { useCreateTrip, useTrips } from '../hooks/useTrips'
-import { formatDateRange } from '../lib/dateFormat'
+import { useFormatDate } from '../hooks/useFormatDate'
 import type { TripInput } from '../types/trip'
 
 function TripsListPage() {
   const { t } = useTranslation('trips')
+  const { formatDateRange } = useFormatDate()
   const { data: trips = [], isLoading, isError, error, refetch } = useTrips()
   const createTrip = useCreateTrip()
   const [isCreateOpen, setIsCreateOpen] = useState(false)

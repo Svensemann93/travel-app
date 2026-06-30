@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import SignedImage from './SignedImage'
-import { formatDate } from '../lib/dateFormat'
+import { useFormatDate } from '../hooks/useFormatDate'
 import { visiblePlacePhotos } from '../lib/journalPhotos'
 import type { JournalEntryWithPlace } from '../types/journal'
 
@@ -12,6 +12,7 @@ type Props = {
 
 function JournalEntryListItem({ entry, onEdit, onDelete }: Props) {
   const { t } = useTranslation(['entries', 'common'])
+  const { formatDate } = useFormatDate()
   const placePhotos = visiblePlacePhotos(entry)
   const hasPhotos = placePhotos.length > 0 || entry.photos.length > 0
   const photoAlt = entry.title ? t('photoAlt', { title: entry.title }) : t('photoAltFallback')

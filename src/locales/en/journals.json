@@ -10,8 +10,15 @@
   "cover": {
     "change": "Change cover image",
     "adjust": "Adjust crop",
-    "choose": "+ Choose cover image"
+    "choose": "+ Choose cover image",
+    "alt": "Cover image"
   },
   "deleteTitle": "Delete journal",
-  "deleteMessage": "Do you really want to delete \"{{title}}\"? All entries will be lost."
+  "deleteMessage": "Do you really want to delete \"{{title}}\"? All entries will be lost.",
+  "form": {
+    "createTitle": "New journal",
+    "editTitle": "Edit journal",
+    "title": "Title",
+    "description": "Description"
+  }
 }
