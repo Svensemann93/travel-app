@@ -8,9 +8,28 @@
   "back": "Zurück zu meinen Trips",
   "notFound": "Trip nicht gefunden",
   "createJournal": "Tagebuch erstellen",
+  "remove": "Entfernen",
   "noPlaces": "Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und wähle diesen Trip aus, um Orte hinzuzufügen.",
   "placesHeading": "Orte",
   "dragToSort": "(ziehen zum Sortieren)",
   "deleteTitle": "Trip löschen",
-  "deleteMessage": "Möchtest du \"{{name}}\" wirklich löschen? Die einzelnen Orte bleiben erhalten, nur der Trip wird entfernt."
+  "deleteMessage": "Möchtest du \"{{name}}\" wirklich löschen? Die einzelnen Orte bleiben erhalten, nur der Trip wird entfernt.",
+  "form": {
+    "createTitle": "Neuen Trip anlegen",
+    "editTitle": "Trip bearbeiten",
+    "name": "Name",
+    "description": "Beschreibung",
+    "from": "Von",
+    "to": "Bis",
+    "endBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen.",
+    "unknownError": "Unbekannter Fehler"
+  },
+  "placeForm": {
+    "subtitle": "Details für diesen Ort im Trip",
+    "plannedDate": "Geplantes Datum",
+    "tripRange": "Trip-Zeitraum: {{range}}",
+    "notes": "Notizen",
+    "notesPlaceholder": "Notizen für deinen Besuch",
+    "counter": "{{count}} / {{max}}"
+  }
 }

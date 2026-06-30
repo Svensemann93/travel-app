@@ -8,9 +8,28 @@
   "back": "Back to my trips",
   "notFound": "Trip not found",
   "createJournal": "Create journal",
+  "remove": "Remove",
   "noPlaces": "No places in this trip yet. Click a marker on the map and choose this trip to add places.",
   "placesHeading": "Places",
   "dragToSort": "(drag to reorder)",
   "deleteTitle": "Delete trip",
-  "deleteMessage": "Do you really want to delete \"{{name}}\"? The individual places are kept; only the trip is removed."
+  "deleteMessage": "Do you really want to delete \"{{name}}\"? The individual places are kept; only the trip is removed.",
+  "form": {
+    "createTitle": "Create new trip",
+    "editTitle": "Edit trip",
+    "name": "Name",
+    "description": "Description",
+    "from": "From",
+    "to": "To",
+    "endBeforeStart": "The end date can't be before the start date.",
+    "unknownError": "Unknown error"
+  },
+  "placeForm": {
+    "subtitle": "Details for this place in the trip",
+    "plannedDate": "Planned date",
+    "tripRange": "Trip period: {{range}}",
+    "notes": "Notes",
+    "notesPlaceholder": "Notes for your visit",
+    "counter": "{{count}} / {{max}}"
+  }
 }

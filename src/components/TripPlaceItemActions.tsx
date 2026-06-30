@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 type Props = {
   onEdit?: () => void
   onRemove?: () => void
@@ -6,12 +8,13 @@ type Props = {
 }
 
 function TripPlaceItemActions({ onEdit, onRemove, isRemoving, className = '' }: Props) {
+  const { t } = useTranslation(['trips', 'common'])
   if (!onEdit && !onRemove) return null
   return (
     <div className={className}>
       {onEdit && (
         <button type="button" onClick={onEdit} className="text-sm text-blue-600 hover:underline">
-          Bearbeiten
+          {t('common:action.edit')}
         </button>
       )}
       {onRemove && (
@@ -21,7 +24,7 @@ function TripPlaceItemActions({ onEdit, onRemove, isRemoving, className = '' }: 
           disabled={isRemoving}
           className="text-sm text-red-600 hover:underline disabled:opacity-50"
         >
-          {isRemoving ? '…' : 'Entfernen'}
+          {isRemoving ? '…' : t('remove')}
         </button>
       )}
     </div>
