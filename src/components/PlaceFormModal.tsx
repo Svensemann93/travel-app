@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import PlaceFormFields from './PlaceFormFields'
 import { usePlaceForm } from '../hooks/usePlaceForm'
@@ -23,6 +24,7 @@ function PlaceFormModal({
   onSave,
   onReposition,
 }: Props) {
+  const { t } = useTranslation(['places', 'common'])
   const formId = useId()
   const form = usePlaceForm(initialData)
   const [errorMessage, setErrorMessage] = useState('')
@@ -38,7 +40,7 @@ function PlaceFormModal({
       await onSave(form.getValues())
       onClose()
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Unbekannter Fehler')
+      setErrorMessage(error instanceof Error ? error.message : t('form.unknownError'))
     } finally {
       setIsSaving(false)
     }
@@ -58,7 +60,7 @@ function PlaceFormModal({
                 disabled={isSaving}
                 className="rounded-md px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-100"
               >
-                Standort verschieben
+                {t('form.reposition')}
               </button>
             ) : null}
           </div>
@@ -69,7 +71,7 @@ function PlaceFormModal({
               disabled={isSaving}
               className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
             >
-              Abbrechen
+              {t('common:action.cancel')}
             </button>
             <button
               type="submit"
@@ -77,18 +79,18 @@ function PlaceFormModal({
               disabled={isSaving}
               className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400"
             >
-              {isSaving ? 'Speichert...' : 'Speichern'}
+              {isSaving ? t('common:action.processing') : t('common:action.save')}
             </button>
           </div>
         </div>
       }
     >
       <h2 className="text-xl font-bold text-slate-800 mb-4">
-        {isEditMode ? 'Ort bearbeiten' : 'Neuen Ort hinzufügen'}
+        {isEditMode ? t('form.editTitle') : t('form.createTitle')}
       </h2>
 
       <p className="text-sm text-slate-500 mb-4">
-        Position: {latitude.toFixed(5)}, {longitude.toFixed(5)}
+        {t('form.position', { lat: latitude.toFixed(5), lng: longitude.toFixed(5) })}
       </p>
 
       <form id={formId} onSubmit={handleSubmit} className="space-y-4">
