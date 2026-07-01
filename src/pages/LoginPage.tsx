@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AuthLayout from '../components/AuthLayout'
 import FormField from '../components/FormField'
 import { supabase } from '../lib/supabase'
+import { authErrorKey } from '../lib/authErrors'
 
 function LoginPage() {
+  const { t } = useTranslation('auth')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -21,7 +24,7 @@ function LoginPage() {
     setIsLoading(false)
 
     if (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(t(authErrorKey(error.message)))
       return
     }
     navigate('/')
@@ -29,15 +32,15 @@ function LoginPage() {
 
   return (
     <AuthLayout
-      title="Anmelden"
-      footerText="Noch kein Konto?"
+      title={t('login.title')}
+      footerText={t('login.footerText')}
       footerLinkTo="/register"
-      footerLinkLabel="Jetzt registrieren"
+      footerLinkLabel={t('login.footerLink')}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           id="email"
-          label="E-Mail"
+          label={t('field.email')}
           type="email"
           value={email}
           onChange={setEmail}
@@ -46,7 +49,7 @@ function LoginPage() {
         />
         <FormField
           id="password"
-          label="Passwort"
+          label={t('field.password')}
           type="password"
           value={password}
           onChange={setPassword}
@@ -63,7 +66,7 @@ function LoginPage() {
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Wird angemeldet...' : 'Anmelden'}
+          {isLoading ? t('login.submitting') : t('login.submit')}
         </button>
       </form>
     </AuthLayout>

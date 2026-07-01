@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import AuthLayout from '../components/AuthLayout'
 import FormField from '../components/FormField'
 import RegistrationSuccess from '../components/RegistrationSuccess'
 import { supabase } from '../lib/supabase'
+import { authErrorKey } from '../lib/authErrors'
 
 function RegisterPage() {
+  const { t } = useTranslation('auth')
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -29,7 +32,7 @@ function RegisterPage() {
     setIsLoading(false)
 
     if (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(t(authErrorKey(error.message)))
       return
     }
     setIsRegistered(true)
@@ -41,15 +44,15 @@ function RegisterPage() {
 
   return (
     <AuthLayout
-      title="Registrieren"
-      footerText="Bereits registriert?"
+      title={t('register.title')}
+      footerText={t('register.footerText')}
       footerLinkTo="/login"
-      footerLinkLabel="Hier anmelden"
+      footerLinkLabel={t('register.footerLink')}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           id="email"
-          label="E-Mail"
+          label={t('field.email')}
           type="email"
           value={email}
           onChange={setEmail}
@@ -58,7 +61,7 @@ function RegisterPage() {
         />
         <FormField
           id="username"
-          label="Benutzername"
+          label={t('field.username')}
           value={username}
           onChange={setUsername}
           autoComplete="username"
@@ -66,7 +69,7 @@ function RegisterPage() {
         />
         <FormField
           id="password"
-          label="Passwort"
+          label={t('field.password')}
           type="password"
           value={password}
           onChange={setPassword}
@@ -84,7 +87,7 @@ function RegisterPage() {
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Wird registriert...' : 'Registrieren'}
+          {isLoading ? t('register.submitting') : t('register.submit')}
         </button>
       </form>
     </AuthLayout>
