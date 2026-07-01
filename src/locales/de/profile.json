@@ -1,0 +1,28 @@
+{
+  "title": "Mein Profil",
+  "username": "Benutzername",
+  "email": "E-Mail",
+  "memberSince": "Mitglied seit",
+  "delete": {
+    "heading": "Account löschen",
+    "description": "Wenn du deinen Account löschst, werden alle deine Daten unwiderruflich entfernt.",
+    "button": "Account löschen",
+    "confirmTitle": "Account wirklich löschen?",
+    "confirmMessage": "Alle deine Orte und persönlichen Daten werden unwiderruflich gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "confirmButton": "Endgültig löschen",
+    "error": "Der Account konnte nicht gelöscht werden. Bitte versuche es erneut."
+  },
+  "entryPoint": {
+    "heading": "Einstiegspunkt",
+    "description": "Lege fest, wo deine Karte beim Öffnen starten soll. Ohne Einstiegspunkt startest du in der Weltansicht.",
+    "current": "Aktuell: Weltansicht",
+    "reset": "Zurücksetzen",
+    "searchPlaceholder": "Ort suchen …",
+    "search": "Suchen",
+    "searching": "Suche…",
+    "notFound": "Kein Ort gefunden.",
+    "searchFailed": "Suche fehlgeschlagen. Bitte später erneut versuchen.",
+    "saveFailed": "Speichern fehlgeschlagen.",
+    "resetFailed": "Zurücksetzen fehlgeschlagen."
+  }
+}
