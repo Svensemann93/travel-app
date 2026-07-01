@@ -16,7 +16,7 @@ type Props = {
 }
 
 function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Props) {
-  const { t } = useTranslation(['map', 'common'])
+  const { t } = useTranslation(['map', 'common', 'category'])
   const photos = (place.photos ?? []).slice().sort((a, b) => a.position - b.position)
   const websiteText = place.website_url
     ? place.website_url.replace('https://', '').replace('http://', '')
@@ -58,7 +58,7 @@ function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Prop
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category.color }} />
-              {category.label}
+              {t(`category:${category.id}`)}
             </span>
           </div>
 

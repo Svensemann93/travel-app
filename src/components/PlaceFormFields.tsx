@@ -12,7 +12,7 @@ type Props = {
 }
 
 function PlaceFormFields({ form, onError }: Props) {
-  const { t } = useTranslation('places')
+  const { t } = useTranslation(['places', 'category'])
 
   return (
     <>
@@ -69,7 +69,7 @@ function PlaceFormFields({ form, onError }: Props) {
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.9)' : cat.color }}
                 />
-                {cat.label}
+                {t(`category:${cat.id}`)}
               </button>
             )
           })}

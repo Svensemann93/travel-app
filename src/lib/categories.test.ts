@@ -6,12 +6,6 @@ describe('CATEGORIES', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('gives every category a non-empty label', () => {
-    for (const category of CATEGORIES) {
-      expect(category.label.length).toBeGreaterThan(0)
-    }
-  })
-
   it('gives every category a valid hex color', () => {
     for (const category of CATEGORIES) {
       expect(category.color).toMatch(/^#[0-9a-f]{6}$/i)
