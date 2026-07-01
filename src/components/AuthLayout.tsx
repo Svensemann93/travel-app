@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   title: string
@@ -10,6 +11,8 @@ type Props = {
 }
 
 function AuthLayout({ title, children, footerText, footerLinkTo, footerLinkLabel }: Props) {
+  const { t } = useTranslation('auth')
+
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       {/* Hero / Brand-Panel */}
@@ -24,8 +27,7 @@ function AuthLayout({ title, children, footerText, footerLinkTo, footerLinkLabel
             </span>
           </div>
           <p className="mt-2 hidden max-w-sm text-sm text-white/90 drop-shadow md:block">
-            Entdecke neue Orte, plane deine Reisen und sammle deine Lieblingsplätze - alles auf
-            einer Karte.
+            {t('hero.tagline')}
           </p>
         </div>
       </div>

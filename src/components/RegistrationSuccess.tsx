@@ -1,3 +1,4 @@
+import { useTranslation, Trans } from 'react-i18next'
 import AuthLayout from './AuthLayout'
 
 type Props = {
@@ -5,19 +6,23 @@ type Props = {
 }
 
 function RegistrationSuccess({ email }: Props) {
+  const { t } = useTranslation('auth')
+
   return (
     <AuthLayout
-      title="E-Mail bestätigen"
-      footerText="Bereits bestätigt?"
+      title={t('success.title')}
+      footerText={t('success.footerText')}
       footerLinkTo="/login"
-      footerLinkLabel="Hier anmelden"
+      footerLinkLabel={t('success.footerLink')}
     >
       <div className="text-sm text-slate-700 space-y-3">
         <p>
-          Wir haben dir einen Bestätigungs-Link an <strong>{email}</strong> gesendet.
+          <Trans i18nKey="success.sentTo" ns="auth" values={{ email }}>
+            Wir haben dir einen Bestätigungs-Link an <strong>{email}</strong> gesendet.
+          </Trans>
         </p>
-        <p>Bitte klicke auf den Link in der Mail, um deine Registrierung abzuschliessen.</p>
-        <p className="text-slate-500">Keine Mail erhalten? Prüfe deinen Spam-Ordner.</p>
+        <p>{t('success.instruction')}</p>
+        <p className="text-slate-500">{t('success.spamHint')}</p>
       </div>
     </AuthLayout>
   )

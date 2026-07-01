@@ -8,6 +8,7 @@ import deJournals from '../locales/de/journals.json'
 import deEntries from '../locales/de/entries.json'
 import deRead from '../locales/de/read.json'
 import deMap from '../locales/de/map.json'
+import deAuth from '../locales/de/auth.json'
 import enCommon from '../locales/en/common.json'
 import enTrips from '../locales/en/trips.json'
 import enPlaces from '../locales/en/places.json'
@@ -15,6 +16,7 @@ import enJournals from '../locales/en/journals.json'
 import enEntries from '../locales/en/entries.json'
 import enRead from '../locales/en/read.json'
 import enMap from '../locales/en/map.json'
+import enAuth from '../locales/en/auth.json'
 
 export const defaultNS = 'common'
 
@@ -27,6 +29,7 @@ export const resources = {
     entries: deEntries,
     read: deRead,
     map: deMap,
+    auth: deAuth,
   },
   en: {
     common: enCommon,
@@ -36,6 +39,7 @@ export const resources = {
     entries: enEntries,
     read: enRead,
     map: enMap,
+    auth: enAuth,
   },
 } as const
 
@@ -44,7 +48,7 @@ void i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'de',
+    fallbackLng: 'en',
     supportedLngs: ['de', 'en'],
     defaultNS,
     load: 'languageOnly',
