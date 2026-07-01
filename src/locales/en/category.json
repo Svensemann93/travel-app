@@ -1,0 +1,11 @@
+{
+  "restaurant": "Restaurant",
+  "cafe": "Café",
+  "bar": "Bar & nightlife",
+  "sight": "Sight",
+  "nature": "Nature & views",
+  "lodging": "Lodging",
+  "activity": "Activity",
+  "hiking": "Hiking",
+  "other": "Other"
+}

@@ -10,6 +10,7 @@ import deRead from '../locales/de/read.json'
 import deMap from '../locales/de/map.json'
 import deAuth from '../locales/de/auth.json'
 import deProfile from '../locales/de/profile.json'
+import deCategory from '../locales/de/category.json'
 import enCommon from '../locales/en/common.json'
 import enTrips from '../locales/en/trips.json'
 import enPlaces from '../locales/en/places.json'
@@ -19,6 +20,7 @@ import enRead from '../locales/en/read.json'
 import enMap from '../locales/en/map.json'
 import enAuth from '../locales/en/auth.json'
 import enProfile from '../locales/en/profile.json'
+import enCategory from '../locales/en/category.json'
 
 export const defaultNS = 'common'
 
@@ -33,6 +35,7 @@ export const resources = {
     map: deMap,
     auth: deAuth,
     profile: deProfile,
+    category: deCategory,
   },
   en: {
     common: enCommon,
@@ -44,6 +47,7 @@ export const resources = {
     map: enMap,
     auth: enAuth,
     profile: enProfile,
+    category: enCategory,
   },
 } as const
 

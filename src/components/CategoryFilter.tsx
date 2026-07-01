@@ -8,7 +8,7 @@ type Props = {
 }
 
 function CategoryFilter({ className = '' }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation(['common', 'category'])
   const { selected, isSelected, toggle, selectAll, clear, allSelected } = useCategoryFilter()
   const [open, setOpen] = useState(false)
 
@@ -83,7 +83,7 @@ function CategoryFilter({ className = '' }: Props) {
                           borderColor: cat.color,
                         }}
                       />
-                      {cat.label}
+                      {t(`category:${cat.id}`)}
                     </button>
                   )
                 })}
