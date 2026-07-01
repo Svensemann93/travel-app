@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import {
   formatDate as rawFormatDate,
+  formatDateLong as rawFormatDateLong,
   formatDateRange as rawFormatDateRange,
 } from '../lib/dateFormat'
 import { resolveLocale } from '../lib/i18nLocale'
@@ -12,6 +13,7 @@ export function useFormatDate() {
 
   return {
     formatDate: (dateString: string) => rawFormatDate(dateString, locale),
+    formatDateLong: (dateString: string) => rawFormatDateLong(dateString, locale),
     formatDateRange: (start: string | null, end: string | null) =>
       rawFormatDateRange(start, end, locale, prefixes),
   }
