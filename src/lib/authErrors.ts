@@ -3,6 +3,8 @@ type AuthErrorKey =
   | 'error.emailInUse'
   | 'error.weakPassword'
   | 'error.emailNotConfirmed'
+  | 'error.usernameTaken'
+  | 'error.tooManyRequests'
   | 'error.generic'
 
 export function authErrorKey(message: string): AuthErrorKey {
@@ -12,5 +14,8 @@ export function authErrorKey(message: string): AuthErrorKey {
     return 'error.emailInUse'
   if (normalized.includes('password') && normalized.includes('weak')) return 'error.weakPassword'
   if (normalized.includes('email not confirmed')) return 'error.emailNotConfirmed'
+  if (normalized.includes('database error saving new user')) return 'error.usernameTaken'
+  if (normalized.includes('rate limit') || normalized.includes('too many requests'))
+    return 'error.tooManyRequests'
   return 'error.generic'
 }
