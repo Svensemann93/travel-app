@@ -13,6 +13,8 @@ export function useSignedUrl(path: string): string | null {
     enabled: !!path && !alreadySigned,
     staleTime: 50 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
+    refetchInterval: 45 * 60 * 1000,
+    refetchIntervalInBackground: false,
   })
   return alreadySigned ? path : (data ?? null)
 }
