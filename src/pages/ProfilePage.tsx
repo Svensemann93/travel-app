@@ -26,7 +26,7 @@ function ProfilePage() {
     setIsDeleting(true)
     setErrorMessage('')
 
-    const { error } = await supabase.rpc('delete_own_account')
+    const { error } = await supabase.functions.invoke('delete-account')
 
     setIsDeleting(false)
 
