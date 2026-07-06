@@ -5,6 +5,10 @@
     "toMap": "Go to map"
   },
   "noFilterMatch": "No places in the selected categories.",
+  "delete": {
+    "title": "Delete place",
+    "message": "Do you really want to delete \"{{name}}\"? This cannot be undone."
+  },
   "form": {
     "createTitle": "Add new place",
     "editTitle": "Edit place",

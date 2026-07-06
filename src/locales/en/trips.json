@@ -7,6 +7,12 @@
   },
   "back": "Back to my trips",
   "notFound": "Trip not found",
+  "addToTrip": {
+    "title": "Add \"{{name}}\" to trip",
+    "loading": "Loading trips…",
+    "empty": "You haven't created any trips yet.",
+    "create": "+ Create new trip"
+  },
   "createJournal": "Create journal",
   "remove": "Remove",
   "noPlaces": "No places in this trip yet. Click a marker on the map and choose this trip to add places.",

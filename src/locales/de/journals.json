@@ -13,6 +13,17 @@
     "choose": "+ Titelbild wählen",
     "alt": "Titelbild"
   },
+  "coverEditor": {
+    "title": "Ausschnitt wählen",
+    "hint": "Tippe auf den wichtigsten Punkt im Bild – er bleibt im Titelbild sichtbar.",
+    "preview": "Vorschau Titelbild",
+    "apply": "Übernehmen"
+  },
+  "coverPicker": {
+    "title": "Titelbild wählen",
+    "empty": "Dieses Tagebuch hat noch keine Fotos, die als Titelbild dienen könnten.",
+    "remove": "Titelbild entfernen"
+  },
   "deleteTitle": "Tagebuch löschen",
   "deleteMessage": "Möchtest du \"{{title}}\" wirklich löschen? Alle Einträge gehen verloren.",
   "form": {

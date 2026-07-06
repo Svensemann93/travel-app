@@ -1,10 +1,12 @@
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import AppHeader from '../components/AppHeader'
 import JournalReadView from '../components/JournalReadView'
 import DetailStatus from '../components/DetailStatus'
 import { useJournalWithEntries } from '../hooks/useJournals'
 
 function JournalReadPage() {
+  const { t } = useTranslation('read')
   const { journalId = '' } = useParams<{ journalId: string }>()
   const { data: journal, isLoading, error, refetch } = useJournalWithEntries(journalId)
 
@@ -16,7 +18,7 @@ function JournalReadPage() {
           to={`/journal/${journalId}`}
           className="mb-4 inline-block text-sm text-slate-600 hover:text-slate-900"
         >
-          ← Zurück zur Bearbeitung
+          {t('backToEditing')}
         </Link>
 
         <DetailStatus
@@ -24,7 +26,7 @@ function JournalReadPage() {
           error={error}
           isMissing={!isLoading && !error && !journal}
           onRetry={() => void refetch()}
-          notFoundLabel="Tagebuch nicht gefunden"
+          notFoundLabel={t('notFound')}
         />
 
         {journal && <JournalReadView journal={journal} stickyHeader />}

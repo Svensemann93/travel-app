@@ -1,5 +1,6 @@
 import { useEffect, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { useSignedUrl } from '../hooks/useSignedUrl'
 
 type Props = {
@@ -15,6 +16,7 @@ function clamp(v: number) {
 }
 
 function CoverFocusEditor({ path, focusX, focusY, onCancel, onSave }: Props) {
+  const { t } = useTranslation(['journals', 'common'])
   const src = useSignedUrl(path)
   const [focus, setFocus] = useState({ x: focusX, y: focusY })
 
@@ -43,10 +45,8 @@ function CoverFocusEditor({ path, focusX, focusY, onCancel, onSave }: Props) {
     <div className="fixed inset-0 z-[1600] flex items-end justify-center bg-black/50 sm:items-center sm:p-4">
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-t-2xl bg-white shadow-xl sm:rounded-2xl">
         <div className="shrink-0 border-b border-slate-100 p-4">
-          <h2 className="text-base font-semibold text-slate-800">Ausschnitt wählen</h2>
-          <p className="mt-1 text-xs text-slate-500">
-            Tippe auf den wichtigsten Punkt im Bild – er bleibt im Titelbild sichtbar.
-          </p>
+          <h2 className="text-base font-semibold text-slate-800">{t('coverEditor.title')}</h2>
+          <p className="mt-1 text-xs text-slate-500">{t('coverEditor.hint')}</p>
         </div>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -69,7 +69,7 @@ function CoverFocusEditor({ path, focusX, focusY, onCancel, onSave }: Props) {
           </div>
 
           <div>
-            <p className="mb-1 text-xs font-medium text-slate-500">Vorschau Titelbild</p>
+            <p className="mb-1 text-xs font-medium text-slate-500">{t('coverEditor.preview')}</p>
             <div className="h-24 w-full overflow-hidden rounded-lg bg-slate-100 sm:h-28">
               {src && (
                 <img
@@ -88,13 +88,13 @@ function CoverFocusEditor({ path, focusX, focusY, onCancel, onSave }: Props) {
             onClick={onCancel}
             className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
           >
-            Abbrechen
+            {t('common:action.cancel')}
           </button>
           <button
             onClick={() => onSave(focus.x, focus.y)}
             className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
-            Übernehmen
+            {t('coverEditor.apply')}
           </button>
         </div>
       </div>

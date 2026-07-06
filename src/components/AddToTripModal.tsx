@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import TripFormModal from './TripFormModal'
 import { useAddPlaceToTrip, useCreateTrip, useTrips } from '../hooks/useTrips'
@@ -11,6 +12,7 @@ type Props = {
 }
 
 function AddToTripModal({ place, onClose }: Props) {
+  const { t } = useTranslation(['trips', 'common'])
   const { data: trips = [], isLoading } = useTrips()
   const addPlaceToTrip = useAddPlaceToTrip()
   const createTrip = useCreateTrip()
@@ -24,7 +26,7 @@ function AddToTripModal({ place, onClose }: Props) {
       await addPlaceToTrip.mutateAsync({ tripId, placeId: place.id })
       onClose()
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Unbekannter Fehler')
+      setErrorMessage(err instanceof Error ? err.message : t('form.unknownError'))
     }
   }
 
@@ -40,13 +42,13 @@ function AddToTripModal({ place, onClose }: Props) {
     <>
       <Modal isOpen={place !== null} onClose={onClose}>
         <h2 className="text-xl font-bold text-slate-800 mb-4">
-          &quot;{place?.name}&quot; zu Trip hinzufügen
+          {t('addToTrip.title', { name: place?.name ?? '' })}
         </h2>
 
-        {isLoading && <p className="text-slate-500 text-sm">Trips werden geladen...</p>}
+        {isLoading && <p className="text-slate-500 text-sm">{t('addToTrip.loading')}</p>}
 
         {!isLoading && trips.length === 0 && (
-          <p className="text-slate-500 text-sm mb-4">Du hast noch keine Trips angelegt.</p>
+          <p className="text-slate-500 text-sm mb-4">{t('addToTrip.empty')}</p>
         )}
 
         {!isLoading && trips.length > 0 && (
@@ -72,7 +74,7 @@ function AddToTripModal({ place, onClose }: Props) {
           onClick={() => setIsCreatingTripOpen(true)}
           className="text-sm text-blue-600 hover:underline self-start mb-4"
         >
-          + Neuen Trip anlegen
+          {t('addToTrip.create')}
         </button>
 
         {errorMessage && (
@@ -86,7 +88,7 @@ function AddToTripModal({ place, onClose }: Props) {
             onClick={onClose}
             className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
           >
-            Schließen
+            {t('common:action.close')}
           </button>
         </div>
       </Modal>

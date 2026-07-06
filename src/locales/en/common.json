@@ -21,6 +21,7 @@
   },
   "state": {
     "loading": "Loading…",
+    "loadingPage": "Loading page",
     "error": "Something went wrong.",
     "retry": "Try again"
   },
@@ -36,12 +37,20 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
+    "close": "Close",
+    "reorder": "Reorder",
     "processing": "Processing…"
   },
   "photo": {
     "add": "+ Add photos",
     "constraints": "JPG, PNG, WebP or HEIC, max. {{size}} per file.",
-    "remove": "Remove photo"
+    "remove": "Remove photo",
+    "previous": "Previous image",
+    "next": "Next image"
+  },
+  "upload": {
+    "invalidType": "Only JPG, PNG, WebP or HEIC allowed.",
+    "tooLarge": "File is too large (max. {{size}})."
   },
   "date": {
     "from": "from",

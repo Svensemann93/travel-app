@@ -4,6 +4,8 @@
   "photos_one": "{{count}} Foto",
   "photos_other": "{{count}} Fotos",
   "noEntries": "Dieses Tagebuch hat noch keine Einträge.",
+  "backToEditing": "← Zurück zur Bearbeitung",
+  "notFound": "Tagebuch nicht gefunden",
   "map": "Karte",
   "showOnMap": "Auf Karte zeigen",
   "closeMap": "Karte schließen",

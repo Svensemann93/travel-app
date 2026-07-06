@@ -13,6 +13,17 @@
     "choose": "+ Choose cover image",
     "alt": "Cover image"
   },
+  "coverEditor": {
+    "title": "Choose crop",
+    "hint": "Tap the most important point in the image – it stays visible in the cover.",
+    "preview": "Cover preview",
+    "apply": "Apply"
+  },
+  "coverPicker": {
+    "title": "Choose cover image",
+    "empty": "This journal has no photos yet that could serve as a cover image.",
+    "remove": "Remove cover image"
+  },
   "deleteTitle": "Delete journal",
   "deleteMessage": "Do you really want to delete \"{{title}}\"? All entries will be lost.",
   "form": {
