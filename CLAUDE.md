@@ -18,7 +18,7 @@ Personal mobile-first travel app (learning project, not yet public). Solo develo
 - `src/lib/categories.ts` is the single source of truth for category data (CategoryId union, CATEGORIES, CATEGORY_MAP, DEFAULT_CATEGORY). Category display names come from i18n only.
 - RLS is always owner-only. Photos are referenced, never duplicated (e.g. `place_photo_ids uuid[]`: null = all, array = curated, empty = none).
 - Accent colors: teal `#39BBDE`, sun `#F4C15A`.
-- Keep files under ~100 lines where possible. No code comments.
+- Keep files under ~100 lines where possible. No code comments (SQL migrations are exempt — they document schema history).
 - `supabase/` is excluded from ESLint and Prettier.
 - Mobile-first: check the mobile view first for every UI decision. Controls placed right (thumb-friendly), dropdowns/panels open right-aligned.
 - Never use `useEffect` to sync local state from props — use the `key` prop to force remount.
@@ -47,22 +47,25 @@ Personal mobile-first travel app (learning project, not yet public). Solo develo
 - Plan before execution: for any non-trivial task, state a short plan first.
 - One task at a time, complete it fully before proposing the next.
 
-## Current backlog (priority order)
+## Security hardening (done)
 
-Security (from completed audit; #1 profiles RLS and #4 security headers are DONE):
+The full launch security audit is complete. For context when touching these areas:
 
-1. **Share-link hard expiry**: `get_shared_journal` extends `expires_at` by 30 days on every access — links never expire if accessed regularly. Add a hard maximum from `created_at` (e.g. 180 days) that is never extended. Migration.
-2. **Storage cleanup on account deletion**: `delete_own_account` cascades DB rows but leaves Storage objects orphaned in `place-photos`. Delete the user's folder (`(storage.foldername(name))[1] = auth.uid()::text`) inside the function. GDPR-relevant. Migration.
-3. **Signed URL expiry during long sessions**: `useSignedUrl` has TTL 60 min / staleTime 50 min but only refetches on mount/focus. Add `refetchInterval: 45 * 60 * 1000`.
-4. **Cascade deletes bypass photo cleanup**: client-side storage deletion only runs on explicit user actions. Consider a `pending_storage_deletions` table filled by trigger + scheduled cleanup.
+- Profiles RLS is owner-only (`profiles_select_own`, `(select auth.uid()) = id`)
+- HTTP security headers set in `vercel.json` (CSP, HSTS, X-Frame-Options, etc.)
+- Share links have a hard 180-day cap from `created_at` that is never extended
+- Account deletion runs through the `delete-account` edge function, which removes the user's storage objects before deleting the user
+- Signed URLs refetch every 45 min (`useSignedUrl`) to avoid expiry on long sessions
+- Cascade deletes queue orphaned photo paths (`pending_storage_deletions` trigger) drained daily by the `process-storage-deletions` edge function via pg_cron + pg_net; service-role key lives in Supabase Vault
 
-Other open items:
+## Backlog (priority order)
 
 - Profile language sync PR (server-side language preference): open design decision on conflict resolution between profile value and localStorage before merging
 - `index.html` has `lang="en"` — set `document.documentElement.lang` via `i18n.on('languageChanged')`
 - Replace stray `console.error` calls with Sentry `captureException` where errors would otherwise be lost (e.g. `AuthContext.loadProfile`)
-- Phase 3: category filter on map and list
-- Phase 4: AI-generated journal text via Supabase Edge Function
+- Category filter on map and list (pattern in `categories.ts` ready)
+- Route-level code splitting (bundle size optimization)
+- AI-generated journal text via Supabase Edge Function
 
 ## ⚠ Pre-launch checklist (before any public release)
 
