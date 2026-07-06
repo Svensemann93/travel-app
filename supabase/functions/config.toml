@@ -1,0 +1,5 @@
+[functions.process-storage-deletions]
+enabled = true
+verify_jwt = false
+import_map = "./functions/process-storage-deletions/deno.json"
+entrypoint = "./functions/process-storage-deletions/index.ts"
