@@ -1,3 +1,5 @@
+import i18n from './i18n'
+
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']
 
 export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
@@ -5,10 +7,10 @@ export const MAX_FILE_SIZE_LABEL = '10 MB'
 
 export function validateImageFile(file: File): string | null {
   if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-    return 'Nur JPG, PNG, WebP oder HEIC erlaubt.'
+    return i18n.t('common:upload.invalidType')
   }
   if (file.size > MAX_FILE_SIZE_BYTES) {
-    return `Datei ist zu groß (max. ${MAX_FILE_SIZE_LABEL}).`
+    return i18n.t('common:upload.tooLarge', { size: MAX_FILE_SIZE_LABEL })
   }
   return null
 }
@@ -39,7 +41,7 @@ export async function resizeImage(file: File, options: ResizeOptions): Promise<B
   const ctx = canvas.getContext('2d')
   if (!ctx) {
     bitmap.close()
-    throw new Error('Canvas-Kontext nicht verfügbar')
+    throw new Error('Canvas context unavailable')
   }
 
   ctx.drawImage(bitmap, 0, 0, width, height)
@@ -49,7 +51,7 @@ export async function resizeImage(file: File, options: ResizeOptions): Promise<B
     canvas.toBlob(
       (blob) => {
         if (blob) resolve(blob)
-        else reject(new Error('Bildverarbeitung fehlgeschlagen'))
+        else reject(new Error('Image processing failed'))
       },
       'image/jpeg',
       options.quality,

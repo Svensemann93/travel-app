@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { LatLng } from 'leaflet'
 import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
 import { useEntryPoint } from '../hooks/useEntryPoint'
@@ -27,6 +28,7 @@ import type { Place } from '../types/place'
 import PopupAutoCenter from '../components/PopupAutoCenter'
 
 function MapPage() {
+  const { t } = useTranslation(['places', 'common'])
   const { data: places = [], isLoading, isError, refetch } = usePlaces()
   const { data: entryPoint, isLoading: isEntryLoading } = useEntryPoint()
   const createPlace = useCreatePlace()
@@ -169,9 +171,9 @@ function MapPage() {
 
       <ConfirmDialog
         isOpen={deletingPlace !== null}
-        title="Ort löschen"
-        message={`Möchtest du "${deletingPlace?.name}" wirklich löschen? Das kann nicht rückgängig gemacht werden.`}
-        confirmLabel="Löschen"
+        title={t('delete.title')}
+        message={t('delete.message', { name: deletingPlace?.name ?? '' })}
+        confirmLabel={t('common:action.delete')}
         isProcessing={deletePlace.isPending}
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeletingPlace(null)}

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 type Props = {
   isLoading: boolean
   error: Error | null
@@ -5,6 +7,8 @@ type Props = {
 }
 
 function TripDetailStatus({ isLoading, error, isMissing }: Props) {
+  const { t } = useTranslation('trips')
+
   if (isLoading) {
     return (
       <div className="animate-pulse rounded-lg bg-white p-6 shadow-sm">
@@ -23,7 +27,7 @@ function TripDetailStatus({ isLoading, error, isMissing }: Props) {
   if (isMissing) {
     return (
       <div className="rounded-lg bg-white p-8 text-center shadow-sm">
-        <p className="text-slate-600">Trip nicht gefunden.</p>
+        <p className="text-slate-600">{t('notFound')}</p>
       </div>
     )
   }

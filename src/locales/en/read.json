@@ -4,6 +4,8 @@
   "photos_one": "{{count}} photo",
   "photos_other": "{{count}} photos",
   "noEntries": "This journal has no entries yet.",
+  "backToEditing": "← Back to editing",
+  "notFound": "Journal not found",
   "map": "Map",
   "showOnMap": "Show on map",
   "closeMap": "Close map",

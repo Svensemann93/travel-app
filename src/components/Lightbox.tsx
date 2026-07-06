@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import SignedImage from './SignedImage'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 
@@ -12,6 +13,7 @@ type Props = {
 }
 
 function Lightbox({ photos, initialIndex, onClose }: Props) {
+  const { t } = useTranslation('common')
   const [index, setIndex] = useState(initialIndex)
   const containerRef = useFocusTrap<HTMLDivElement>(true)
 
@@ -61,7 +63,7 @@ function Lightbox({ photos, initialIndex, onClose }: Props) {
           onClose()
         }}
         className="absolute top-4 right-4 text-white text-3xl hover:text-slate-300"
-        aria-label="Schließen"
+        aria-label={t('action.close')}
       >
         ✕
       </button>
@@ -73,7 +75,7 @@ function Lightbox({ photos, initialIndex, onClose }: Props) {
               setIndex((i) => (i - 1 + photos.length) % photos.length)
             }}
             className="absolute left-4 text-white text-4xl hover:text-slate-300 px-3"
-            aria-label="Vorheriges Bild"
+            aria-label={t('photo.previous')}
           >
             ‹
           </button>
@@ -83,7 +85,7 @@ function Lightbox({ photos, initialIndex, onClose }: Props) {
               setIndex((i) => (i + 1) % photos.length)
             }}
             className="absolute right-4 text-white text-4xl hover:text-slate-300 px-3"
-            aria-label="Nächstes Bild"
+            aria-label={t('photo.next')}
           >
             ›
           </button>

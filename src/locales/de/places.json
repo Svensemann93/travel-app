@@ -5,6 +5,10 @@
     "toMap": "Zur Karte"
   },
   "noFilterMatch": "Keine Orte in den gewählten Kategorien.",
+  "delete": {
+    "title": "Ort löschen",
+    "message": "Möchtest du \"{{name}}\" wirklich löschen? Das kann nicht rückgängig gemacht werden."
+  },
   "form": {
     "createTitle": "Neuen Ort hinzufügen",
     "editTitle": "Ort bearbeiten",

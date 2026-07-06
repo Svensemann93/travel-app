@@ -14,7 +14,7 @@ function DetailStatus({
   isLoading,
   error,
   isMissing,
-  notFoundLabel = 'Nicht gefunden.',
+  notFoundLabel = 'Not found.',
   onRetry,
 }: Props) {
   if (isLoading) return <LoadingState />

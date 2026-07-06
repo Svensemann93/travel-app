@@ -7,6 +7,12 @@
   },
   "back": "Zurück zu meinen Trips",
   "notFound": "Trip nicht gefunden",
+  "addToTrip": {
+    "title": "\"{{name}}\" zu Trip hinzufügen",
+    "loading": "Trips werden geladen…",
+    "empty": "Du hast noch keine Trips angelegt.",
+    "create": "+ Neuen Trip anlegen"
+  },
   "createJournal": "Tagebuch erstellen",
   "remove": "Entfernen",
   "noPlaces": "Noch keine Orte in diesem Trip. Klicke auf einen Marker auf der Karte und wähle diesen Trip aus, um Orte hinzuzufügen.",
