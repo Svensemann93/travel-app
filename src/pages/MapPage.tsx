@@ -26,6 +26,9 @@ import MapErrorOverlay from '../components/MapErrorOverlay'
 import LocateControl from '../components/LocateControl'
 import type { Place } from '../types/place'
 import PopupAutoCenter from '../components/PopupAutoCenter'
+import { usePublicPlaces } from '../hooks/usePublicPlaces'
+import PublicPlaceMarkers from '../components/PublicPlaceMarkers'
+import PublicPlacesToggle from '../components/PublicPlacesToggle'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -37,9 +40,14 @@ function MapPage() {
   const reposition = useReposition()
   const focusedPlace = useFocusedPlace(places)
   const { selected } = useCategoryFilter()
+  const [showPublic, setShowPublic] = useState(true)
+  const { data: publicPlaces = [] } = usePublicPlaces(showPublic)
 
   const visiblePlaces = useMemo(() => filterPlacesByCategory(places, selected), [places, selected])
-
+  const visiblePublicPlaces = useMemo(
+    () => filterPlacesByCategory(publicPlaces, selected),
+    [publicPlaces, selected],
+  )
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
@@ -65,6 +73,7 @@ function MapPage() {
         rating: data.rating,
         price_level: data.price_level,
         website_url: data.website_url || null,
+        is_public: data.isPublic,
         latitude: clickedPosition.lat,
         longitude: clickedPosition.lng,
       },
@@ -83,6 +92,7 @@ function MapPage() {
         rating: data.rating,
         price_level: data.price_level,
         website_url: data.website_url || null,
+        is_public: data.isPublic,
       },
       photosToAdd: data.photos,
       photoIdsToDelete: data.photosToDelete,
@@ -123,6 +133,7 @@ function MapPage() {
               onDelete={(place) => setDeletingPlace(place)}
               onAddToTrip={(place) => setAddingToTripPlace(place)}
             />
+            {showPublic && <PublicPlaceMarkers places={visiblePublicPlaces} />}
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace} />
             <PopupAutoCenter />
@@ -137,7 +148,13 @@ function MapPage() {
         {!isEntryLoading && places.length > 0 && (
           <CategoryFilter className="absolute right-4 top-4 z-[1000] hidden md:block" />
         )}
-
+        {!isEntryLoading && (
+          <PublicPlacesToggle
+            enabled={showPublic}
+            onToggle={() => setShowPublic((v) => !v)}
+            className="absolute left-4 top-4 z-[1000]"
+          />
+        )}
         {reposition.place && (
           <RepositionBar
             placeName={reposition.place.name}

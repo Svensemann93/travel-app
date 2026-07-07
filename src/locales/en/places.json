@@ -21,6 +21,8 @@
     "website": "Website",
     "photos": "Photos",
     "reposition": "Move location",
+    "public": "Share publicly",
+    "publicHint": "Other signed-in users will see this place on their map. Photos stay private for now.",
     "unknownError": "Unknown error"
   }
 }

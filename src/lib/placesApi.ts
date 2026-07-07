@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 import { uploadPhoto, deletePhotos as deletePhotoFiles } from './photoStorage'
-import type { Place, PlacePhoto } from '../types/place'
+import type { Place, PlacePhoto, PublicPlace } from '../types/place'
 import type { PlaceCreateInput, PlaceUpdateInput } from '../types/place'
 
 type PlaceRow = Omit<Place, 'photos'>
@@ -19,6 +19,16 @@ export async function fetchPlacesForUser(signal?: AbortSignal): Promise<Place[]>
     query = query.abortSignal(signal)
   }
 
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+  return data ?? []
+}
+
+export async function fetchPublicPlaces(signal?: AbortSignal): Promise<PublicPlace[]> {
+  let query = supabase.rpc('get_public_places')
+  if (signal) {
+    query = query.abortSignal(signal)
+  }
   const { data, error } = await query
   if (error) throw new Error(error.message)
   return data ?? []

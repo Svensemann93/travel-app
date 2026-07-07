@@ -4,6 +4,10 @@
     "notFound": "Kein Ort gefunden."
   },
   "addToTrip": "+ Zu Trip",
+  "public": {
+    "toggle": "Öffentliche Orte",
+    "sharedBy": "geteilt von @{{username}}"
+  },
   "empty": {
     "title": "Willkommen!",
     "message": "Klicke irgendwo auf die Karte, um deinen ersten Ort hinzuzufügen."
