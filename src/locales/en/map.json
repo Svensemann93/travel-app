@@ -4,6 +4,10 @@
     "notFound": "No location found."
   },
   "addToTrip": "+ To trip",
+  "public": {
+    "toggle": "Public places",
+    "sharedBy": "shared by @{{username}}"
+  },
   "empty": {
     "title": "Welcome!",
     "message": "Click anywhere on the map to add your first place."

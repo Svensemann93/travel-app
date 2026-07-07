@@ -20,6 +20,7 @@ export function makePlace(overrides: Partial<Place> = {}): Place {
     rating: null,
     price_level: null,
     website_url: null,
+    is_public: false,
     created_at: '2025-01-15T00:00:00.000Z',
     photos: [],
     ...overrides,

@@ -10,6 +10,7 @@ export type PlaceFormValues = {
   rating: number | null
   price_level: number | null
   website_url: string
+  isPublic: boolean
   photos: File[]
   photosToDelete: string[]
 }
@@ -31,6 +32,8 @@ export type PlaceFormApi = {
   setPriceLevel: (value: number | null) => void
   websiteUrl: string
   setWebsiteUrl: (value: string) => void
+  isPublic: boolean
+  setIsPublic: (value: boolean) => void
   photos: File[]
   existingPhotos: PlacePhoto[]
   addPhotos: (files: File[]) => void
@@ -47,6 +50,7 @@ export function placeToFormInitial(place: Place): PlaceFormInitial {
     rating: place.rating,
     price_level: place.price_level,
     website_url: place.website_url ?? '',
+    isPublic: place.is_public,
     existingPhotos: place.photos ?? [],
   }
 }
@@ -58,6 +62,7 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
   const [rating, setRating] = useState<number | null>(initialData?.rating ?? null)
   const [priceLevel, setPriceLevel] = useState<number | null>(initialData?.price_level ?? null)
   const [websiteUrl, setWebsiteUrl] = useState(initialData?.website_url ?? '')
+  const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false)
   const [photos, setPhotos] = useState<File[]>([])
   const [existingPhotos, setExistingPhotos] = useState<PlacePhoto[]>(
     initialData?.existingPhotos ?? [],
@@ -85,6 +90,7 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
       rating: rating === 0 ? null : rating,
       price_level: priceLevel === 0 ? null : priceLevel,
       website_url: websiteUrl,
+      isPublic,
       photos,
       photosToDelete,
     }
@@ -103,6 +109,8 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
     setPriceLevel,
     websiteUrl,
     setWebsiteUrl,
+    isPublic,
+    setIsPublic,
     photos,
     existingPhotos,
     addPhotos,

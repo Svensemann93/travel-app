@@ -21,6 +21,8 @@
     "website": "Website",
     "photos": "Fotos",
     "reposition": "Standort verschieben",
+    "public": "Öffentlich teilen",
+    "publicHint": "Andere angemeldete Nutzer sehen diesen Ort auf ihrer Karte. Fotos bleiben vorerst privat.",
     "unknownError": "Unbekannter Fehler"
   }
 }

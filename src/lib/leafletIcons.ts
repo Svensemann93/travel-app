@@ -60,3 +60,27 @@ export function getCategoryMarkerIcon(color: string): DivIcon {
   categoryIconCache.set(color, icon)
   return icon
 }
+
+const publicIconCache = new Map<string, DivIcon>()
+
+export function getPublicMarkerIcon(color: string): DivIcon {
+  const cached = publicIconCache.get(color)
+  if (cached) return cached
+
+  const html = `
+    <svg viewBox="0 0 25 41" width="25" height="41" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.5 1 C 6.1 1, 1 6.1, 1 12.5 C 1 21.5, 12.5 39.5, 12.5 39.5 C 12.5 39.5, 24 21.5, 24 12.5 C 24 6.1, 18.9 1, 12.5 1 Z" fill="white" stroke="${color}" stroke-width="2.5"/>
+      <circle cx="12.5" cy="12.5" r="4.5" fill="${color}"/>
+    </svg>
+  `
+
+  const icon = new DivIcon({
+    html,
+    className: '',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+  })
+  publicIconCache.set(color, icon)
+  return icon
+}
