@@ -29,6 +29,7 @@ import PopupAutoCenter from '../components/PopupAutoCenter'
 import { usePublicPlaces } from '../hooks/usePublicPlaces'
 import PublicPlaceMarkers from '../components/PublicPlaceMarkers'
 import PublicPlacesToggle from '../components/PublicPlacesToggle'
+import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -52,6 +53,12 @@ function MapPage() {
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
   const [addingToTripPlace, setAddingToTripPlace] = useState<Place | null>(null)
+  const [welcomeDismissed, setWelcomeDismissed] = useState(isWelcomeDismissed)
+
+  function handleDismissWelcome() {
+    dismissWelcome()
+    setWelcomeDismissed(true)
+  }
 
   function handleMapClick(latlng: LatLng) {
     setClickedPosition(latlng)
@@ -144,7 +151,9 @@ function MapPage() {
         {!isEntryLoading && !isLoading && isError && (
           <MapErrorOverlay onRetry={() => void refetch()} />
         )}
-        {!isEntryLoading && !isLoading && !isError && places.length === 0 && <MapEmptyState />}
+        {!isEntryLoading && !isLoading && !isError && places.length === 0 && !welcomeDismissed && (
+          <MapEmptyState onClose={handleDismissWelcome} />
+        )}{' '}
         {!isEntryLoading && (places.length > 0 || (showPublic && publicPlaces.length > 0)) && (
           <CategoryFilter className="absolute right-4 top-4 z-[1000] hidden md:block" />
         )}
