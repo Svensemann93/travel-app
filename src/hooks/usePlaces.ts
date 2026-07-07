@@ -5,12 +5,13 @@ import {
   fetchPlacesForUser,
   insertPhotoRows,
   insertPlaceRow,
-  removePhotoStorageOnly,
   removePhotos,
+  removePhotoStorageOnly,
+  updatePhotoVisibility,
   updatePlaceLocation,
   updatePlaceRow,
 } from '../lib/placesApi'
-import type { Place, PlaceCreateInput, PlaceUpdateInput } from '../types/place'
+import type { NewPhoto, Place, PlaceCreateInput, PlaceUpdateInput } from '../types/place'
 
 export const placesKeys = {
   all: ['places'] as const,
@@ -39,7 +40,7 @@ export function useCreatePlace() {
       photos,
     }: {
       data: PlaceCreateInput
-      photos: File[]
+      photos: NewPhoto[]
     }): Promise<Place> => {
       if (!userId) throw new Error('Not authenticated')
       const row = await insertPlaceRow(userId, data)
@@ -69,11 +70,13 @@ export function useUpdatePlace() {
       data,
       photosToAdd,
       photoIdsToDelete,
+      photoVisibility,
     }: {
       id: string
       data: PlaceUpdateInput
-      photosToAdd: File[]
+      photosToAdd: NewPhoto[]
       photoIdsToDelete: string[]
+      photoVisibility: Record<string, boolean>
     }): Promise<Place> => {
       if (!userId) throw new Error('Not authenticated')
 
@@ -84,11 +87,19 @@ export function useUpdatePlace() {
 
       const row = await updatePlaceRow(id, data)
 
-      let remainingPhotos = existing.photos
+      const visibilityChanges = photoVisibility ?? {}
+      if (Object.keys(visibilityChanges).length > 0) {
+        await updatePhotoVisibility(visibilityChanges)
+      }
+
+      let remainingPhotos = existing.photos.map((p) =>
+        visibilityChanges[p.id] !== undefined ? { ...p, is_public: visibilityChanges[p.id] } : p,
+      )
+
       if (photoIdsToDelete.length > 0) {
-        const toDelete = existing.photos.filter((p) => photoIdsToDelete.includes(p.id))
+        const toDelete = remainingPhotos.filter((p) => photoIdsToDelete.includes(p.id))
         await removePhotos(toDelete)
-        remainingPhotos = existing.photos.filter((p) => !photoIdsToDelete.includes(p.id))
+        remainingPhotos = remainingPhotos.filter((p) => !photoIdsToDelete.includes(p.id))
       }
 
       const addedPhotos = await insertPhotoRows(userId, id, photosToAdd, remainingPhotos.length)

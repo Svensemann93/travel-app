@@ -74,6 +74,7 @@ export function toJournalWithEntries(data: SharedJournal): JournalWithEntries {
               url: p.url,
               thumb_url: p.thumb_url,
               position: pi,
+              is_public: false,
               created_at: '',
             })),
           }

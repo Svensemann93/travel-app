@@ -7,7 +7,13 @@ export type PlacePhoto = {
   url: string
   thumb_url: string | null
   position: number
+  is_public: boolean
   created_at: string
+}
+
+export type NewPhoto = {
+  file: File
+  isPublic: boolean
 }
 
 export type Place = {
@@ -26,6 +32,12 @@ export type Place = {
   photos: PlacePhoto[]
 }
 
+export type PublicPlacePhoto = {
+  id: string
+  url: string
+  thumb_url: string | null
+}
+
 export type PublicPlace = {
   id: string
   name: string
@@ -37,6 +49,7 @@ export type PublicPlace = {
   price_level: number | null
   website_url: string | null
   username: string | null
+  photos: PublicPlacePhoto[]
 }
 
 export type PlaceUpdateInput = {
