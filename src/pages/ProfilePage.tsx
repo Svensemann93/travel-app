@@ -10,6 +10,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import EntryPointSetting from '../components/EntryPointSetting'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import ErrorState from '../components/ErrorState'
+import { resetWelcome } from '../lib/welcomeBanner'
 
 function ProfilePage() {
   const { t } = useTranslation(['profile', 'common'])
@@ -35,6 +36,8 @@ function ProfilePage() {
       return
     }
 
+    await supabase.auth.signOut()
+    resetWelcome()
     await supabase.auth.signOut()
     queryClient.clear()
     navigate('/login')

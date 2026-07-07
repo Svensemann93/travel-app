@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import MobileMenu from './MobileMenu'
 import CategoryFilter from './CategoryFilter'
+import { resetWelcome } from '../lib/welcomeBanner'
 
 const NAV_ITEMS = [
   { to: '/', labelKey: 'nav.map', match: (path: string) => path === '/' },
@@ -36,6 +37,8 @@ function AppHeader({ sticky = false }: Props) {
   }))
 
   async function handleLogout() {
+    resetWelcome()
+    await supabase.auth.signOut()
     setIsMobileOpen(false)
     await supabase.auth.signOut()
     queryClient.clear()
