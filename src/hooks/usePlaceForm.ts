@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { DEFAULT_CATEGORY } from '../lib/categories'
 import type { CategoryId } from '../lib/categories'
-import type { Place, PlacePhoto } from '../types/place'
+import type { NewPhoto, Place, PlacePhoto } from '../types/place'
 
 export type PlaceFormValues = {
   name: string
@@ -11,11 +11,15 @@ export type PlaceFormValues = {
   price_level: number | null
   website_url: string
   isPublic: boolean
-  photos: File[]
+  newPhotos: NewPhoto[]
   photosToDelete: string[]
+  photoVisibility: Record<string, boolean>
 }
 
-export type PlaceFormInitial = Omit<PlaceFormValues, 'photos' | 'photosToDelete'> & {
+export type PlaceFormInitial = Omit<
+  PlaceFormValues,
+  'newPhotos' | 'photosToDelete' | 'photoVisibility'
+> & {
   existingPhotos?: PlacePhoto[]
 }
 
@@ -35,10 +39,13 @@ export type PlaceFormApi = {
   isPublic: boolean
   setIsPublic: (value: boolean) => void
   photos: File[]
+  newPhotoPublic: boolean[]
   existingPhotos: PlacePhoto[]
   addPhotos: (files: File[]) => void
   removeNewPhoto: (index: number) => void
+  toggleNewPhoto: (index: number) => void
   removeExistingPhoto: (photo: PlacePhoto) => void
+  togglePhotoVisibility: (photo: PlacePhoto) => void
   getValues: () => PlaceFormValues
 }
 
@@ -64,22 +71,38 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
   const [websiteUrl, setWebsiteUrl] = useState(initialData?.website_url ?? '')
   const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false)
   const [photos, setPhotos] = useState<File[]>([])
+  const [newPhotoPublic, setNewPhotoPublic] = useState<boolean[]>([])
   const [existingPhotos, setExistingPhotos] = useState<PlacePhoto[]>(
     initialData?.existingPhotos ?? [],
   )
   const [photosToDelete, setPhotosToDelete] = useState<string[]>([])
+  const [photoVisibility, setPhotoVisibility] = useState<Record<string, boolean>>({})
 
   function addPhotos(files: File[]) {
     setPhotos((prev) => [...prev, ...files])
+    setNewPhotoPublic((prev) => [...prev, ...files.map(() => false)])
   }
 
   function removeNewPhoto(index: number) {
     setPhotos((prev) => prev.filter((_, i) => i !== index))
+    setNewPhotoPublic((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function toggleNewPhoto(index: number) {
+    setNewPhotoPublic((prev) => prev.map((v, i) => (i === index ? !v : v)))
   }
 
   function removeExistingPhoto(photo: PlacePhoto) {
     setExistingPhotos((prev) => prev.filter((p) => p.id !== photo.id))
     setPhotosToDelete((prev) => [...prev, photo.id])
+  }
+
+  function togglePhotoVisibility(photo: PlacePhoto) {
+    const next = !photo.is_public
+    setExistingPhotos((prev) =>
+      prev.map((p) => (p.id === photo.id ? { ...p, is_public: next } : p)),
+    )
+    setPhotoVisibility((prev) => ({ ...prev, [photo.id]: next }))
   }
 
   function getValues(): PlaceFormValues {
@@ -91,8 +114,9 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
       price_level: priceLevel === 0 ? null : priceLevel,
       website_url: websiteUrl,
       isPublic,
-      photos,
+      newPhotos: photos.map((file, i) => ({ file, isPublic: newPhotoPublic[i] ?? false })),
       photosToDelete,
+      photoVisibility,
     }
   }
 
@@ -112,10 +136,13 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
     isPublic,
     setIsPublic,
     photos,
+    newPhotoPublic,
     existingPhotos,
     addPhotos,
     removeNewPhoto,
+    toggleNewPhoto,
     removeExistingPhoto,
+    togglePhotoVisibility,
     getValues,
   }
 }

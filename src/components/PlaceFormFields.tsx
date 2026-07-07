@@ -104,6 +104,10 @@ function PlaceFormFields({ form, onError }: Props) {
           onRemoveNewPhoto={form.removeNewPhoto}
           onRemoveExistingPhoto={form.removeExistingPhoto}
           onError={onError}
+          isPlacePublic={form.isPublic}
+          newPhotoPublic={form.newPhotoPublic}
+          onToggleNewPhoto={form.toggleNewPhoto}
+          onTogglePhotoVisibility={form.togglePhotoVisibility}
         />
       </CollapsibleSection>
     </>

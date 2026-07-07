@@ -35,11 +35,11 @@ export function makePlacePhoto(overrides: Partial<PlacePhoto> = {}): PlacePhoto 
     url: 'test-user-id/place-1/full.jpg',
     thumb_url: 'test-user-id/place-1/thumb.jpg',
     position: 0,
+    is_public: false,
     created_at: '2025-01-15T00:00:00.000Z',
     ...overrides,
   }
 }
-
 export function makeTripPlace(overrides: Partial<TripPlace> = {}): TripPlace {
   return {
     trip_id: 'trip-1',

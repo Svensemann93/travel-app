@@ -1,13 +1,20 @@
 import { Popup } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
 import type { PublicPlace } from '../types/place'
+import SignedImage from './SignedImage'
 import PopupDescription from './PopupDescription'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 
 const CONTENT_MAX = 372
 
-function PublicPlacePopup({ place }: { place: PublicPlace }) {
+type Props = {
+  place: PublicPlace
+  onPhotoClick: (place: PublicPlace, index: number) => void
+}
+
+function PublicPlacePopup({ place, onPhotoClick }: Props) {
   const { t } = useTranslation(['map', 'category'])
+  const photos = place.photos ?? []
   const websiteText = place.website_url
     ? place.website_url.replace('https://', '').replace('http://', '')
     : ''
@@ -21,6 +28,28 @@ function PublicPlacePopup({ place }: { place: PublicPlace }) {
         style={{ maxHeight: CONTENT_MAX }}
       >
         <div className="shrink-0 space-y-2">
+          {photos.length > 0 ? (
+            <div className="flex gap-1 overflow-x-auto pb-0.5">
+              {photos.map((p, i) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onPhotoClick(place, i)
+                  }}
+                  className="shrink-0 cursor-zoom-in"
+                >
+                  <SignedImage
+                    path={p.thumb_url ?? p.url}
+                    alt={place.name}
+                    className="h-40 w-56 rounded object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           <strong className="block text-base leading-tight">{place.name}</strong>
 
           <div>

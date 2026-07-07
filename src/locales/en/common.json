@@ -46,7 +46,9 @@
     "constraints": "JPG, PNG, WebP or HEIC, max. {{size}} per file.",
     "remove": "Remove photo",
     "previous": "Previous image",
-    "next": "Next image"
+    "next": "Next image",
+    "public": "Public",
+    "private": "Private"
   },
   "upload": {
     "invalidType": "Only JPG, PNG, WebP or HEIC allowed.",

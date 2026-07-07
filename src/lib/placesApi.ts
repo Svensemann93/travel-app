@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 import { uploadPhoto, deletePhotos as deletePhotoFiles } from './photoStorage'
-import type { Place, PlacePhoto, PublicPlace } from '../types/place'
+import type { Place, PlacePhoto, PublicPlace, NewPhoto } from '../types/place'
 import type { PlaceCreateInput, PlaceUpdateInput } from '../types/place'
 
 type PlaceRow = Omit<Place, 'photos'>
@@ -78,14 +78,14 @@ export async function deletePlaceRow(id: string): Promise<void> {
 export async function insertPhotoRows(
   userId: string,
   placeId: string,
-  files: File[],
+  photos: NewPhoto[],
   startPosition: number,
 ): Promise<PlacePhoto[]> {
-  if (files.length === 0) return []
+  if (photos.length === 0) return []
 
   return Promise.all(
-    files.map(async (file, i) => {
-      const { fullPath, thumbPath } = await uploadPhoto(userId, placeId, file)
+    photos.map(async (photo, i) => {
+      const { fullPath, thumbPath } = await uploadPhoto(userId, placeId, photo.file)
       const { data, error } = await supabase
         .from('place_photos')
         .insert({
@@ -94,6 +94,7 @@ export async function insertPhotoRows(
           url: fullPath,
           thumb_url: thumbPath,
           position: startPosition + i,
+          is_public: photo.isPublic,
         })
         .select('*')
         .single()
@@ -114,6 +115,20 @@ export async function removePhotos(photos: PlacePhoto[]): Promise<void> {
       photos.map((p) => p.id),
     )
   if (error) throw new Error(error.message)
+}
+
+export async function updatePhotoVisibility(changes: Record<string, boolean>): Promise<void> {
+  const entries = Object.entries(changes ?? {})
+  if (entries.length === 0) return
+  await Promise.all(
+    entries.map(async ([id, isPublic]) => {
+      const { error } = await supabase
+        .from('place_photos')
+        .update({ is_public: isPublic })
+        .eq('id', id)
+      if (error) throw new Error(error.message)
+    }),
+  )
 }
 
 export async function removePhotoStorageOnly(photos: PlacePhoto[]): Promise<void> {

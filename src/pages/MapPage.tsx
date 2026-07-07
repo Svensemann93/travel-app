@@ -77,7 +77,7 @@ function MapPage() {
         latitude: clickedPosition.lat,
         longitude: clickedPosition.lng,
       },
-      photos: data.photos,
+      photos: data.newPhotos,
     })
   }
 
@@ -94,8 +94,9 @@ function MapPage() {
         website_url: data.website_url || null,
         is_public: data.isPublic,
       },
-      photosToAdd: data.photos,
+      photosToAdd: data.newPhotos,
       photoIdsToDelete: data.photosToDelete,
+      photoVisibility: data.photoVisibility,
     })
   }
 
