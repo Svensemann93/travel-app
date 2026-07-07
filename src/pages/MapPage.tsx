@@ -144,17 +144,14 @@ function MapPage() {
           <MapErrorOverlay onRetry={() => void refetch()} />
         )}
         {!isEntryLoading && !isLoading && !isError && places.length === 0 && <MapEmptyState />}
-
-        {!isEntryLoading && places.length > 0 && (
+        {!isEntryLoading && (places.length > 0 || (showPublic && publicPlaces.length > 0)) && (
           <CategoryFilter className="absolute right-4 top-4 z-[1000] hidden md:block" />
         )}
         {!isEntryLoading && (
-          <PublicPlacesToggle
-            enabled={showPublic}
-            onToggle={() => setShowPublic((v) => !v)}
-            className="absolute left-4 top-4 z-[1000]"
-          />
-        )}
+          <div className="absolute inset-x-0 top-16 z-[1000] mx-auto flex w-80 max-w-[calc(100%-24px)] justify-end md:left-auto md:right-4 md:mx-0 md:w-auto md:max-w-none">
+            <PublicPlacesToggle enabled={showPublic} onToggle={() => setShowPublic((v) => !v)} />
+          </div>
+        )}{' '}
         {reposition.place && (
           <RepositionBar
             placeName={reposition.place.name}
