@@ -26,5 +26,17 @@
     "unsupported": "Your browser doesn't support location detection.",
     "denied": "Location access is blocked. You can allow it in your browser settings.",
     "failed": "Your location couldn't be determined."
+  },
+  "visits": {
+    "count_one": "{{count}} has been here",
+    "count_other": "{{count}} have been here",
+    "yourRating": "Your rating: {{rating}}",
+    "yourRatingLabel": "Your rating",
+    "yourPriceLabel": "Your price",
+    "markVisited": "I've been here",
+    "edit": "Edit rating",
+    "editTitle": "Edit your visit",
+    "remove": "Remove visit",
+    "clear": "clear"
   }
 }

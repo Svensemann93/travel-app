@@ -24,11 +24,13 @@ import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 import MapErrorOverlay from '../components/MapErrorOverlay'
 import LocateControl from '../components/LocateControl'
-import type { Place } from '../types/place'
+import type { Place, PublicPlace } from '../types/place'
 import PopupAutoCenter from '../components/PopupAutoCenter'
 import { usePublicPlaces } from '../hooks/usePublicPlaces'
 import PublicPlaceMarkers from '../components/PublicPlaceMarkers'
 import PublicPlacesToggle from '../components/PublicPlacesToggle'
+import VisitEditModal from '../components/VisitEditModal'
+import { useSetPlaceVisit, useRemovePlaceVisit } from '../hooks/usePlaceVisits'
 import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 
 function MapPage() {
@@ -42,12 +44,16 @@ function MapPage() {
   const focusedPlace = useFocusedPlace(places)
   const { selected } = useCategoryFilter()
   const [showPublic, setShowPublic] = useState(true)
-  const { data: publicPlaces = [] } = usePublicPlaces(showPublic)
+  const { data: publicPlaces = [] } = usePublicPlaces(true)
+  const setVisit = useSetPlaceVisit()
+  const removeVisit = useRemovePlaceVisit()
+  const [editingVisit, setEditingVisit] = useState<PublicPlace | null>(null)
 
   const visiblePlaces = useMemo(() => filterPlacesByCategory(places, selected), [places, selected])
   const visiblePublicPlaces = useMemo(
-    () => filterPlacesByCategory(publicPlaces, selected),
-    [publicPlaces, selected],
+    () =>
+      filterPlacesByCategory(publicPlaces, selected).filter((p) => showPublic || p.visited_by_me),
+    [publicPlaces, selected, showPublic],
   )
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
@@ -141,7 +147,14 @@ function MapPage() {
               onDelete={(place) => setDeletingPlace(place)}
               onAddToTrip={(place) => setAddingToTripPlace(place)}
             />
-            {showPublic && <PublicPlaceMarkers places={visiblePublicPlaces} />}
+            <PublicPlaceMarkers
+              places={visiblePublicPlaces}
+              onMarkVisited={(placeId) =>
+                setVisit.mutate({ placeId, rating: null, priceLevel: null })
+              }
+              onEditVisit={(place) => setEditingVisit(place)}
+              isSaving={setVisit.isPending || removeVisit.isPending}
+            />
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace} />
             <PopupAutoCenter />
@@ -154,7 +167,7 @@ function MapPage() {
         {!isEntryLoading && !isLoading && !isError && places.length === 0 && !welcomeDismissed && (
           <MapEmptyState onClose={handleDismissWelcome} />
         )}{' '}
-        {!isEntryLoading && (places.length > 0 || (showPublic && publicPlaces.length > 0)) && (
+        {!isEntryLoading && (places.length > 0 || publicPlaces.length > 0) && (
           <CategoryFilter className="absolute right-4 top-4 z-[1000] hidden md:block" />
         )}
         {!isEntryLoading && (
@@ -204,6 +217,23 @@ function MapPage() {
       />
 
       <AddToTripModal place={addingToTripPlace} onClose={() => setAddingToTripPlace(null)} />
+
+      {editingVisit && (
+        <VisitEditModal
+          key={editingVisit.id}
+          place={editingVisit}
+          onClose={() => setEditingVisit(null)}
+          onSave={(id, rating, priceLevel) => {
+            setVisit.mutate({ placeId: id, rating, priceLevel })
+            setEditingVisit(null)
+          }}
+          onRemove={(id) => {
+            removeVisit.mutate(id)
+            setEditingVisit(null)
+          }}
+          isSaving={setVisit.isPending || removeVisit.isPending}
+        />
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
-import { uploadPhoto, deletePhotos as deletePhotoFiles } from './photoStorage'
-import type { Place, PlacePhoto, PublicPlace, NewPhoto } from '../types/place'
+import { deletePhotos as deletePhotoFiles, uploadPhoto } from './photoStorage'
+import type { NewPhoto, Place, PlacePhoto, PublicPlace } from '../types/place'
 import type { PlaceCreateInput, PlaceUpdateInput } from '../types/place'
 
 type PlaceRow = Omit<Place, 'photos'>
@@ -21,7 +21,10 @@ export async function fetchPlacesForUser(signal?: AbortSignal): Promise<Place[]>
 
   const { data, error } = await query
   if (error) throw new Error(error.message)
-  return data ?? []
+  return (data ?? []).map((p: Place) => ({
+    ...p,
+    rating: p.rating != null ? Number(p.rating) : null,
+  }))
 }
 
 export async function fetchPublicPlaces(signal?: AbortSignal): Promise<PublicPlace[]> {
@@ -31,7 +34,37 @@ export async function fetchPublicPlaces(signal?: AbortSignal): Promise<PublicPla
   }
   const { data, error } = await query
   if (error) throw new Error(error.message)
-  return data ?? []
+  return (data ?? []).map((row: PublicPlace) => ({
+    ...row,
+    rating: row.rating != null ? Number(row.rating) : null,
+    avg_rating: row.avg_rating != null ? Number(row.avg_rating) : null,
+    avg_price: row.avg_price != null ? Number(row.avg_price) : null,
+    my_rating: row.my_rating != null ? Number(row.my_rating) : null,
+  }))
+}
+
+export async function upsertPlaceVisit(
+  userId: string,
+  placeId: string,
+  rating: number | null,
+  priceLevel: number | null,
+): Promise<void> {
+  const { error } = await supabase
+    .from('place_visits')
+    .upsert(
+      { place_id: placeId, user_id: userId, rating, price_level: priceLevel },
+      { onConflict: 'place_id,user_id' },
+    )
+  if (error) throw new Error(error.message)
+}
+
+export async function deletePlaceVisit(userId: string, placeId: string): Promise<void> {
+  const { error } = await supabase
+    .from('place_visits')
+    .delete()
+    .eq('place_id', placeId)
+    .eq('user_id', userId)
+  if (error) throw new Error(error.message)
 }
 
 export async function insertPlaceRow(userId: string, data: PlaceCreateInput): Promise<PlaceRow> {

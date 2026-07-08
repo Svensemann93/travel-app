@@ -1,17 +1,6 @@
 import SignedImage from './SignedImage'
+import StarDisplay from './StarDisplay'
 import type { Place } from '../types/place'
-
-function StarDisplay({ rating }: { rating: number }) {
-  return (
-    <span>
-      {[1, 2, 3, 4, 5].map((s) => (
-        <span key={s} className={s <= rating ? 'text-yellow-400' : 'text-slate-300'}>
-          ★
-        </span>
-      ))}
-    </span>
-  )
-}
 
 type Props = {
   place: Place
@@ -42,12 +31,12 @@ function PlaceListItem({ place, onClick }: Props) {
         <h3 className="font-semibold text-slate-800">{place.name}</h3>
 
         <div className="flex items-center gap-2 mt-1">
-          {place.rating && <StarDisplay rating={place.rating} />}
-          {place.price_level && (
+          {place.rating ? <StarDisplay value={place.rating} className="text-sm" /> : null}
+          {place.price_level ? (
             <span className="text-sm font-medium text-green-700">
               {'$'.repeat(place.price_level)}
             </span>
-          )}
+          ) : null}
         </div>
 
         {place.description && (

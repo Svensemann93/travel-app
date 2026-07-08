@@ -50,6 +50,12 @@ export type PublicPlace = {
   website_url: string | null
   username: string | null
   photos: PublicPlacePhoto[]
+  avg_rating: number | null
+  avg_price: number | null
+  visit_count: number
+  my_rating: number | null
+  my_price: number | null
+  visited_by_me: boolean
 }
 
 export type PlaceUpdateInput = {
