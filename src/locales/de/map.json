@@ -26,5 +26,17 @@
     "unsupported": "Dein Browser unterstützt keine Standortbestimmung.",
     "denied": "Standortzugriff ist blockiert. Du kannst ihn in den Browser-Einstellungen erlauben.",
     "failed": "Dein Standort konnte nicht ermittelt werden."
+  },
+  "visits": {
+    "count_one": "{{count}} war da",
+    "count_other": "{{count}} waren da",
+    "yourRating": "Deine Bewertung: {{rating}}",
+    "yourRatingLabel": "Deine Bewertung",
+    "yourPriceLabel": "Dein Preis",
+    "markVisited": "Ich war hier",
+    "edit": "Bewertung bearbeiten",
+    "editTitle": "Deinen Besuch bearbeiten",
+    "remove": "Besuch entfernen",
+    "clear": "zurücksetzen"
   }
 }

@@ -4,15 +4,19 @@ import type { PublicPlace } from '../types/place'
 import SignedImage from './SignedImage'
 import PopupDescription from './PopupDescription'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
+import StarDisplay from './StarDisplay'
 
 const CONTENT_MAX = 372
 
 type Props = {
   place: PublicPlace
   onPhotoClick: (place: PublicPlace, index: number) => void
+  onMarkVisited: (placeId: string) => void
+  onEditVisit: (place: PublicPlace) => void
+  isSaving: boolean
 }
 
-function PublicPlacePopup({ place, onPhotoClick }: Props) {
+function PublicPlacePopup({ place, onPhotoClick, onMarkVisited, onEditVisit, isSaving }: Props) {
   const { t } = useTranslation(['map', 'category'])
   const photos = place.photos ?? []
   const websiteText = place.website_url
@@ -59,16 +63,31 @@ function PublicPlacePopup({ place, onPhotoClick }: Props) {
             </span>
           </div>
 
-          {place.rating ? (
-            <div className="text-sm leading-none">
-              <span className="text-yellow-400">{'★'.repeat(place.rating)}</span>
-              <span className="text-slate-300">{'★'.repeat(5 - place.rating)}</span>
+          {place.avg_rating != null ? (
+            <div className="flex items-center gap-1.5 text-sm leading-none">
+              <StarDisplay value={place.avg_rating} />
+              <span className="text-slate-600">{place.avg_rating.toFixed(1)}</span>
+              <span className="text-slate-400">
+                · {t('visits.count', { count: place.visit_count })}
+              </span>
+            </div>
+          ) : (
+            <div className="text-xs text-slate-400">
+              {t('visits.count', { count: place.visit_count })}
+            </div>
+          )}
+          {place.avg_price != null ? (
+            <div className="text-sm font-medium leading-none text-green-700">
+              {'$'.repeat(Math.round(place.avg_price))}
+              <span className="ml-1 font-normal text-slate-400">
+                ⌀ {place.avg_price.toFixed(1)}
+              </span>
             </div>
           ) : null}
 
-          {place.price_level ? (
-            <div className="text-sm font-medium leading-none text-green-700">
-              {'$'.repeat(place.price_level)}
+          {place.visited_by_me && place.my_rating ? (
+            <div className="text-xs text-slate-500">
+              {t('visits.yourRating', { rating: place.my_rating })}
             </div>
           ) : null}
         </div>
@@ -87,8 +106,29 @@ function PublicPlacePopup({ place, onPhotoClick }: Props) {
             </a>
           ) : null}
 
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-1">
+            {place.visited_by_me ? (
+              <button
+                type="button"
+                onClick={() => onEditVisit(place)}
+                className="text-sm leading-tight text-blue-600 hover:underline"
+              >
+                {t('visits.edit')}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onMarkVisited(place.id)}
+                disabled={isSaving}
+                className="text-sm leading-tight text-green-700 hover:underline disabled:opacity-50"
+              >
+                {t('visits.markVisited')}
+              </button>
+            )}
+          </div>
+
           {place.username ? (
-            <div className="border-t border-slate-100 pt-1 text-xs text-slate-500">
+            <div className="text-xs text-slate-500">
               {t('public.sharedBy', { username: place.username })}
             </div>
           ) : null}

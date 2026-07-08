@@ -4,6 +4,7 @@ import type { Place } from '../types/place'
 import SignedImage from './SignedImage'
 import PopupDescription from './PopupDescription'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
+import StarDisplay from './StarDisplay'
 
 const CONTENT_MAX = 372
 
@@ -64,8 +65,7 @@ function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Prop
 
           {place.rating ? (
             <div className="text-sm leading-none">
-              <span className="text-yellow-400">{'★'.repeat(place.rating)}</span>
-              <span className="text-slate-300">{'★'.repeat(5 - place.rating)}</span>
+              <StarDisplay value={place.rating} />
             </div>
           ) : null}
 
