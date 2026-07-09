@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Marker } from 'react-leaflet'
 import type { Marker as LeafletMarker } from 'leaflet'
 import type { Place } from '../types/place'
+import type { MyPlaceStats } from '../lib/placesApi'
 import Lightbox from './Lightbox'
 import PlacePopup from './PlacePopup'
 import { getCategoryMarkerIcon } from '../lib/leafletIcons'
@@ -9,6 +10,7 @@ import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 
 type Props = {
   places: Place[]
+  stats: Map<string, MyPlaceStats>
   repositioningId: string | null
   pendingPosition: { lat: number; lng: number } | null
   onDragMove: (latitude: number, longitude: number) => void
@@ -19,6 +21,7 @@ type Props = {
 
 function PlaceMarkers({
   places,
+  stats,
   repositioningId,
   pendingPosition,
   onDragMove,
@@ -54,6 +57,7 @@ function PlaceMarkers({
           >
             <PlacePopup
               place={place}
+              stats={stats.get(place.id)}
               onPhotoClick={(p, index) => setLightbox({ place: p, index })}
               onEdit={onEdit}
               onDelete={onDelete}

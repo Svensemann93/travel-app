@@ -35,6 +35,7 @@ Personal mobile-first travel app. Solo developer, German-speaking — conversati
 5. Open PR on GitHub
 6. Merge (user confirms)
 7. Cleanup: `git checkout main; git pull; git branch -d <branch>; git fetch --prune` — never skip `--prune`
+8. Documentation (CLAUDE.md) is updated within the feature branch, not in a separate docs branch
 
 ## Git conventions
 
@@ -73,6 +74,8 @@ The launch security audit is complete. For context when touching these areas:
 - Foreign public pins render with a distinct hollow marker, read-only popup, "shared by @username" attribution, and a show/hide toggle
 - Storage read for public photos goes through the `is_public_photo_object(name)` SECURITY DEFINER helper called by a storage policy (a policy's own subquery would run under the caller's owner-only RLS and never see foreign rows)
 - `place_photos` has an owner-only UPDATE policy (added so visibility toggles actually persist)
+- Visited places: visitors mark a foreign public place as visited and add their own rating/price (`place_visits`, owner-only per row, insert limited to public foreign places via `is_visitable_place`); averages come from `get_public_places()` and, for the creator's own popup, from `get_my_place_stats()`
+- Ratings are half-star (`numeric(2,1)`, 0.5-step check) for both creator and visitors; shared `StarDisplay`/`StarRating` are SVG-based and half-star capable
 
 ## Backlog (priority order)
 

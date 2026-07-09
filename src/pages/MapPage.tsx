@@ -32,6 +32,7 @@ import PublicPlacesToggle from '../components/PublicPlacesToggle'
 import VisitEditModal from '../components/VisitEditModal'
 import { useSetPlaceVisit, useRemovePlaceVisit } from '../hooks/usePlaceVisits'
 import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
+import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -48,6 +49,7 @@ function MapPage() {
   const setVisit = useSetPlaceVisit()
   const removeVisit = useRemovePlaceVisit()
   const [editingVisit, setEditingVisit] = useState<PublicPlace | null>(null)
+  const myPlaceStats = useMyPlaceStats()
 
   const visiblePlaces = useMemo(() => filterPlacesByCategory(places, selected), [places, selected])
   const visiblePublicPlaces = useMemo(
@@ -140,6 +142,7 @@ function MapPage() {
             <LocateControl />
             <PlaceMarkers
               places={visiblePlaces}
+              stats={myPlaceStats}
               repositioningId={reposition.place?.id ?? null}
               pendingPosition={reposition.pendingPosition}
               onDragMove={reposition.dragMove}

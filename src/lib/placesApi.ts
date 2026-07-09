@@ -43,6 +43,28 @@ export async function fetchPublicPlaces(signal?: AbortSignal): Promise<PublicPla
   }))
 }
 
+export type MyPlaceStats = {
+  place_id: string
+  avg_rating: number | null
+  avg_price: number | null
+  visit_count: number
+}
+
+export async function fetchMyPlaceStats(signal?: AbortSignal): Promise<MyPlaceStats[]> {
+  let query = supabase.rpc('get_my_place_stats')
+  if (signal) {
+    query = query.abortSignal(signal)
+  }
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((row: MyPlaceStats) => ({
+    place_id: row.place_id,
+    avg_rating: row.avg_rating != null ? Number(row.avg_rating) : null,
+    avg_price: row.avg_price != null ? Number(row.avg_price) : null,
+    visit_count: row.visit_count,
+  }))
+}
+
 export async function upsertPlaceVisit(
   userId: string,
   placeId: string,

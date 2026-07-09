@@ -76,18 +76,20 @@ function PublicPlacePopup({ place, onPhotoClick, onMarkVisited, onEditVisit, isS
               {t('visits.count', { count: place.visit_count })}
             </div>
           )}
+
+          {place.visited_by_me && place.my_rating ? (
+            <div className="flex items-center gap-1.5 text-xs leading-none text-slate-500">
+              <span>{t('visits.yourRatingLabel')}:</span>
+              <StarDisplay value={place.my_rating} className="text-xs" />
+            </div>
+          ) : null}
+
           {place.avg_price != null ? (
             <div className="text-sm font-medium leading-none text-green-700">
               {'$'.repeat(Math.round(place.avg_price))}
               <span className="ml-1 font-normal text-slate-400">
                 ⌀ {place.avg_price.toFixed(1)}
               </span>
-            </div>
-          ) : null}
-
-          {place.visited_by_me && place.my_rating ? (
-            <div className="text-xs text-slate-500">
-              {t('visits.yourRating', { rating: place.my_rating })}
             </div>
           ) : null}
         </div>
