@@ -8,6 +8,8 @@ import CategoryFilterProvider from './components/CategoryFilterProvider'
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
 const MapPage = lazy(() => import('./pages/MapPage'))
 const PlacesListPage = lazy(() => import('./pages/PlacesListPage'))
 const TripsListPage = lazy(() => import('./pages/TripsListPage'))
@@ -90,7 +92,9 @@ function App() {
             />
             <Route path="/share/:token" element={<JournalSharePage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />{' '}
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
         </Suspense>
       </CategoryFilterProvider>
