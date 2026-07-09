@@ -1,7 +1,7 @@
 import { Popup } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
 import type { Place } from '../types/place'
-import SignedImage from './SignedImage'
+import PopupPhoto from './PopupPhoto'
 import PopupDescription from './PopupDescription'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 import StarDisplay from './StarDisplay'
@@ -37,21 +37,12 @@ function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip 
           {photos.length > 0 ? (
             <div className="flex gap-1 overflow-x-auto pb-0.5">
               {photos.map((p, i) => (
-                <button
+                <PopupPhoto
                   key={p.id}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onPhotoClick(place, i)
-                  }}
-                  className="shrink-0 cursor-zoom-in"
-                >
-                  <SignedImage
-                    path={p.thumb_url ?? p.url}
-                    alt={place.name}
-                    className="h-40 w-56 rounded object-cover"
-                  />
-                </button>
+                  path={p.thumb_url ?? p.url}
+                  alt={place.name}
+                  onClick={() => onPhotoClick(place, i)}
+                />
               ))}
             </div>
           ) : null}
