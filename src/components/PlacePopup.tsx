@@ -5,18 +5,20 @@ import SignedImage from './SignedImage'
 import PopupDescription from './PopupDescription'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 import StarDisplay from './StarDisplay'
+import type { MyPlaceStats } from '../lib/placesApi'
 
 const CONTENT_MAX = 372
 
 type Props = {
   place: Place
+  stats?: MyPlaceStats
   onPhotoClick: (place: Place, index: number) => void
   onEdit: (place: Place) => void
   onDelete: (place: Place) => void
   onAddToTrip: (place: Place) => void
 }
 
-function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Props) {
+function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip }: Props) {
   const { t } = useTranslation(['map', 'common', 'category'])
   const photos = (place.photos ?? []).slice().sort((a, b) => a.position - b.position)
   const websiteText = place.website_url
@@ -63,7 +65,23 @@ function PlacePopup({ place, onPhotoClick, onEdit, onDelete, onAddToTrip }: Prop
             </span>
           </div>
 
-          {place.rating ? (
+          {stats && stats.avg_rating != null ? (
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5 text-sm leading-none">
+                <StarDisplay value={stats.avg_rating} />
+                <span className="text-slate-600">{stats.avg_rating.toFixed(1)}</span>
+                <span className="text-slate-400">
+                  · {t('visits.count', { count: stats.visit_count + 1 })}
+                </span>
+              </div>
+              {place.rating ? (
+                <div className="flex items-center gap-1.5 text-xs leading-none text-slate-500">
+                  <span>{t('visits.yourRatingLabel')}:</span>
+                  <StarDisplay value={place.rating} className="text-xs" />
+                </div>
+              ) : null}
+            </div>
+          ) : place.rating ? (
             <div className="text-sm leading-none">
               <StarDisplay value={place.rating} />
             </div>
