@@ -3,17 +3,18 @@ import { useTranslation } from 'react-i18next'
 import { usePlaces } from '../hooks/usePlaces'
 import { useTrips } from '../hooks/useTrips'
 import { useJournals } from '../hooks/useJournals'
-import { computeTravelStats, computeGeoReach } from '../lib/travelStats'
+import { usePublicPlaces } from '../hooks/usePublicPlaces'
+import { computeTravelStats } from '../lib/travelStats'
 import { ACHIEVEMENTS } from '../lib/achievements'
 import { STAMP_ICONS } from '../lib/stampIcons'
 import { CATEGORIES } from '../lib/categories'
+import { CONTINENT_TOTAL, COUNTRY_TOTAL } from '../lib/continents'
 import AppHeader from '../components/AppHeader'
 import QueryBoundary from '../components/QueryBoundary'
 import ListSkeleton from '../components/ListSkeleton'
 import PassportStamp from '../components/PassportStamp'
 import ProgressBar from '../components/ProgressBar'
-import { CONTINENT_TOTAL, COUNTRY_TOTAL } from '../lib/continents'
-import { usePublicPlaces } from '../hooks/usePublicPlaces'
+import WorldMap from '../components/WorldMap'
 
 function PassportPage() {
   const { t } = useTranslation('pass')
@@ -23,18 +24,17 @@ function PassportPage() {
   const { data: journals = [] } = useJournals()
   const { data: publicPlaces = [] } = usePublicPlaces(true)
 
-  const stats = useMemo(
-    () => computeTravelStats(places, trips.length, journals.length),
-    [places, trips.length, journals.length],
+  const visited = useMemo(
+    () =>
+      publicPlaces
+        .filter((p) => p.visited_by_me)
+        .map((p) => ({ category: p.category, country_code: p.country_code })),
+    [publicPlaces],
   )
 
-  const geo = useMemo(
-    () =>
-      computeGeoReach([
-        ...places.map((p) => p.country_code),
-        ...publicPlaces.filter((p) => p.visited_by_me).map((p) => p.country_code),
-      ]),
-    [places, publicPlaces],
+  const stats = useMemo(
+    () => computeTravelStats(places, visited, trips.length, journals.length),
+    [places, visited, trips.length, journals.length],
   )
 
   const earnedCount = ACHIEVEMENTS.filter((a) => a.earned(stats)).length
@@ -84,17 +84,27 @@ function PassportPage() {
             />
             <ProgressBar
               label={t('progress.continents')}
-              value={geo.continentCount}
+              value={stats.continentCount}
               max={CONTINENT_TOTAL}
               color="#0d9488"
             />
             <ProgressBar
               label={t('progress.countries')}
-              value={geo.countryCount}
+              value={stats.countryCount}
               max={COUNTRY_TOTAL}
               color="#9333ea"
             />
           </div>
+        </section>
+
+        <section className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 md:p-6">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-slate-800">{t('map.title')}</h3>
+            <span className="text-sm text-slate-500">
+              {t('map.count', { count: stats.countryCount })}
+            </span>
+          </div>
+          <WorldMap visitedCodes={stats.countryCodes} />
         </section>
 
         <QueryBoundary

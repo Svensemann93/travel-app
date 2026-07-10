@@ -3,6 +3,11 @@ import type { CategoryId } from './categories'
 import { CATEGORIES } from './categories'
 import { COUNTRY_CONTINENT } from './continents'
 
+export type CountedPlace = {
+  category: CategoryId
+  country_code: string | null
+}
+
 export type TravelStats = {
   placeCount: number
   photoCount: number
@@ -13,10 +18,12 @@ export type TravelStats = {
   categoriesCovered: number
   countryCount: number
   continentCount: number
+  countryCodes: string[]
 }
 
 export function computeTravelStats(
-  places: Place[],
+  ownPlaces: Place[],
+  visitedPlaces: CountedPlace[],
   tripCount: number,
   journalCount: number,
 ): TravelStats {
@@ -25,26 +32,33 @@ export function computeTravelStats(
     categoryCounts[category.id] = 0
   }
 
-  let photoCount = 0
-  let publicPlaceCount = 0
   const countries = new Set<string>()
   const continents = new Set<string>()
 
-  for (const place of places) {
-    categoryCounts[place.category] = (categoryCounts[place.category] ?? 0) + 1
-    photoCount += place.photos.length
-    if (place.is_public) publicPlaceCount += 1
-    if (place.country_code) {
-      countries.add(place.country_code)
-      const continent = COUNTRY_CONTINENT[place.country_code]
+  const count = (category: CategoryId, code: string | null) => {
+    categoryCounts[category] = (categoryCounts[category] ?? 0) + 1
+    if (code) {
+      countries.add(code)
+      const continent = COUNTRY_CONTINENT[code]
       if (continent) continents.add(continent)
     }
+  }
+
+  let photoCount = 0
+  let publicPlaceCount = 0
+  for (const place of ownPlaces) {
+    count(place.category, place.country_code)
+    photoCount += place.photos.length
+    if (place.is_public) publicPlaceCount += 1
+  }
+  for (const place of visitedPlaces) {
+    count(place.category, place.country_code)
   }
 
   const categoriesCovered = CATEGORIES.filter((c) => categoryCounts[c.id] > 0).length
 
   return {
-    placeCount: places.length,
+    placeCount: ownPlaces.length + visitedPlaces.length,
     photoCount,
     publicPlaceCount,
     tripCount,
@@ -53,20 +67,6 @@ export function computeTravelStats(
     categoriesCovered,
     countryCount: countries.size,
     continentCount: continents.size,
+    countryCodes: [...countries],
   }
-}
-
-export function computeGeoReach(codes: (string | null | undefined)[]): {
-  countryCount: number
-  continentCount: number
-} {
-  const countries = new Set<string>()
-  const continents = new Set<string>()
-  for (const code of codes) {
-    if (!code) continue
-    countries.add(code)
-    const continent = COUNTRY_CONTINENT[code]
-    if (continent) continents.add(continent)
-  }
-  return { countryCount: countries.size, continentCount: continents.size }
 }

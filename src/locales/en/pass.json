@@ -100,5 +100,9 @@
       "title": "Influencer",
       "desc": "Shared 20 places publicly"
     }
+  },
+  "map": {
+    "title": "Your world",
+    "count": "{{count}} countries visited"
   }
 }
