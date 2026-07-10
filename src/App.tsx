@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ErrorFallback from './components/ErrorFallback'
 import PageLoader from './components/PageLoader'
 import CategoryFilterProvider from './components/CategoryFilterProvider'
+import AchievementToast from './components/AchievementToast'
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
@@ -19,6 +20,7 @@ const JournalDetailPage = lazy(() => import('./pages/JournalDetailPage'))
 const JournalReadPage = lazy(() => import('./pages/JournalReadPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 const JournalSharePage = lazy(() => import('./pages/JournalSharePage'))
+const PassportPage = lazy(() => import('./pages/PassportPage'))
 
 function App() {
   return (
@@ -90,6 +92,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/passport"
+              element={
+                <ProtectedRoute>
+                  <PassportPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/share/:token" element={<JournalSharePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -97,6 +107,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
         </Suspense>
+        <AchievementToast />
       </CategoryFilterProvider>
     </Sentry.ErrorBoundary>
   )

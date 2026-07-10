@@ -1,0 +1,1 @@
+alter table public.places add column if not exists country_code text;

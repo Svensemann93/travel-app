@@ -10,7 +10,8 @@
     "trips": "Trips",
     "journal": "Tagebuch",
     "profile": "Profil",
-    "label": "Hauptnavigation"
+    "label": "Hauptnavigation",
+    "pass": "Reisepass"
   },
   "auth": {
     "logout": "Abmelden"

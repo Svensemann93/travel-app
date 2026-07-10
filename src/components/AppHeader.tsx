@@ -7,12 +7,14 @@ import { supabase } from '../lib/supabase'
 import MobileMenu from './MobileMenu'
 import CategoryFilter from './CategoryFilter'
 import { resetWelcome } from '../lib/welcomeBanner'
+import AchievementToast from './AchievementToast'
 
 const NAV_ITEMS = [
   { to: '/', labelKey: 'nav.map', match: (path: string) => path === '/' },
   { to: '/places', labelKey: 'nav.places', match: (path: string) => path === '/places' },
   { to: '/trips', labelKey: 'nav.trips', match: (path: string) => path.startsWith('/trips') },
   { to: '/journal', labelKey: 'nav.journal', match: (path: string) => path.startsWith('/journal') },
+  { to: '/passport', labelKey: 'nav.pass', match: (path: string) => path === '/passport' },
   { to: '/profile', labelKey: 'nav.profile', match: (path: string) => path === '/profile' },
 ] as const
 
@@ -27,7 +29,6 @@ function AppHeader({ sticky = false }: Props) {
   const location = useLocation()
   const queryClient = useQueryClient()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-
   const userLabel = profile?.username ?? user?.email ?? ''
 
   const navItems = NAV_ITEMS.map((item) => ({
@@ -119,6 +120,7 @@ function AppHeader({ sticky = false }: Props) {
         userLabel={userLabel}
         onLogout={handleLogout}
       />
+      <AchievementToast />
     </>
   )
 }
