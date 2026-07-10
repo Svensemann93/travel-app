@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from './useAuth'
-import { upsertPlaceVisit, deletePlaceVisit } from '../lib/placesApi'
+import { deletePlaceVisit, upsertPlaceVisit } from '../lib/placesApi'
 
 export function useSetPlaceVisit() {
   const queryClient = useQueryClient()
@@ -21,6 +21,7 @@ export function useSetPlaceVisit() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['public-places'] })
+      queryClient.invalidateQueries({ queryKey: ['my-visited-stats'] })
     },
   })
 }
@@ -36,6 +37,7 @@ export function useRemovePlaceVisit() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['public-places'] })
+      queryClient.invalidateQueries({ queryKey: ['my-visited-stats'] })
     },
   })
 }

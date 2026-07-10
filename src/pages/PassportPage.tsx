@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { usePlaces } from '../hooks/usePlaces'
 import { useTrips } from '../hooks/useTrips'
 import { useJournals } from '../hooks/useJournals'
-import { usePublicPlaces } from '../hooks/usePublicPlaces'
+import { useMyVisitedStats } from '../hooks/useMyVisitedStats'
 import { computeTravelStats } from '../lib/travelStats'
 import { ACHIEVEMENTS } from '../lib/achievements'
 import { STAMP_ICONS } from '../lib/stampIcons'
@@ -22,15 +22,7 @@ function PassportPage() {
   const { data: places = [] } = placesQuery
   const { data: trips = [] } = useTrips()
   const { data: journals = [] } = useJournals()
-  const { data: publicPlaces = [] } = usePublicPlaces(true)
-
-  const visited = useMemo(
-    () =>
-      publicPlaces
-        .filter((p) => p.visited_by_me)
-        .map((p) => ({ category: p.category, country_code: p.country_code })),
-    [publicPlaces],
-  )
+  const { data: visited = [] } = useMyVisitedStats()
 
   const stats = useMemo(
     () => computeTravelStats(places, visited, trips.length, journals.length),

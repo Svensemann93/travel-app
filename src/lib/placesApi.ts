@@ -3,6 +3,7 @@ import { deletePhotos as deletePhotoFiles, uploadPhoto } from './photoStorage'
 import type { NewPhoto, Place, PlacePhoto, PublicPlace } from '../types/place'
 import type { PlaceCreateInput, PlaceUpdateInput } from '../types/place'
 import type { PublicBounds } from './publicBounds'
+import type { CategoryId } from './categories'
 
 type PlaceRow = Omit<Place, 'photos'>
 
@@ -206,4 +207,22 @@ export async function removePhotoStorageOnly(photos: PlacePhoto[]): Promise<void
   } catch (err) {
     console.error('Storage cleanup failed:', err)
   }
+}
+
+export type VisitedStat = {
+  category: CategoryId
+  country_code: string | null
+}
+
+export async function fetchMyVisitedStats(signal?: AbortSignal): Promise<VisitedStat[]> {
+  let query = supabase.rpc('get_my_public_place_visit_stats')
+  if (signal) {
+    query = query.abortSignal(signal)
+  }
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((row: { category: string; country_code: string | null }) => ({
+    category: row.category as CategoryId,
+    country_code: row.country_code,
+  }))
 }
