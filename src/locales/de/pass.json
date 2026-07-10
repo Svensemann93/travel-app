@@ -100,5 +100,9 @@
       "title": "Influencer",
       "desc": "20 Orte öffentlich geteilt"
     }
+  },
+  "map": {
+    "title": "Deine Welt",
+    "count": "{{count}} Länder besucht"
   }
 }
