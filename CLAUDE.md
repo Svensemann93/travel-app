@@ -50,3 +50,7 @@ Personal mobile-first travel app. Solo developer, German-speaking — conversati
 ## Communication style
 
 - Short, direct answers. No preamble, no recaps, no unsolicited
+
+## Public places & photos
+
+- `get_public_places()` takes optional bounding-box + `max_rows` params (default whole world). The map passes the current viewport (debounced 400 ms, `MapBoundsWatcher` via `useMapEvents`) so it loads only visible pins; the toggle stays a display-only filter. Passport/toast still call it without bounds (whole world) until the summary RPC lands.

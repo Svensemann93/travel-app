@@ -27,8 +27,26 @@ export async function fetchPlacesForUser(signal?: AbortSignal): Promise<Place[]>
   }))
 }
 
-export async function fetchPublicPlaces(signal?: AbortSignal): Promise<PublicPlace[]> {
-  let query = supabase.rpc('get_public_places')
+export type PublicBounds = {
+  minLat: number
+  maxLat: number
+  minLng: number
+  maxLng: number
+}
+
+export async function fetchPublicPlaces(
+  bounds?: PublicBounds,
+  signal?: AbortSignal,
+): Promise<PublicPlace[]> {
+  const args = bounds
+    ? {
+        min_lat: bounds.minLat,
+        max_lat: bounds.maxLat,
+        min_lng: bounds.minLng,
+        max_lng: bounds.maxLng,
+      }
+    : {}
+  let query = supabase.rpc('get_public_places', args)
   if (signal) {
     query = query.abortSignal(signal)
   }
