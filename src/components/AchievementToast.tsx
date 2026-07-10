@@ -8,7 +8,7 @@ import { ACHIEVEMENTS } from '../lib/achievements'
 import { STAMP_ICONS } from '../lib/stampIcons'
 import { loadSeen, saveSeen } from '../lib/achievementsSeen'
 import PassportStamp from './PassportStamp'
-import { usePublicPlaces } from '../hooks/usePublicPlaces'
+import { useMyVisitedStats } from '../hooks/useMyVisitedStats'
 
 function AchievementToast() {
   const { t } = useTranslation('pass')
@@ -16,16 +16,13 @@ function AchievementToast() {
   const { data: trips } = useTrips()
   const { data: journals } = useJournals()
   const [queue, setQueue] = useState<string[]>([])
-  const { data: publicPlaces } = usePublicPlaces(true)
+  const { data: visited } = useMyVisitedStats()
 
   const earnedIds = useMemo(() => {
-    if (!places || !trips || !journals || !publicPlaces) return null
-    const visited = publicPlaces
-      .filter((p) => p.visited_by_me)
-      .map((p) => ({ category: p.category, country_code: p.country_code }))
+    if (!places || !trips || !journals || !visited) return null
     const stats = computeTravelStats(places, visited, trips.length, journals.length)
     return ACHIEVEMENTS.filter((a) => a.earned(stats)).map((a) => a.id)
-  }, [places, trips, journals, publicPlaces])
+  }, [places, trips, journals, visited])
 
   useEffect(() => {
     if (!earnedIds) return
