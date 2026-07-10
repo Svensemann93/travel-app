@@ -1,26 +1,16 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useAuth } from './useAuth'
 import { fetchPublicPlaces } from '../lib/placesApi'
-import type { PublicBounds } from '../lib/placesApi'
-
-const round = (n: number) => Math.round(n * 100) / 100
+import { normalizeBounds } from '../lib/publicBounds'
+import type { PublicBounds } from '../lib/publicBounds'
 
 export function usePublicPlaces(enabled: boolean, bounds?: PublicBounds) {
   const { user } = useAuth()
-
-  const queryKey = bounds
-    ? [
-        'public-places',
-        round(bounds.minLat),
-        round(bounds.maxLat),
-        round(bounds.minLng),
-        round(bounds.maxLng),
-      ]
-    : ['public-places', 'all']
+  const normalized = bounds ? normalizeBounds(bounds) : undefined
 
   return useQuery({
-    queryKey,
-    queryFn: ({ signal }) => fetchPublicPlaces(bounds, signal),
+    queryKey: ['public-places', normalized ?? 'all'],
+    queryFn: ({ signal }) => fetchPublicPlaces(normalized, signal),
     enabled: enabled && !!user,
     staleTime: 5 * 60 * 1000,
     placeholderData: keepPreviousData,

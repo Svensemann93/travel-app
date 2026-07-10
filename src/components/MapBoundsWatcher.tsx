@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useMap, useMapEvents } from 'react-leaflet'
 import type { Map as LeafletMap } from 'leaflet'
-import type { PublicBounds } from '../lib/placesApi'
+import type { PublicBounds } from '../lib/publicBounds'
 
 type Props = {
   onChange: (bounds: PublicBounds) => void
