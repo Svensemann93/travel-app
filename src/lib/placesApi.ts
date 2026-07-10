@@ -2,6 +2,7 @@ import { supabase } from './supabase'
 import { deletePhotos as deletePhotoFiles, uploadPhoto } from './photoStorage'
 import type { NewPhoto, Place, PlacePhoto, PublicPlace } from '../types/place'
 import type { PlaceCreateInput, PlaceUpdateInput } from '../types/place'
+import type { PublicBounds } from './publicBounds'
 
 type PlaceRow = Omit<Place, 'photos'>
 
@@ -25,13 +26,6 @@ export async function fetchPlacesForUser(signal?: AbortSignal): Promise<Place[]>
     ...p,
     rating: p.rating != null ? Number(p.rating) : null,
   }))
-}
-
-export type PublicBounds = {
-  minLat: number
-  maxLat: number
-  minLng: number
-  maxLng: number
 }
 
 export async function fetchPublicPlaces(

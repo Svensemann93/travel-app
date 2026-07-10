@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LatLng } from 'leaflet'
 import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
@@ -34,7 +34,7 @@ import { useSetPlaceVisit, useRemovePlaceVisit } from '../hooks/usePlaceVisits'
 import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 import MapBoundsWatcher from '../components/MapBoundsWatcher'
-import type { PublicBounds } from '../lib/placesApi'
+import type { PublicBounds } from '../lib/publicBounds'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -53,6 +53,7 @@ function MapPage() {
     clearTimeout(boundsTimer.current)
     boundsTimer.current = setTimeout(() => setBounds(next), 400)
   }, [])
+  useEffect(() => () => clearTimeout(boundsTimer.current), [])
   const { data: publicPlaces = [] } = usePublicPlaces(!!bounds, bounds)
   const setVisit = useSetPlaceVisit()
   const removeVisit = useRemovePlaceVisit()
