@@ -29,10 +29,15 @@ function AchievementToast() {
       saveSeen(earnedIds)
       return
     }
+    const earnedSet = new Set<string>(earnedIds)
+    const stillEarned = seen.filter((id) => earnedSet.has(id))
     const fresh = earnedIds.filter((id) => !seen.includes(id))
-    if (fresh.length === 0) return
-    saveSeen([...seen, ...fresh])
-    queueMicrotask(() => setQueue((q) => [...q, ...fresh]))
+    if (fresh.length > 0) {
+      saveSeen([...stillEarned, ...fresh])
+      queueMicrotask(() => setQueue((q) => [...q, ...fresh]))
+    } else if (stillEarned.length !== seen.length) {
+      saveSeen(stillEarned)
+    }
   }, [earnedIds])
 
   useEffect(() => {
@@ -45,7 +50,7 @@ function AchievementToast() {
   if (!current) return null
 
   return (
-    <div className="fixed bottom-4 right-4 z-[2000] flex w-72 max-w-[calc(100vw-2rem)] items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-lg">
+    <div className="fixed top-20 right-4 z-[2000] flex w-72 max-w-[calc(100vw-2rem)] items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-lg">
       <div className="h-16 w-16 shrink-0">
         <PassportStamp
           id={`toast-${current.id}`}

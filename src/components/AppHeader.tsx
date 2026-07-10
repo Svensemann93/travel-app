@@ -7,7 +7,6 @@ import { supabase } from '../lib/supabase'
 import MobileMenu from './MobileMenu'
 import CategoryFilter from './CategoryFilter'
 import { resetWelcome } from '../lib/welcomeBanner'
-import AchievementToast from './AchievementToast'
 
 const NAV_ITEMS = [
   { to: '/', labelKey: 'nav.map', match: (path: string) => path === '/' },
@@ -120,7 +119,6 @@ function AppHeader({ sticky = false }: Props) {
         userLabel={userLabel}
         onLogout={handleLogout}
       />
-      <AchievementToast />
     </>
   )
 }
