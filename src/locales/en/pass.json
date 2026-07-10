@@ -1,0 +1,104 @@
+{
+  "title": "Passport",
+  "collected": "{{earned}} of {{total}} stamps collected",
+  "earned": "Earned",
+  "toast": {
+    "title": "New stamp!",
+    "dismiss": "Dismiss"
+  },
+  "stats": {
+    "places": "Places",
+    "photos": "Photos",
+    "trips": "Trips",
+    "journals": "Journals",
+    "shared": "Shared"
+  },
+  "progress": {
+    "collection": "Collection",
+    "categories": "Categories explored",
+    "continents": "Continents",
+    "countries": "Countries"
+  },
+  "achievements": {
+    "first_place": {
+      "title": "First Pin",
+      "desc": "Saved your first place"
+    },
+    "ten_places": {
+      "title": "Traveller",
+      "desc": "Collected 10 places"
+    },
+    "fifty_places": {
+      "title": "Globetrotter",
+      "desc": "Collected 50 places"
+    },
+    "hundred_places": {
+      "title": "Legend",
+      "desc": "Collected 100 places"
+    },
+    "places_250": {
+      "title": "Cartographer",
+      "desc": "Collected 250 places"
+    },
+    "places_500": {
+      "title": "Pioneer",
+      "desc": "Collected 500 places"
+    },
+    "explorer": {
+      "title": "Explorer",
+      "desc": "Explored 8 categories"
+    },
+    "hiker": {
+      "title": "Peak Seeker",
+      "desc": "Marked 10 hikes"
+    },
+    "foodie": {
+      "title": "Foodie",
+      "desc": "10 restaurants & cafés"
+    },
+    "nightlife": {
+      "title": "Night Owl",
+      "desc": "Visited 10 bars"
+    },
+    "nature": {
+      "title": "Nature Lover",
+      "desc": "Marked 10 nature spots"
+    },
+    "sightseer": {
+      "title": "Sightseer",
+      "desc": "10 sights visited"
+    },
+    "photographer": {
+      "title": "Photographer",
+      "desc": "Uploaded 25 photos"
+    },
+    "photos_100": {
+      "title": "Photojournalist",
+      "desc": "Uploaded 100 photos"
+    },
+    "planner": {
+      "title": "Planner",
+      "desc": "Planned your first trip"
+    },
+    "trips_5": {
+      "title": "Frequent Traveller",
+      "desc": "Planned 5 trips"
+    },
+    "chronicler": {
+      "title": "Chronicler",
+      "desc": "Started your first journal"
+    },
+    "journals_5": {
+      "title": "Storyteller",
+      "desc": "Kept 5 journals"
+    },
+    "sharer": {
+      "title": "Ambassador",
+      "desc": "Shared 5 places publicly"
+    },
+    "public_20": {
+      "title": "Influencer",
+      "desc": "Shared 20 places publicly"
+    }
+  }
+}

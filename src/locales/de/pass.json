@@ -1,0 +1,104 @@
+{
+  "title": "Reisepass",
+  "collected": "{{earned}} von {{total}} Stempeln gesammelt",
+  "earned": "Erreicht",
+  "toast": {
+    "title": "Neuer Stempel!",
+    "dismiss": "Schließen"
+  },
+  "stats": {
+    "places": "Orte",
+    "photos": "Fotos",
+    "trips": "Trips",
+    "journals": "Tagebücher",
+    "shared": "Geteilt"
+  },
+  "progress": {
+    "collection": "Sammlung",
+    "categories": "Kategorien erkundet",
+    "continents": "Kontinente",
+    "countries": "Länder"
+  },
+  "achievements": {
+    "first_place": {
+      "title": "Erster Pin",
+      "desc": "Ersten Ort gespeichert"
+    },
+    "ten_places": {
+      "title": "Reisender",
+      "desc": "10 Orte gesammelt"
+    },
+    "fifty_places": {
+      "title": "Globetrotter",
+      "desc": "50 Orte gesammelt"
+    },
+    "hundred_places": {
+      "title": "Legende",
+      "desc": "100 Orte gesammelt"
+    },
+    "places_250": {
+      "title": "Kartograf",
+      "desc": "250 Orte gesammelt"
+    },
+    "places_500": {
+      "title": "Pionier",
+      "desc": "500 Orte gesammelt"
+    },
+    "explorer": {
+      "title": "Entdecker",
+      "desc": "8 Kategorien erkundet"
+    },
+    "hiker": {
+      "title": "Gipfelstürmer",
+      "desc": "10 Wanderungen markiert"
+    },
+    "foodie": {
+      "title": "Feinschmecker",
+      "desc": "10 Restaurants & Cafés"
+    },
+    "nightlife": {
+      "title": "Nachtschwärmer",
+      "desc": "10 Bars besucht"
+    },
+    "nature": {
+      "title": "Naturfreund",
+      "desc": "10 Naturorte markiert"
+    },
+    "sightseer": {
+      "title": "Kulturkenner",
+      "desc": "10 Sehenswürdigkeiten"
+    },
+    "photographer": {
+      "title": "Fotograf",
+      "desc": "25 Fotos hochgeladen"
+    },
+    "photos_100": {
+      "title": "Bildreporter",
+      "desc": "100 Fotos hochgeladen"
+    },
+    "planner": {
+      "title": "Planer",
+      "desc": "Ersten Trip geplant"
+    },
+    "trips_5": {
+      "title": "Vielreisender",
+      "desc": "5 Trips geplant"
+    },
+    "chronicler": {
+      "title": "Chronist",
+      "desc": "Erstes Tagebuch geführt"
+    },
+    "journals_5": {
+      "title": "Erzähler",
+      "desc": "5 Tagebücher geführt"
+    },
+    "sharer": {
+      "title": "Botschafter",
+      "desc": "5 Orte öffentlich geteilt"
+    },
+    "public_20": {
+      "title": "Influencer",
+      "desc": "20 Orte öffentlich geteilt"
+    }
+  }
+}

@@ -66,6 +66,7 @@ export function toJournalWithEntries(data: SharedJournal): JournalWithEntries {
             price_level: null,
             website_url: null,
             is_public: false,
+            country_code: null,
             created_at: '',
             photos: e.place_photos.map((p, pi) => ({
               id: p.id,

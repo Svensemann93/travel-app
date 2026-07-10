@@ -12,6 +12,7 @@ import {
   updatePlaceRow,
 } from '../lib/placesApi'
 import type { NewPhoto, Place, PlaceCreateInput, PlaceUpdateInput } from '../types/place'
+import { reverseGeocodeCountry } from '../lib/reverseGeocode'
 
 export const placesKeys = {
   all: ['places'] as const,
@@ -43,7 +44,8 @@ export function useCreatePlace() {
       photos: NewPhoto[]
     }): Promise<Place> => {
       if (!userId) throw new Error('Not authenticated')
-      const row = await insertPlaceRow(userId, data)
+      const country_code = await reverseGeocodeCountry(data.latitude, data.longitude)
+      const row = await insertPlaceRow(userId, { ...data, country_code })
       const photoRows = await insertPhotoRows(userId, row.id, photos, 0)
       return { ...row, photos: photoRows }
     },

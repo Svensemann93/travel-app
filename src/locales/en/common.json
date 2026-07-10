@@ -10,7 +10,8 @@
     "trips": "Trips",
     "journal": "Journal",
     "profile": "Profile",
-    "label": "Main navigation"
+    "label": "Main navigation",
+    "pass": "Passport"
   },
   "auth": {
     "logout": "Sign out"
