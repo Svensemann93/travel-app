@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LatLng } from 'leaflet'
 import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
@@ -33,6 +33,8 @@ import VisitEditModal from '../components/VisitEditModal'
 import { useSetPlaceVisit, useRemovePlaceVisit } from '../hooks/usePlaceVisits'
 import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
+import MapBoundsWatcher from '../components/MapBoundsWatcher'
+import type { PublicBounds } from '../lib/placesApi'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -45,7 +47,13 @@ function MapPage() {
   const focusedPlace = useFocusedPlace(places)
   const { selected } = useCategoryFilter()
   const [showPublic, setShowPublic] = useState(true)
-  const { data: publicPlaces = [] } = usePublicPlaces(true)
+  const [bounds, setBounds] = useState<PublicBounds | undefined>(undefined)
+  const boundsTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const handleBoundsChange = useCallback((next: PublicBounds) => {
+    clearTimeout(boundsTimer.current)
+    boundsTimer.current = setTimeout(() => setBounds(next), 400)
+  }, [])
+  const { data: publicPlaces = [] } = usePublicPlaces(!!bounds, bounds)
   const setVisit = useSetPlaceVisit()
   const removeVisit = useRemovePlaceVisit()
   const [editingVisit, setEditingVisit] = useState<PublicPlace | null>(null)
@@ -138,6 +146,7 @@ function MapPage() {
             center={entryPoint ? [entryPoint.latitude, entryPoint.longitude] : undefined}
             zoom={entryPoint ? 13 : undefined}
           >
+            <MapBoundsWatcher onChange={handleBoundsChange} />
             <SearchControl />
             <LocateControl />
             <PlaceMarkers
