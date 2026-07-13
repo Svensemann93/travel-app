@@ -1,46 +1,64 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlaces } from '../hooks/usePlaces'
 import { useTrips } from '../hooks/useTrips'
 import { useJournals } from '../hooks/useJournals'
+import { useMyVisitedStats } from '../hooks/useMyVisitedStats'
+import { useAuth } from '../hooks/useAuth'
 import { computeTravelStats } from '../lib/travelStats'
 import { ACHIEVEMENTS } from '../lib/achievements'
 import { STAMP_ICONS } from '../lib/stampIcons'
-import { loadSeen, saveSeen } from '../lib/achievementsSeen'
+import { loadSeen, saveSeen, reconcileSeen } from '../lib/achievementsSeen'
+import { captureException } from '../lib/sentry'
 import PassportStamp from './PassportStamp'
-import { useMyVisitedStats } from '../hooks/useMyVisitedStats'
 
 function AchievementToast() {
   const { t } = useTranslation('pass')
+  const { user } = useAuth()
+  const userId = user?.id
   const { data: places } = usePlaces()
   const { data: trips } = useTrips()
   const { data: journals } = useJournals()
+  const {
+    data: visited = [],
+    isPending: visitedPending,
+    isError: visitedError,
+  } = useMyVisitedStats()
   const [queue, setQueue] = useState<string[]>([])
-  const { data: visited } = useMyVisitedStats()
-
-  const earnedIds = useMemo(() => {
-    if (!places || !trips || !journals || !visited) return null
-    const stats = computeTravelStats(places, visited, trips.length, journals.length)
-    return ACHIEVEMENTS.filter((a) => a.earned(stats)).map((a) => a.id)
-  }, [places, trips, journals, visited])
 
   useEffect(() => {
-    if (!earnedIds) return
-    const seen = loadSeen()
-    if (seen === null) {
-      saveSeen(earnedIds)
+    if (visitedError) {
+      captureException(new Error('get_my_public_place_visit_stats failed'))
+    }
+  }, [visitedError])
+
+  const prevUser = useRef<string | undefined>(userId)
+  useEffect(() => {
+    if (prevUser.current !== userId) {
+      prevUser.current = userId
+      setQueue([])
+    }
+  }, [userId])
+
+  const earnedIds = useMemo(() => {
+    if (!userId || !places || !trips || !journals) return null
+    if (visitedPending && !visitedError) return null
+    const stats = computeTravelStats(places, visited, trips.length, journals.length)
+    return ACHIEVEMENTS.filter((a) => a.earned(stats)).map((a) => a.id)
+  }, [userId, places, trips, journals, visited, visitedPending, visitedError])
+
+  useEffect(() => {
+    if (!userId || !earnedIds) return
+    const stored = loadSeen(userId)
+    if (stored === null) {
+      saveSeen(userId, earnedIds)
       return
     }
-    const earnedSet = new Set<string>(earnedIds)
-    const stillEarned = seen.filter((id) => earnedSet.has(id))
-    const fresh = earnedIds.filter((id) => !seen.includes(id))
-    if (fresh.length > 0) {
-      saveSeen([...stillEarned, ...fresh])
-      queueMicrotask(() => setQueue((q) => [...q, ...fresh]))
-    } else if (stillEarned.length !== seen.length) {
-      saveSeen(stillEarned)
-    }
-  }, [earnedIds])
+    const { fresh, nextSeen } = reconcileSeen(earnedIds, stored)
+    if (fresh.length === 0) return
+    saveSeen(userId, nextSeen)
+    queueMicrotask(() => setQueue((q) => [...q, ...fresh]))
+  }, [userId, earnedIds])
 
   useEffect(() => {
     if (queue.length === 0) return
