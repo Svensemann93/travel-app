@@ -5,13 +5,21 @@ export type PublicBounds = {
   maxLng: number
 }
 
-const PRECISION = 100
+const STEP = 5
+
+function floorTo(n: number): number {
+  return (Math.floor(Math.round(n * 100) / STEP) * STEP) / 100
+}
+
+function ceilTo(n: number): number {
+  return (Math.ceil(Math.round(n * 100) / STEP) * STEP) / 100
+}
 
 export function normalizeBounds(bounds: PublicBounds): PublicBounds {
   return {
-    minLat: Math.floor(bounds.minLat * PRECISION) / PRECISION,
-    maxLat: Math.ceil(bounds.maxLat * PRECISION) / PRECISION,
-    minLng: Math.floor(bounds.minLng * PRECISION) / PRECISION,
-    maxLng: Math.ceil(bounds.maxLng * PRECISION) / PRECISION,
+    minLat: floorTo(bounds.minLat),
+    maxLat: ceilTo(bounds.maxLat),
+    minLng: floorTo(bounds.minLng),
+    maxLng: ceilTo(bounds.maxLng),
   }
 }

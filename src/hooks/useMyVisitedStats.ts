@@ -6,7 +6,7 @@ export function useMyVisitedStats() {
   const { user } = useAuth()
 
   return useQuery({
-    queryKey: ['my-visited-stats'],
+    queryKey: ['my-visited-stats', user?.id],
     queryFn: ({ signal }) => fetchMyVisitedStats(signal),
     enabled: !!user,
     staleTime: 5 * 60 * 1000,

@@ -49,9 +49,15 @@ function MapPage() {
   const [showPublic, setShowPublic] = useState(true)
   const [bounds, setBounds] = useState<PublicBounds | undefined>(undefined)
   const boundsTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const boundsInitialized = useRef(false)
   const handleBoundsChange = useCallback((next: PublicBounds) => {
+    if (!boundsInitialized.current) {
+      boundsInitialized.current = true
+      setBounds(next)
+      return
+    }
     clearTimeout(boundsTimer.current)
-    boundsTimer.current = setTimeout(() => setBounds(next), 400)
+    boundsTimer.current = setTimeout(() => setBounds(next), 80)
   }, [])
   useEffect(() => () => clearTimeout(boundsTimer.current), [])
   const { data: publicPlaces = [] } = usePublicPlaces(!!bounds, bounds)
