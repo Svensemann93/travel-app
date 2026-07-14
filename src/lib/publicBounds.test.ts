@@ -26,4 +26,14 @@ describe('normalizeBounds', () => {
     })
     expect(result).toEqual({ minLat: -34.65, maxLat: -34.6, minLng: -58.45, maxLng: -58.4 })
   })
+
+  it('rounds strictly outward for a thin box straddling a 0.05 grid line', () => {
+    const result = normalizeBounds({
+      minLat: 47.34999,
+      maxLat: 47.35001,
+      minLng: 8.54999,
+      maxLng: 8.55001,
+    })
+    expect(result).toEqual({ minLat: 47.3, maxLat: 47.4, minLng: 8.5, maxLng: 8.6 })
+  })
 })

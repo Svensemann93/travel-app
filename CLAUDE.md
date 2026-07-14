@@ -29,6 +29,14 @@ Personal mobile-first travel app. Solo developer, German-speaking — conversati
 - Never use `useEffect` to sync local state from props — use the `key` prop to force remount. Never call `setState` synchronously in an effect body (`react-hooks/set-state-in-effect` fails the build) — decide via a `useState` lazy initializer, or defer with `queueMicrotask`.
 - DOM measurement logic must live in the component that is actually mounted when measuring.
 
+## Public places (read model + viewport loading)
+
+- `get_public_places(bbox?, max_rows?)` is the only way other users' public places are exposed — base tables are never read directly. `max_rows` is clamped server-side to 1..1000. A partial btree index `places_public_coords_idx` on `(latitude, longitude) where is_public` supports the bbox scan (PostGIS + GiST is the later option for real growth).
+- The map passes the current viewport so only visible pins load; the public toggle is a display-only filter. The first viewport is applied immediately, later pans/zooms are debounced (`MapPage`).
+- `normalizeBounds` snaps the viewport **outward** to the 0.05° grid (floor min / ceil max). The **same** normalized box must drive both the React Query key and the request, so panning within a cell can't serve cached data that misses edge pins. Unit-tested in `publicBounds.test.ts`.
+- Passport & `AchievementToast` never load full public places. They read visited foreign places from the lean `get_my_public_place_visit_stats()` RPC (only `category` + `country_code`). `useMyVisitedStats` is keyed `['my-visited-stats', userId]`; visit mutations invalidate it.
+- `AchievementToast`: the seen-set is per user (`achievementsSeen:${userId}`) and **monotonic** — `reconcileSeen` never removes ids, so a transient undercount can't resurface dismissed stamps. The queue is cleared on user change. Own place/trip/journal stamps are still evaluated when `useMyVisitedStats` errors (visited treated as empty, reported to Sentry); the toast only waits while the visit RPC is genuinely pending for the first evaluation.
+
 ## Workflow (ALWAYS in this exact order — never start by editing files)
 
 1. Create feature branch from up-to-date main
@@ -49,12 +57,4 @@ Personal mobile-first travel app. Solo developer, German-speaking — conversati
 
 ## Communication style
 
-- Short, direct answers. No preamble, no recaps, no unsolicited
-
-## Public places & photos
-
-- `get_public_places()` takes optional bounding-box + `max_rows` params (default whole world). The map passes the current viewport (debounced 400 ms, `MapBoundsWatcher` via `useMapEvents`) so it loads only visible pins; the toggle stays a display-only filter. Passport/toast still call it without bounds (whole world) until the summary RPC lands.
-- Viewport bounds are normalized outward (`normalizeBounds`, floor min / ceil max to 0.01°) and the **same** normalized box drives both the React Query key and the request, so panning within a cell can't serve cached data that misses edge pins (unit-tested in `publicBounds.test.ts`). `max_rows` is clamped server-side to 1..1000; a partial btree index `places_public_coords_idx` on `(latitude, longitude) where is_public` supports the bbox scan (PostGIS + GiST is the later option for real growth).
-- Passport & `AchievementToast` no longer load all public places. They read visited foreign places from the lean `get_my_public_place_visit_stats()` RPC (returns only `category` + `country_code` of the user's visited public foreign places — no photos/descriptions/foreign ratings, no 1000-row world query). `useMyVisitedStats` caches it; visit mutations invalidate `['my-visited-stats']`.
-- `AchievementToast` stores the seen-set per user (`achievementsSeen:${userId}`) and the seen-set is **monotonic** — `reconcileSeen` never removes ids, so a transient undercount (a stat query still loading) can't resurface already-dismissed stamps. The toast queue is cleared on user change. Own-place/trip/journal stamps are still evaluated when `useMyVisitedStats` errors (visited treated as empty, error reported to Sentry); the toast only waits while the visit RPC is genuinely pending for the first evaluation. `useMyVisitedStats` is keyed by `['my-visited-stats', userId]`.
-- Known limitation (not fixed here): a visited foreign place that its owner later makes private or deletes drops out of `get_my_public_place_visit_stats`, so the visitor's place count and country/continent reach decrease (already-dismissed stamps won't re-toast thanks to the monotonic seen-set). Historical stability would require snapshotting `category` + `country_code` into `place_visits` at visit time and reading stats from the snapshot instead of joining live to `places`.
+- Short, direct answers. No preamble, no recaps, no unsolicited suggestions. Evaluate external feedback honestly before implementing.
