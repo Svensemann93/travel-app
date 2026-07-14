@@ -5,14 +5,14 @@ export type PublicBounds = {
   maxLng: number
 }
 
-const STEP = 5
+const CELLS_PER_DEGREE = 20
 
 function floorTo(n: number): number {
-  return (Math.floor(Math.round(n * 100) / STEP) * STEP) / 100
+  return Math.floor(n * CELLS_PER_DEGREE) / CELLS_PER_DEGREE
 }
 
 function ceilTo(n: number): number {
-  return (Math.ceil(Math.round(n * 100) / STEP) * STEP) / 100
+  return Math.ceil(n * CELLS_PER_DEGREE) / CELLS_PER_DEGREE
 }
 
 export function normalizeBounds(bounds: PublicBounds): PublicBounds {
