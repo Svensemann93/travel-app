@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { usePlaces } from '../hooks/usePlaces'
 import { useTrips } from '../hooks/useTrips'
 import { useJournals } from '../hooks/useJournals'
+import { useMyVisitedStats } from '../hooks/useMyVisitedStats'
 import { availableYears, computeYearReview } from '../lib/yearReview'
 import type { YearSelection } from '../lib/yearReview'
 import AppHeader from '../components/AppHeader'
@@ -16,13 +17,17 @@ function YearReviewPage() {
   const { data: places = [] } = usePlaces()
   const { data: trips = [] } = useTrips()
   const { data: journals = [] } = useJournals()
+  const { data: visits = [] } = useMyVisitedStats()
 
-  const years = useMemo(() => availableYears(places, trips, journals), [places, trips, journals])
+  const years = useMemo(
+    () => availableYears(places, visits, trips, journals),
+    [places, visits, trips, journals],
+  )
   const [selected, setSelected] = useState<YearSelection>('all')
 
   const review = useMemo(
-    () => computeYearReview(places, trips, journals, selected),
-    [places, trips, journals, selected],
+    () => computeYearReview(places, visits, trips, journals, selected),
+    [places, visits, trips, journals, selected],
   )
 
   const hasPhotos = review.photos.length > 0
