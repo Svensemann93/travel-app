@@ -11,8 +11,6 @@ export type ReviewPhoto = {
   placeId: string
 }
 
-const PHOTO_POOL = 48
-
 export type YearReview = {
   year: YearSelection
   placeCount: number
@@ -85,21 +83,14 @@ export function computeYearReview(
   }
 
   const placesWithPhotos = selectedPlaces.filter((place) => place.photos.length > 0)
-  const stride = Math.max(1, Math.ceil(placesWithPhotos.length / PHOTO_POOL))
-  const sampledPlaces: Place[] = []
-  for (let i = 0; i < placesWithPhotos.length && sampledPlaces.length < PHOTO_POOL; i += stride) {
-    sampledPlaces.push(placesWithPhotos[i])
-  }
-
   const photos: ReviewPhoto[] = []
-  for (let round = 0; photos.length < PHOTO_POOL; round += 1) {
+  for (let round = 0; ; round += 1) {
     let added = false
-    for (const place of sampledPlaces) {
+    for (const place of placesWithPhotos) {
       const photo = place.photos[round]
       if (!photo) continue
       photos.push({ path: photo.thumb_url ?? photo.url, placeId: place.id })
       added = true
-      if (photos.length >= PHOTO_POOL) break
     }
     if (!added) break
   }

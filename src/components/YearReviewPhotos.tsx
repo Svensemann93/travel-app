@@ -1,10 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ReviewPhoto } from '../lib/yearReview'
 import SignedImage from './SignedImage'
 
 const VISIBLE = 9
 const INTERVAL_MS = 18000
+
+function shuffle(photos: ReviewPhoto[]): ReviewPhoto[] {
+  const result = [...photos]
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const swap = result[i]
+    result[i] = result[j]
+    result[j] = swap
+  }
+  return result
+}
+
+function pickOther(current: number, total: number): number {
+  if (total <= 1) return current
+  const offset = Math.floor(Math.random() * (total - 1))
+  return offset >= current ? offset + 1 : offset
+}
 
 type TileProps = {
   photos: ReviewPhoto[]
@@ -14,12 +31,22 @@ type TileProps = {
 }
 
 function RotatingTile({ photos, startDelay, label, onSelect }: TileProps) {
-  const [index, setIndex] = useState(0)
+  const total = photos.length
+  const [frame, setFrame] = useState(() => ({
+    previous: 0,
+    current: 0,
+    next: pickOther(0, total),
+  }))
 
   useEffect(() => {
-    if (photos.length <= 1) return
+    if (total <= 1) return
     let interval: number | undefined
-    const advance = () => setIndex((current) => (current + 1) % photos.length)
+    const advance = () =>
+      setFrame((current) => ({
+        previous: current.current,
+        current: current.next,
+        next: pickOther(current.next, total),
+      }))
     const timeout = window.setTimeout(() => {
       advance()
       interval = window.setInterval(advance, INTERVAL_MS)
@@ -28,17 +55,16 @@ function RotatingTile({ photos, startDelay, label, onSelect }: TileProps) {
       window.clearTimeout(timeout)
       if (interval !== undefined) window.clearInterval(interval)
     }
-  }, [photos.length, startDelay])
+  }, [total, startDelay])
 
-  const total = photos.length
-  const mounted = new Set([(index - 1 + total) % total, index, (index + 1) % total])
+  const mounted = new Set([frame.previous, frame.current, frame.next])
 
   return (
     <button
       type="button"
       title={label}
       aria-label={label}
-      onClick={() => onSelect(photos[index].placeId)}
+      onClick={() => onSelect(photos[frame.current].placeId)}
       className="group relative aspect-square overflow-hidden rounded-xl bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#39bbde] md:aspect-auto md:h-full"
     >
       {photos.map((photo, i) =>
@@ -46,7 +72,7 @@ function RotatingTile({ photos, startDelay, label, onSelect }: TileProps) {
           <div
             key={photo.path}
             className={`absolute inset-0 transition-opacity duration-[3000ms] ease-in-out ${
-              i === index ? 'opacity-100' : 'opacity-0'
+              i === frame.current ? 'opacity-100' : 'opacity-0'
             }`}
           >
             <SignedImage
@@ -68,10 +94,12 @@ type Props = {
 
 function YearReviewPhotos({ photos, onSelect }: Props) {
   const { t } = useTranslation('review')
-  if (photos.length === 0) return null
-  const cellCount = Math.min(VISIBLE, photos.length)
+  const shuffled = useMemo(() => shuffle(photos), [photos])
+
+  if (shuffled.length === 0) return null
+  const cellCount = Math.min(VISIBLE, shuffled.length)
   const cells: ReviewPhoto[][] = Array.from({ length: cellCount }, () => [])
-  photos.forEach((photo, i) => cells[i % cellCount].push(photo))
+  shuffled.forEach((photo, i) => cells[i % cellCount].push(photo))
   const step = INTERVAL_MS / cellCount
   const label = t('photoAction')
 

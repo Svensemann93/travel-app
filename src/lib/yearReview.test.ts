@@ -138,7 +138,7 @@ describe('computeYearReview', () => {
     expect(r.photos).toHaveLength(3)
   })
 
-  it('spreads photos across the whole place list', () => {
+  it('returns every photo, one per place before any second photo', () => {
     const many: Place[] = Array.from({ length: 200 }, (_, i) =>
       place({
         created_at: '2025-01-01T00:00:00Z',
@@ -147,9 +147,9 @@ describe('computeYearReview', () => {
       }),
     )
     const r = computeYearReview(many, [], [], [], 2025)
-    expect(r.photos).toHaveLength(48)
-    expect(new Set(r.photos.map((p) => p.path)).size).toBe(48)
-    expect(new Set(r.photos.map((p) => p.placeId)).size).toBeGreaterThanOrEqual(40)
+    expect(r.photos).toHaveLength(400)
+    expect(new Set(r.photos.map((p) => p.path)).size).toBe(400)
+    expect(new Set(r.photos.slice(0, 200).map((p) => p.placeId)).size).toBe(200)
   })
 
   it('uses several photos per place when the year has few places', () => {
@@ -179,7 +179,11 @@ describe('computeYearReview', () => {
         name: 'Foreign cafe',
         rating: 5,
       }),
-      visit({ created_at: '2023-09-09T00:00:00Z', country_code: 'JP', category: 'cafe' }),
+      visit({
+        created_at: '2023-09-09T00:00:00Z',
+        country_code: 'JP',
+        category: 'cafe',
+      }),
       visit({ created_at: '2021-01-01T00:00:00Z', country_code: 'US' }),
     ]
     const r = computeYearReview([], visits, [], [], 2023)
@@ -188,16 +192,28 @@ describe('computeYearReview', () => {
     expect(r.continentCount).toBe(1)
     expect(r.newCountryCount).toBe(1)
     expect(r.topCategory).toEqual({ id: 'cafe', count: 2 })
-    expect(r.highlight).toEqual({ name: 'Foreign cafe', countryCode: 'JP', rating: 5 })
+    expect(r.highlight).toEqual({
+      name: 'Foreign cafe',
+      countryCode: 'JP',
+      rating: 5,
+    })
     expect(r.photos).toHaveLength(0)
   })
 
   it('combines own places and visits within the same year', () => {
     const own = [
-      place({ created_at: '2023-05-05T00:00:00Z', country_code: 'CH', category: 'hiking' }),
+      place({
+        created_at: '2023-05-05T00:00:00Z',
+        country_code: 'CH',
+        category: 'hiking',
+      }),
     ]
     const vis = [
-      visit({ created_at: '2023-06-06T00:00:00Z', country_code: 'JP', category: 'cafe' }),
+      visit({
+        created_at: '2023-06-06T00:00:00Z',
+        country_code: 'JP',
+        category: 'cafe',
+      }),
     ]
     const r = computeYearReview(own, vis, [], [], 2023)
     expect(r.placeCount).toBe(2)
