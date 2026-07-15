@@ -9,6 +9,7 @@ export type YearSelection = number | 'all'
 export type ReviewPhoto = {
   path: string
   placeId: string
+  name: string
 }
 
 export type YearReview = {
@@ -44,6 +45,19 @@ function visitYear(visit: VisitedPlace): number | null {
   return yearOf(visit.visited_on ?? visit.created_at)
 }
 
+type BestPlace = {
+  name: string
+  countryCode: string | null
+  rating: number
+  date: string
+}
+
+function beats(candidate: BestPlace, best: BestPlace): boolean {
+  if (candidate.rating !== best.rating) return candidate.rating > best.rating
+  if (candidate.date !== best.date) return candidate.date > best.date
+  return candidate.name.localeCompare(best.name) < 0
+}
+
 export function computeYearReview(
   places: Place[],
   visits: VisitedPlace[],
@@ -56,13 +70,15 @@ export function computeYearReview(
   const countries = new Set<string>()
   const continents = new Set<string>()
   const categoryCounts = new Map<CategoryId, number>()
-  let highlight: YearReview['highlight'] = null
+
+  const rated: BestPlace[] = []
 
   const collect = (
     category: CategoryId,
     countryCode: string | null,
     name: string,
     rating: number | null,
+    date: string,
   ) => {
     if (countryCode) {
       countries.add(countryCode)
@@ -70,17 +86,35 @@ export function computeYearReview(
       if (continent) continents.add(continent)
     }
     categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1)
-    if (rating != null && (!highlight || rating > highlight.rating)) {
-      highlight = { name, countryCode, rating }
-    }
+    if (rating == null) return
+    rated.push({ name, countryCode, rating, date: date.slice(0, 10) })
   }
 
   for (const place of selectedPlaces) {
-    collect(place.category, place.country_code, place.name, place.rating)
+    collect(
+      place.category,
+      place.country_code,
+      place.name,
+      place.rating,
+      place.visited_on ?? place.created_at,
+    )
   }
   for (const visit of selectedVisits) {
-    collect(visit.category, visit.country_code, visit.name, visit.rating)
+    collect(
+      visit.category,
+      visit.country_code,
+      visit.name,
+      visit.rating,
+      visit.visited_on ?? visit.created_at,
+    )
   }
+  let best: BestPlace | null = null
+  for (const candidate of rated) {
+    if (!best || beats(candidate, best)) best = candidate
+  }
+  const highlight: YearReview['highlight'] = best
+    ? { name: best.name, countryCode: best.countryCode, rating: best.rating }
+    : null
 
   const placesWithPhotos = selectedPlaces.filter((place) => place.photos.length > 0)
   const photos: ReviewPhoto[] = []
@@ -89,7 +123,7 @@ export function computeYearReview(
     for (const place of placesWithPhotos) {
       const photo = place.photos[round]
       if (!photo) continue
-      photos.push({ path: photo.thumb_url ?? photo.url, placeId: place.id })
+      photos.push({ path: photo.thumb_url ?? photo.url, placeId: place.id, name: place.name })
       added = true
     }
     if (!added) break

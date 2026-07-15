@@ -8,16 +8,23 @@ import { useMyVisitedStats } from '../hooks/useMyVisitedStats'
 import { availableYears, computeYearReview } from '../lib/yearReview'
 import type { YearSelection } from '../lib/yearReview'
 import AppHeader from '../components/AppHeader'
+import QueryBoundary from '../components/QueryBoundary'
 import YearReviewCard from '../components/YearReviewCard'
 import YearReviewPhotos from '../components/YearReviewPhotos'
 
 function YearReviewPage() {
   const { t } = useTranslation('review')
   const navigate = useNavigate()
-  const { data: places = [] } = usePlaces()
-  const { data: trips = [] } = useTrips()
-  const { data: journals = [] } = useJournals()
-  const { data: visits = [] } = useMyVisitedStats()
+  const placesQuery = usePlaces()
+  const tripsQuery = useTrips()
+  const journalsQuery = useJournals()
+  const visitsQuery = useMyVisitedStats()
+  const queries = [placesQuery, tripsQuery, journalsQuery, visitsQuery]
+
+  const places = useMemo(() => placesQuery.data ?? [], [placesQuery.data])
+  const trips = useMemo(() => tripsQuery.data ?? [], [tripsQuery.data])
+  const journals = useMemo(() => journalsQuery.data ?? [], [journalsQuery.data])
+  const visits = useMemo(() => visitsQuery.data ?? [], [visitsQuery.data])
 
   const years = useMemo(
     () => availableYears(places, visits, trips, journals),
@@ -72,17 +79,24 @@ function YearReviewPage() {
           </select>
         </div>
 
-        {hasPhotos ? (
-          <div className="grid gap-6 md:grid-cols-[minmax(0,26rem)_1fr]">
+        <QueryBoundary
+          isLoading={queries.some((query) => query.isLoading)}
+          isError={queries.some((query) => query.isError)}
+          error={queries.find((query) => query.error)?.error}
+          onRetry={() => queries.forEach((query) => void query.refetch())}
+        >
+          {hasPhotos ? (
+            <div className="grid gap-6 md:grid-cols-[minmax(0,26rem)_1fr]">
+              <YearReviewCard review={review} />
+              <YearReviewPhotos
+                photos={review.photos}
+                onSelect={(placeId) => navigate(`/?focus=${placeId}`)}
+              />
+            </div>
+          ) : (
             <YearReviewCard review={review} />
-            <YearReviewPhotos
-              photos={review.photos}
-              onSelect={(placeId) => navigate(`/?focus=${placeId}`)}
-            />
-          </div>
-        ) : (
-          <YearReviewCard review={review} />
-        )}
+          )}
+        </QueryBoundary>
       </main>
     </div>
   )

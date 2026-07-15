@@ -221,6 +221,63 @@ describe('computeYearReview', () => {
     expect(r.continentCount).toBe(2)
   })
 
+  it('breaks highlight ties by newest date, then by name', () => {
+    const tied: Place[] = [
+      place({
+        created_at: '2024-01-01T00:00:00Z',
+        visited_on: '2024-03-01',
+        rating: 5,
+        name: 'Older',
+      }),
+      place({
+        created_at: '2024-01-01T00:00:00Z',
+        visited_on: '2024-09-01',
+        rating: 5,
+        name: 'Zulu',
+      }),
+      place({
+        created_at: '2024-01-01T00:00:00Z',
+        visited_on: '2024-09-01',
+        rating: 5,
+        name: 'Alpha',
+      }),
+      place({
+        created_at: '2024-01-01T00:00:00Z',
+        visited_on: '2024-09-02',
+        rating: 4,
+        name: 'Lower',
+      }),
+    ]
+    expect(computeYearReview(tied, [], [], [], 2024).highlight?.name).toBe('Alpha')
+    const reversed = [...tied].reverse()
+    expect(computeYearReview(reversed, [], [], [], 2024).highlight?.name).toBe('Alpha')
+  })
+
+  it('carries the place name on every photo', () => {
+    const named: Place[] = [
+      place({
+        created_at: '2024-01-01T00:00:00Z',
+        name: 'Kijani Beach Villas',
+        photos: [photo('2024-01-01T00:00:00Z')],
+      }),
+    ]
+    const r = computeYearReview(named, [], [], [], 2024)
+    expect(r.photos[0].name).toBe('Kijani Beach Villas')
+  })
+
+  it('reports trips and journals even without a place in that year', () => {
+    const r = computeYearReview(
+      [],
+      [],
+      [trip({ created_at: '2020-02-02T00:00:00Z', start_date: '2020-02-02' })],
+      [journal('2020-03-03T00:00:00Z')],
+      2020,
+    )
+    expect(r.placeCount).toBe(0)
+    expect(r.tripCount).toBe(1)
+    expect(r.journalCount).toBe(1)
+  })
+
   it('prefers the travel date over the capture date', () => {
     const dated: Place[] = [
       place({

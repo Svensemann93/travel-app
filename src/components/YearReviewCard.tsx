@@ -12,7 +12,11 @@ function YearReviewCard({ review }: Props) {
   const nf = new Intl.NumberFormat(i18n.language === 'de' ? 'de-CH' : 'en-US')
   const isAll = review.year === 'all'
   const yearLabel = isAll ? t('all') : String(review.year)
-  const empty = review.placeCount === 0
+  const empty =
+    review.placeCount === 0 &&
+    review.tripCount === 0 &&
+    review.journalCount === 0 &&
+    review.photoCount === 0
 
   const fields = [
     { k: t('fields.places'), v: nf.format(review.placeCount) },

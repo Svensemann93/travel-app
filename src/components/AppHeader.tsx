@@ -38,7 +38,6 @@ function AppHeader({ sticky = false }: Props) {
 
   async function handleLogout() {
     resetWelcome()
-    await supabase.auth.signOut()
     setIsMobileOpen(false)
     await supabase.auth.signOut()
     queryClient.clear()
