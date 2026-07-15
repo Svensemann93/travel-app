@@ -2,6 +2,7 @@
   "title": "Reisepass",
   "collected": "{{earned}} von {{total}} Stempeln gesammelt",
   "earned": "Erreicht",
+  "reviewLink": "Rückblick ansehen",
   "toast": {
     "title": "Neuer Stempel!",
     "dismiss": "Schließen"

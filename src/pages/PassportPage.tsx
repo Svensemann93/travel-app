@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { usePlaces } from '../hooks/usePlaces'
 import { useTrips } from '../hooks/useTrips'
@@ -44,7 +45,15 @@ function PassportPage() {
       <AppHeader />
       <main className="mx-auto max-w-4xl p-4 md:p-8">
         <section className="mb-8 rounded-2xl border border-slate-200 bg-gradient-to-br from-sky-50 to-amber-50 p-5 md:p-6">
-          <h2 className="text-2xl font-bold text-slate-800">{t('title')}</h2>
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="text-2xl font-bold text-slate-800">{t('title')}</h2>
+            <Link
+              to="/review"
+              className="shrink-0 rounded-full bg-white/70 px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-white"
+            >
+              {t('reviewLink')}
+            </Link>{' '}
+          </div>
           <p className="mt-1 text-sm text-slate-600">
             {t('collected', { earned: earnedCount, total: ACHIEVEMENTS.length })}
           </p>
