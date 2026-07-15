@@ -10,6 +10,7 @@ export type PlaceFormValues = {
   rating: number | null
   price_level: number | null
   website_url: string
+  visitedOn: string
   isPublic: boolean
   newPhotos: NewPhoto[]
   photosToDelete: string[]
@@ -36,6 +37,8 @@ export type PlaceFormApi = {
   setPriceLevel: (value: number | null) => void
   websiteUrl: string
   setWebsiteUrl: (value: string) => void
+  visitedOn: string
+  setVisitedOn: (value: string) => void
   isPublic: boolean
   setIsPublic: (value: boolean) => void
   photos: File[]
@@ -57,6 +60,7 @@ export function placeToFormInitial(place: Place): PlaceFormInitial {
     rating: place.rating,
     price_level: place.price_level,
     website_url: place.website_url ?? '',
+    visitedOn: place.visited_on ?? '',
     isPublic: place.is_public,
     existingPhotos: place.photos ?? [],
   }
@@ -69,6 +73,7 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
   const [rating, setRating] = useState<number | null>(initialData?.rating ?? null)
   const [priceLevel, setPriceLevel] = useState<number | null>(initialData?.price_level ?? null)
   const [websiteUrl, setWebsiteUrl] = useState(initialData?.website_url ?? '')
+  const [visitedOn, setVisitedOn] = useState(initialData?.visitedOn ?? '')
   const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? false)
   const [photos, setPhotos] = useState<File[]>([])
   const [newPhotoPublic, setNewPhotoPublic] = useState<boolean[]>([])
@@ -113,8 +118,12 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
       rating: rating === 0 ? null : rating,
       price_level: priceLevel === 0 ? null : priceLevel,
       website_url: websiteUrl,
+      visitedOn,
       isPublic,
-      newPhotos: photos.map((file, i) => ({ file, isPublic: newPhotoPublic[i] ?? false })),
+      newPhotos: photos.map((file, i) => ({
+        file,
+        isPublic: newPhotoPublic[i] ?? false,
+      })),
       photosToDelete,
       photoVisibility,
     }
@@ -133,6 +142,8 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
     setPriceLevel,
     websiteUrl,
     setWebsiteUrl,
+    visitedOn,
+    setVisitedOn,
     isPublic,
     setIsPublic,
     photos,

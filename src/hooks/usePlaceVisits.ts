@@ -11,13 +11,15 @@ export function useSetPlaceVisit() {
       placeId,
       rating,
       priceLevel,
+      visitedOn,
     }: {
       placeId: string
       rating: number | null
       priceLevel: number | null
+      visitedOn: string | null
     }) => {
       if (!user) throw new Error('Not authenticated')
-      return upsertPlaceVisit(user.id, placeId, rating, priceLevel)
+      return upsertPlaceVisit(user.id, placeId, rating, priceLevel, visitedOn)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['public-places'] })

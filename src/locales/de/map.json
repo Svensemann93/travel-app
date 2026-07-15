@@ -37,6 +37,7 @@
     "edit": "Bewertung bearbeiten",
     "editTitle": "Deinen Besuch bearbeiten",
     "remove": "Besuch entfernen",
-    "clear": "zurücksetzen"
+    "clear": "zurücksetzen",
+    "visitedOnLabel": "Dein Besuchsdatum"
   }
 }

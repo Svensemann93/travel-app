@@ -37,6 +37,7 @@
     "edit": "Edit rating",
     "editTitle": "Edit your visit",
     "remove": "Remove visit",
-    "clear": "clear"
+    "clear": "clear",
+    "visitedOnLabel": "Your visit date"
   }
 }

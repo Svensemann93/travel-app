@@ -83,13 +83,18 @@ export async function upsertPlaceVisit(
   placeId: string,
   rating: number | null,
   priceLevel: number | null,
+  visitedOn: string | null,
 ): Promise<void> {
-  const { error } = await supabase
-    .from('place_visits')
-    .upsert(
-      { place_id: placeId, user_id: userId, rating, price_level: priceLevel },
-      { onConflict: 'place_id,user_id' },
-    )
+  const { error } = await supabase.from('place_visits').upsert(
+    {
+      place_id: placeId,
+      user_id: userId,
+      rating,
+      price_level: priceLevel,
+      visited_on: visitedOn,
+    },
+    { onConflict: 'place_id,user_id' },
+  )
   if (error) throw new Error(error.message)
 }
 

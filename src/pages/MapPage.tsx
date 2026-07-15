@@ -104,6 +104,7 @@ function MapPage() {
         price_level: data.price_level,
         website_url: data.website_url || null,
         is_public: data.isPublic,
+        visited_on: data.visitedOn || null,
         latitude: clickedPosition.lat,
         longitude: clickedPosition.lng,
       },
@@ -123,6 +124,7 @@ function MapPage() {
         price_level: data.price_level,
         website_url: data.website_url || null,
         is_public: data.isPublic,
+        visited_on: data.visitedOn || null,
       },
       photosToAdd: data.newPhotos,
       photoIdsToDelete: data.photosToDelete,
@@ -169,7 +171,7 @@ function MapPage() {
             <PublicPlaceMarkers
               places={visiblePublicPlaces}
               onMarkVisited={(placeId) =>
-                setVisit.mutate({ placeId, rating: null, priceLevel: null })
+                setVisit.mutate({ placeId, rating: null, priceLevel: null, visitedOn: null })
               }
               onEditVisit={(place) => setEditingVisit(place)}
               isSaving={setVisit.isPending || removeVisit.isPending}
@@ -242,8 +244,8 @@ function MapPage() {
           key={editingVisit.id}
           place={editingVisit}
           onClose={() => setEditingVisit(null)}
-          onSave={(id, rating, priceLevel) => {
-            setVisit.mutate({ placeId: id, rating, priceLevel })
+          onSave={(id, rating, priceLevel, visitedOn) => {
+            setVisit.mutate({ placeId: id, rating, priceLevel, visitedOn })
             setEditingVisit(null)
           }}
           onRemove={(id) => {
