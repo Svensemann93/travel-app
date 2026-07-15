@@ -1,0 +1,24 @@
+{
+  "nav": "Review",
+  "title": "Travel review",
+  "eyebrow": "Passport · Review",
+  "year": "Year",
+  "back": "Back to passport",
+  "photoAction": "Show on map",
+  "all": "All time",
+  "subtitle": "Your travel year — {{countries}} countries, captured across {{places}} places.",
+  "subtitleEmpty": "No trips recorded for {{year}} yet.",
+  "stampLabel": "{{countries}} COUNTRIES · REVIEW · ",
+  "new": "{{count}} new",
+  "fields": {
+    "places": "Places",
+    "countries": "Countries",
+    "continents": "Continents",
+    "trips": "Trips",
+    "journals": "Journals",
+    "photos": "Photos"
+  },
+  "topCategory": "Top category",
+  "topCategoryValue": "{{count}} places",
+  "highlight": "Highlight"
+}

@@ -2,6 +2,7 @@
   "title": "Passport",
   "collected": "{{earned}} of {{total}} stamps collected",
   "earned": "Earned",
+  "reviewLink": "View review",
   "toast": {
     "title": "New stamp!",
     "dismiss": "Dismiss"

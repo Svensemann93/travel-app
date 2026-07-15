@@ -1,0 +1,24 @@
+{
+  "nav": "Rückblick",
+  "title": "Reise-Rückblick",
+  "eyebrow": "Reisepass · Rückblick",
+  "year": "Jahr",
+  "back": "Zurück zum Reisepass",
+  "photoAction": "Auf der Karte anzeigen",
+  "all": "Gesamt",
+  "subtitle": "Dein Reisejahr — {{countries}} Länder, festgehalten in {{places}} Orten.",
+  "subtitleEmpty": "Für {{year}} sind noch keine Reisen erfasst.",
+  "stampLabel": "{{countries}} LÄNDER · RÜCKBLICK · ",
+  "new": "{{count}} neu",
+  "fields": {
+    "places": "Orte",
+    "countries": "Länder",
+    "continents": "Kontinente",
+    "trips": "Trips",
+    "journals": "Tagebücher",
+    "photos": "Fotos"
+  },
+  "topCategory": "Top-Kategorie",
+  "topCategoryValue": "{{count}} Orte",
+  "highlight": "Highlight"
+}
