@@ -62,6 +62,16 @@ export type PublicPlace = {
   visited_by_me: boolean
 }
 
+export type VisitedPlace = {
+  place_id: string
+  name: string
+  category: CategoryId
+  country_code: string | null
+  rating: number | null
+  visited_on: string | null
+  created_at: string
+}
+
 export type PlaceUpdateInput = {
   name: string
   description: string | null

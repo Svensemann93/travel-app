@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 import { deletePhotos as deletePhotoFiles, uploadPhoto } from './photoStorage'
 import type { NewPhoto, Place, PlacePhoto, PublicPlace } from '../types/place'
-import type { PlaceCreateInput, PlaceUpdateInput } from '../types/place'
+import type { PlaceCreateInput, PlaceUpdateInput, VisitedPlace } from '../types/place'
 import type { PublicBounds } from './publicBounds'
 import type { CategoryId } from './categories'
 
@@ -214,20 +214,30 @@ export async function removePhotoStorageOnly(photos: PlacePhoto[]): Promise<void
   }
 }
 
-export type VisitedStat = {
-  category: CategoryId
+type VisitedPlaceRow = {
+  place_id: string
+  name: string
+  category: string
   country_code: string | null
+  rating: number | null
+  visited_on: string | null
+  created_at: string
 }
 
-export async function fetchMyVisitedStats(signal?: AbortSignal): Promise<VisitedStat[]> {
+export async function fetchMyVisitedStats(signal?: AbortSignal): Promise<VisitedPlace[]> {
   let query = supabase.rpc('get_my_public_place_visit_stats')
   if (signal) {
     query = query.abortSignal(signal)
   }
   const { data, error } = await query
   if (error) throw new Error(error.message)
-  return (data ?? []).map((row: { category: string; country_code: string | null }) => ({
+  return (data ?? []).map((row: VisitedPlaceRow) => ({
+    place_id: row.place_id,
+    name: row.name,
     category: row.category as CategoryId,
     country_code: row.country_code,
+    rating: row.rating,
+    visited_on: row.visited_on,
+    created_at: row.created_at,
   }))
 }
