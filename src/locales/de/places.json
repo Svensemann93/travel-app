@@ -23,6 +23,8 @@
     "reposition": "Standort verschieben",
     "public": "Öffentlich teilen",
     "publicHint": "Andere angemeldete Nutzer sehen diesen Ort auf ihrer Karte. Fotos bleiben vorerst privat.",
-    "unknownError": "Unbekannter Fehler"
+    "unknownError": "Unbekannter Fehler",
+    "visitedOn": "Reisedatum",
+    "visitedOnHint": "Wann warst du dort? Leer lassen, wenn unbekannt."
   }
 }

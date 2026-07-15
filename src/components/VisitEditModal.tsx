@@ -8,7 +8,12 @@ import type { PublicPlace } from '../types/place'
 type Props = {
   place: PublicPlace
   onClose: () => void
-  onSave: (placeId: string, rating: number | null, priceLevel: number | null) => void
+  onSave: (
+    placeId: string,
+    rating: number | null,
+    priceLevel: number | null,
+    visitedOn: string | null,
+  ) => void
   onRemove: (placeId: string) => void
   isSaving: boolean
 }
@@ -17,6 +22,7 @@ function VisitEditModal({ place, onClose, onSave, onRemove, isSaving }: Props) {
   const { t } = useTranslation(['map', 'common'])
   const [rating, setRating] = useState<number | null>(place.my_rating)
   const [price, setPrice] = useState<number | null>(place.my_price)
+  const [visitedOn, setVisitedOn] = useState(place.my_visited_on ?? '')
 
   const footer = (
     <div className="flex justify-end gap-2">
@@ -29,7 +35,7 @@ function VisitEditModal({ place, onClose, onSave, onRemove, isSaving }: Props) {
       </button>
       <button
         type="button"
-        onClick={() => onSave(place.id, rating || null, price || null)}
+        onClick={() => onSave(place.id, rating || null, price || null, visitedOn || null)}
         disabled={isSaving}
         className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
       >
@@ -74,6 +80,22 @@ function VisitEditModal({ place, onClose, onSave, onRemove, isSaving }: Props) {
             ) : null}
           </div>
           <PriceLevel value={price} onChange={(p) => setPrice(p || null)} />
+        </div>
+
+        <div>
+          <label
+            htmlFor="visit-visited-on"
+            className="mb-1 block text-sm font-medium text-slate-700"
+          >
+            {t('visits.visitedOnLabel')}
+          </label>
+          <input
+            id="visit-visited-on"
+            type="date"
+            value={visitedOn}
+            onChange={(e) => setVisitedOn(e.target.value)}
+            className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         <button

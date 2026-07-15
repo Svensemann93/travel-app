@@ -38,14 +38,17 @@ function inSelection(year: number | null, selection: YearSelection): boolean {
   return selection === 'all' || year === selection
 }
 
+function placeYear(place: Place): number | null {
+  return yearOf(place.visited_on ?? place.created_at)
+}
+
 export function computeYearReview(
   places: Place[],
   trips: Trip[],
   journals: Journal[],
   selection: YearSelection,
 ): YearReview {
-  const selectedPlaces = places.filter((place) => inSelection(yearOf(place.created_at), selection))
-
+  const selectedPlaces = places.filter((place) => inSelection(placeYear(place), selection))
   const countries = new Set<string>()
   const continents = new Set<string>()
   const categoryCounts = new Map<CategoryId, number>()
@@ -59,24 +62,37 @@ export function computeYearReview(
     }
     categoryCounts.set(place.category, (categoryCounts.get(place.category) ?? 0) + 1)
     if (place.rating != null && (!highlight || place.rating > highlight.rating)) {
-      highlight = { name: place.name, countryCode: place.country_code, rating: place.rating }
+      highlight = {
+        name: place.name,
+        countryCode: place.country_code,
+        rating: place.rating,
+      }
     }
   }
 
   const placesWithPhotos = selectedPlaces.filter((place) => place.photos.length > 0)
   const stride = Math.max(1, Math.ceil(placesWithPhotos.length / PHOTO_POOL))
+  const sampledPlaces: Place[] = []
+  for (let i = 0; i < placesWithPhotos.length && sampledPlaces.length < PHOTO_POOL; i += stride) {
+    sampledPlaces.push(placesWithPhotos[i])
+  }
+
   const photos: ReviewPhoto[] = []
-  for (let i = 0; i < placesWithPhotos.length && photos.length < PHOTO_POOL; i += stride) {
-    const place = placesWithPhotos[i]
-    const photo = place.photos[0]
-    photos.push({ path: photo.thumb_url ?? photo.url, placeId: place.id })
+  for (let round = 0; photos.length < PHOTO_POOL; round += 1) {
+    let added = false
+    for (const place of sampledPlaces) {
+      const photo = place.photos[round]
+      if (!photo) continue
+      photos.push({ path: photo.thumb_url ?? photo.url, placeId: place.id })
+      added = true
+      if (photos.length >= PHOTO_POOL) break
+    }
+    if (!added) break
   }
 
   let photoCount = 0
-  for (const place of places) {
-    for (const photo of place.photos) {
-      if (inSelection(yearOf(photo.created_at), selection)) photoCount += 1
-    }
+  for (const place of selectedPlaces) {
+    photoCount += place.photos.length
   }
 
   let newCountryCount = 0
@@ -84,7 +100,7 @@ export function computeYearReview(
     const firstYear = new Map<string, number>()
     for (const place of places) {
       if (!place.country_code) continue
-      const year = yearOf(place.created_at)
+      const year = placeYear(place)
       if (year == null) continue
       const prev = firstYear.get(place.country_code)
       if (prev == null || year < prev) firstYear.set(place.country_code, year)
@@ -127,7 +143,7 @@ export function availableYears(places: Place[], trips: Trip[], journals: Journal
     const year = yearOf(iso)
     if (year != null) years.add(year)
   }
-  for (const place of places) add(place.created_at)
+  for (const place of places) add(place.visited_on ?? place.created_at)
   for (const trip of trips) add(trip.start_date ?? trip.created_at)
   for (const journal of journals) add(journal.created_at)
   years.add(new Date().getFullYear())

@@ -22,6 +22,7 @@ export function makePlace(overrides: Partial<Place> = {}): Place {
     website_url: null,
     is_public: false,
     country_code: null,
+    visited_on: null,
     created_at: '2025-01-15T00:00:00.000Z',
     photos: [],
     ...overrides,

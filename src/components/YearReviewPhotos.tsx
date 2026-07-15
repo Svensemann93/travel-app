@@ -45,7 +45,7 @@ function RotatingTile({ photos, startDelay, label, onSelect }: TileProps) {
         mounted.has(i) ? (
           <div
             key={photo.path}
-            className={`absolute inset-0 transition-opacity duration-3000 ${
+            className={`absolute inset-0 transition-opacity duration-[3000ms] ease-in-out ${
               i === index ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -79,7 +79,7 @@ function YearReviewPhotos({ photos, onSelect }: Props) {
     <div className="grid grid-cols-3 gap-2 md:h-full md:grid-rows-3">
       {cells.map((cellPhotos, c) => (
         <RotatingTile
-          key={c}
+          key={cellPhotos[0].path}
           photos={cellPhotos}
           startDelay={Math.round(c * step)}
           label={label}

@@ -23,6 +23,8 @@
     "reposition": "Move location",
     "public": "Share publicly",
     "publicHint": "Other signed-in users will see this place on their map. Photos stay private for now.",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "visitedOn": "Travel date",
+    "visitedOnHint": "When were you there? Leave empty if unknown."
   }
 }

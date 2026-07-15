@@ -29,6 +29,7 @@ export type Place = {
   website_url: string | null
   is_public: boolean
   country_code: string | null
+  visited_on: string | null
   created_at: string
   photos: PlacePhoto[]
 }
@@ -57,6 +58,7 @@ export type PublicPlace = {
   visit_count: number
   my_rating: number | null
   my_price: number | null
+  my_visited_on: string | null
   visited_by_me: boolean
 }
 
@@ -68,6 +70,7 @@ export type PlaceUpdateInput = {
   price_level: number | null
   website_url: string | null
   is_public: boolean
+  visited_on: string | null
 }
 
 export type PlaceCreateInput = PlaceUpdateInput & {
