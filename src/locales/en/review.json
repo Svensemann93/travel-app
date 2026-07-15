@@ -4,7 +4,7 @@
   "eyebrow": "Passport · Review",
   "year": "Year",
   "back": "Back to passport",
-  "photoAction": "Show on map",
+  "photoAction": "Show {{name}} on the map",
   "all": "All time",
   "subtitle": "Your travel year — {{countries}} countries, captured across {{places}} places.",
   "subtitleEmpty": "No trips recorded for {{year}} yet.",
@@ -20,5 +20,5 @@
   },
   "topCategory": "Top category",
   "topCategoryValue": "{{count}} places",
-  "highlight": "Highlight"
+  "highlight": "Top rated place"
 }

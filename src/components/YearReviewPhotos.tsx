@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ReviewPhoto } from '../lib/yearReview'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import SignedImage from './SignedImage'
 
 const VISIBLE = 9
@@ -26,11 +27,12 @@ function pickOther(current: number, total: number): number {
 type TileProps = {
   photos: ReviewPhoto[]
   startDelay: number
-  label: string
+  still: boolean
   onSelect: (placeId: string) => void
 }
 
-function RotatingTile({ photos, startDelay, label, onSelect }: TileProps) {
+function RotatingTile({ photos, startDelay, still, onSelect }: TileProps) {
+  const { t } = useTranslation('review')
   const total = photos.length
   const [frame, setFrame] = useState(() => ({
     previous: 0,
@@ -39,7 +41,7 @@ function RotatingTile({ photos, startDelay, label, onSelect }: TileProps) {
   }))
 
   useEffect(() => {
-    if (total <= 1) return
+    if (still || total <= 1) return
     let interval: number | undefined
     const advance = () =>
       setFrame((current) => ({
@@ -55,30 +57,34 @@ function RotatingTile({ photos, startDelay, label, onSelect }: TileProps) {
       window.clearTimeout(timeout)
       if (interval !== undefined) window.clearInterval(interval)
     }
-  }, [total, startDelay])
+  }, [still, total, startDelay])
 
-  const mounted = new Set([frame.previous, frame.current, frame.next])
+  const safe = (index: number) => (index < total ? index : 0)
+  const current = safe(frame.current)
+  const mounted = new Set([safe(frame.previous), current, safe(frame.next)])
 
   return (
     <button
       type="button"
-      title={label}
-      aria-label={label}
-      onClick={() => onSelect(photos[frame.current].placeId)}
+      title={t('photoAction', { name: photos[current].name })}
+      aria-label={t('photoAction', { name: photos[current].name })}
+      onClick={() => onSelect(photos[current].placeId)}
       className="group relative aspect-square overflow-hidden rounded-xl bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#39bbde] md:aspect-auto md:h-full"
     >
       {photos.map((photo, i) =>
         mounted.has(i) ? (
           <div
             key={photo.path}
-            className={`absolute inset-0 transition-opacity duration-[3000ms] ease-in-out ${
-              i === frame.current ? 'opacity-100' : 'opacity-0'
+            className={`absolute inset-0 ${still ? '' : 'transition-opacity duration-[3000ms] ease-in-out'} ${
+              i === current ? 'opacity-100' : 'opacity-0'
             }`}
           >
             <SignedImage
               path={photo.path}
               alt=""
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className={`h-full w-full object-cover ${
+                still ? '' : 'transition-transform duration-500 group-hover:scale-105'
+              }`}
             />
           </div>
         ) : null,
@@ -93,7 +99,7 @@ type Props = {
 }
 
 function YearReviewPhotos({ photos, onSelect }: Props) {
-  const { t } = useTranslation('review')
+  const still = usePrefersReducedMotion()
   const shuffled = useMemo(() => shuffle(photos), [photos])
 
   if (shuffled.length === 0) return null
@@ -101,16 +107,15 @@ function YearReviewPhotos({ photos, onSelect }: Props) {
   const cells: ReviewPhoto[][] = Array.from({ length: cellCount }, () => [])
   shuffled.forEach((photo, i) => cells[i % cellCount].push(photo))
   const step = INTERVAL_MS / cellCount
-  const label = t('photoAction')
 
   return (
     <div className="grid grid-cols-3 gap-2 md:h-full md:grid-rows-3">
       {cells.map((cellPhotos, c) => (
         <RotatingTile
-          key={cellPhotos[0].path}
+          key={cellPhotos.map((photo) => photo.path).join('|')}
           photos={cellPhotos}
           startDelay={Math.round(c * step)}
-          label={label}
+          still={still}
           onSelect={onSelect}
         />
       ))}

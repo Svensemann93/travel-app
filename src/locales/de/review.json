@@ -4,7 +4,7 @@
   "eyebrow": "Reisepass · Rückblick",
   "year": "Jahr",
   "back": "Zurück zum Reisepass",
-  "photoAction": "Auf der Karte anzeigen",
+  "photoAction": "Auf der Karte anzeigen: {{name}}",
   "all": "Gesamt",
   "subtitle": "Dein Reisejahr — {{countries}} Länder, festgehalten in {{places}} Orten.",
   "subtitleEmpty": "Für {{year}} sind noch keine Reisen erfasst.",
@@ -20,5 +20,5 @@
   },
   "topCategory": "Top-Kategorie",
   "topCategoryValue": "{{count}} Orte",
-  "highlight": "Highlight"
+  "highlight": "Bestbewerteter Ort"
 }
