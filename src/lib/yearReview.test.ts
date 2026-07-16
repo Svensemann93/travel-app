@@ -34,6 +34,7 @@ function place(overrides: Partial<Place> & { created_at: string }): Place {
     is_public: false,
     country_code: null,
     visited_on: null,
+    adopted: false,
     photos: [],
     ...overrides,
   }

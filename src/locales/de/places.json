@@ -23,6 +23,7 @@
     "reposition": "Standort verschieben",
     "public": "Öffentlich teilen",
     "publicHint": "Andere angemeldete Nutzer sehen diesen Ort auf ihrer Karte. Fotos bleiben vorerst privat.",
+    "adoptedHint": "Dieser Ort stammt von einer öffentlichen Nadel, die der Ersteller gelöscht hat. Er gehört jetzt dir, kann aber nicht öffentlich geteilt werden.",
     "unknownError": "Unbekannter Fehler",
     "visitedOn": "Reisedatum",
     "visitedOnHint": "Wann warst du dort? Leer lassen, wenn unbekannt."

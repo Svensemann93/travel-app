@@ -94,18 +94,24 @@ function PlaceFormModal({
       <form id={formId} onSubmit={handleSubmit} className="space-y-4">
         <PlaceFormFields form={form} onError={setErrorMessage} />
 
-        <label className="flex items-start gap-3 rounded-md border border-slate-200 p-3">
-          <input
-            type="checkbox"
-            checked={form.isPublic}
-            onChange={(e) => form.setIsPublic(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm">
-            <span className="block font-medium text-slate-700">{t('form.public')}</span>
-            <span className="block text-slate-500">{t('form.publicHint')}</span>
-          </span>
-        </label>
+        {initialData?.adopted ? (
+          <p className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-500">
+            {t('form.adoptedHint')}
+          </p>
+        ) : (
+          <label className="flex items-start gap-3 rounded-md border border-slate-200 p-3">
+            <input
+              type="checkbox"
+              checked={form.isPublic}
+              onChange={(e) => form.setIsPublic(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm">
+              <span className="block font-medium text-slate-700">{t('form.public')}</span>
+              <span className="block text-slate-500">{t('form.publicHint')}</span>
+            </span>
+          </label>
+        )}
 
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm">
