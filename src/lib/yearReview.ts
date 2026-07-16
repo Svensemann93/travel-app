@@ -45,6 +45,19 @@ function visitYear(visit: VisitedPlace): number | null {
   return yearOf(visit.visited_on ?? visit.created_at)
 }
 
+function tripStartMap(trips: Trip[]): Map<string, string> {
+  const starts = new Map<string, string>()
+  for (const trip of trips) {
+    if (trip.start_date) starts.set(trip.id, trip.start_date)
+  }
+  return starts
+}
+
+function journalYear(journal: Journal, tripStarts: Map<string, string>): number | null {
+  const tripStart = journal.trip_id ? tripStarts.get(journal.trip_id) : undefined
+  return yearOf(tripStart ?? journal.created_at)
+}
+
 type BestPlace = {
   name: string
   countryCode: string | null
@@ -157,8 +170,9 @@ export function computeYearReview(
   const tripCount = trips.filter((trip) =>
     inSelection(yearOf(trip.start_date ?? trip.created_at), selection),
   ).length
+  const tripStarts = tripStartMap(trips)
   const journalCount = journals.filter((journal) =>
-    inSelection(yearOf(journal.created_at), selection),
+    inSelection(journalYear(journal, tripStarts), selection),
   ).length
 
   return {
@@ -190,7 +204,11 @@ export function availableYears(
   for (const place of places) add(place.visited_on ?? place.created_at)
   for (const visit of visits) add(visit.visited_on ?? visit.created_at)
   for (const trip of trips) add(trip.start_date ?? trip.created_at)
-  for (const journal of journals) add(journal.created_at)
+  const tripStarts = tripStartMap(trips)
+  for (const journal of journals) {
+    const year = journalYear(journal, tripStarts)
+    if (year != null) years.add(year)
+  }
   years.add(new Date().getFullYear())
   return [...years].sort((a, b) => b - a)
 }
