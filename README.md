@@ -18,6 +18,17 @@ photos in a travel journal, and share read-only journals via private links.
   active pin, clicking a pin jumps to its entry.
 - **Private share links** — share a read-only journal via an unguessable link with a
   sliding 30-day expiry.
+- **Trips** — group places into a trip, reorder stops by drag and drop, and give each
+  trip its own dates.
+- **Public places** — share a place read-only with other signed-in users. Visitors mark
+  it as visited and add their own rating, price and visit date, while name, location and
+  photos stay owner-only. Only pins in the current viewport are loaded.
+- **Passport ("Reisepass")** — a stamp collection with 20 achievements, progress bars for
+  categories, continents and countries, plus a world map of everywhere you have been.
+- **Year in review ("Rückblick")** — per year or all time: places, countries (including
+  newly reached ones), continents, trips, journals, photos, top category and your top
+  rated place, next to a mosaic that cycles through the period's photos. Clicking a photo
+  jumps to its pin on the map.
 
 ## Tech stack
 
@@ -26,7 +37,7 @@ photos in a travel journal, and share read-only journals via private links.
 - **Routing & data:** react-router-dom v7, TanStack Query
 - **Backend:** Supabase (Auth, Postgres, Storage, Edge Functions on Deno, pg_cron)
 - **Monitoring:** Sentry
-- **Testing:** Vitest
+- **Testing:** Vitest, Testing Library (jsdom)
 
 The UI language is German. Photos live in a private Supabase Storage bucket and are
 served via signed URLs.
