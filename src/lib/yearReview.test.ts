@@ -64,11 +64,11 @@ function trip(overrides: Partial<Trip> & { created_at: string }): Trip {
   }
 }
 
-function journal(created_at: string): Journal {
+function journal(created_at: string, tripId: string | null = null): Journal {
   return {
     id: `journal-${Math.random()}`,
     user_id: 'u',
-    trip_id: null,
+    trip_id: tripId,
     title: 'J',
     description: null,
     created_at,
@@ -278,6 +278,28 @@ describe('computeYearReview', () => {
     expect(r.journalCount).toBe(1)
   })
 
+  it('dates a journal by the start of the trip it belongs to', () => {
+    const tripRow = trip({
+      id: 'trip-1',
+      created_at: '2026-01-01T00:00:00Z',
+      start_date: '2021-07-01',
+    })
+    const journals2 = [journal('2026-02-02T00:00:00Z', 'trip-1')]
+    expect(computeYearReview([], [], [tripRow], journals2, 2026).journalCount).toBe(0)
+    expect(computeYearReview([], [], [tripRow], journals2, 2021).journalCount).toBe(1)
+  })
+
+  it('falls back to the capture date for journals without a trip', () => {
+    const journals2 = [journal('2022-04-04T00:00:00Z')]
+    expect(computeYearReview([], [], [], journals2, 2022).journalCount).toBe(1)
+  })
+
+  it('falls back to the capture date when the trip has no start date', () => {
+    const tripRow = trip({ id: 'trip-2', created_at: '2020-01-01T00:00:00Z' })
+    const journals2 = [journal('2023-08-08T00:00:00Z', 'trip-2')]
+    expect(computeYearReview([], [], [tripRow], journals2, 2023).journalCount).toBe(1)
+  })
+
   it('prefers the travel date over the capture date', () => {
     const dated: Place[] = [
       place({
@@ -323,6 +345,16 @@ describe('availableYears', () => {
       [],
     )
     expect(years).toEqual([new Date().getFullYear(), 2017])
+  })
+
+  it('offers the trip year for a journal that belongs to a trip', () => {
+    const years = availableYears(
+      [],
+      [],
+      [trip({ id: 'trip-9', created_at: '2026-01-01T00:00:00Z', start_date: '2015-06-01' })],
+      [journal('2026-05-05T00:00:00Z', 'trip-9')],
+    )
+    expect(years).toEqual([new Date().getFullYear(), 2015])
   })
 
   it('returns distinct years plus the current year, newest first', () => {
