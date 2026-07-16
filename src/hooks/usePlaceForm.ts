@@ -22,6 +22,7 @@ export type PlaceFormInitial = Omit<
   'newPhotos' | 'photosToDelete' | 'photoVisibility'
 > & {
   existingPhotos?: PlacePhoto[]
+  adopted?: boolean
 }
 
 export type PlaceFormApi = {
@@ -62,6 +63,7 @@ export function placeToFormInitial(place: Place): PlaceFormInitial {
     website_url: place.website_url ?? '',
     visitedOn: place.visited_on ?? '',
     isPublic: place.is_public,
+    adopted: place.adopted,
     existingPhotos: place.photos ?? [],
   }
 }

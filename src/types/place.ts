@@ -30,6 +30,7 @@ export type Place = {
   is_public: boolean
   country_code: string | null
   visited_on: string | null
+  adopted: boolean
   created_at: string
   photos: PlacePhoto[]
 }
