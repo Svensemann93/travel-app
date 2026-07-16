@@ -63,7 +63,7 @@ export type PublicPlace = {
 }
 
 export type VisitedPlace = {
-  place_id: string
+  place_id: string | null
   name: string
   category: CategoryId
   country_code: string | null

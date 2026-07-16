@@ -215,7 +215,7 @@ export async function removePhotoStorageOnly(photos: PlacePhoto[]): Promise<void
 }
 
 type VisitedPlaceRow = {
-  place_id: string
+  place_id: string | null
   name: string
   category: string
   country_code: string | null

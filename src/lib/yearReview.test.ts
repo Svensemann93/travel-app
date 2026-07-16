@@ -200,6 +200,21 @@ describe('computeYearReview', () => {
     expect(r.photos).toHaveLength(0)
   })
 
+  it('still counts a visit whose place was deleted or turned private', () => {
+    const orphan = visit({
+      place_id: null,
+      created_at: '2023-04-04T00:00:00Z',
+      country_code: 'JP',
+      category: 'cafe',
+      name: 'Gone but visited',
+      rating: 4,
+    })
+    const r = computeYearReview([], [orphan], [], [], 2023)
+    expect(r.placeCount).toBe(1)
+    expect(r.countryCount).toBe(1)
+    expect(r.highlight).toEqual({ name: 'Gone but visited', countryCode: 'JP', rating: 4 })
+  })
+
   it('combines own places and visits within the same year', () => {
     const own = [
       place({
