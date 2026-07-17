@@ -13,6 +13,7 @@ export function useAddPlaceWish() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['public-places'] })
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] })
     },
   })
 }
@@ -28,6 +29,7 @@ export function useRemovePlaceWish() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['public-places'] })
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] })
     },
   })
 }

@@ -13,6 +13,7 @@ const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
 const MapPage = lazy(() => import('./pages/MapPage'))
 const PlacesListPage = lazy(() => import('./pages/PlacesListPage'))
+const WishlistPage = lazy(() => import('./pages/WishlistPage'))
 const TripsListPage = lazy(() => import('./pages/TripsListPage'))
 const TripDetailPage = lazy(() => import('./pages/TripDetailPage'))
 const JournalsListPage = lazy(() => import('./pages/JournalsListPage'))
@@ -42,6 +43,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PlacesListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoute>
+                  <WishlistPage />
                 </ProtectedRoute>
               }
             />

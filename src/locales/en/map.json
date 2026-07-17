@@ -42,6 +42,21 @@
   },
   "wishlist": {
     "add": "Add to wishlist",
-    "remove": "Remove from wishlist"
+    "remove": "Remove from wishlist",
+    "title": "My wishlist",
+    "emptyTitle": "Nothing on the wishlist yet",
+    "emptyMessage": "Open someone else's pin on the map and add it to your wishlist.",
+    "toMap": "Go to map",
+    "done": "Been there",
+    "groupByCountry": "By country",
+    "sortLabel": "Sort order",
+    "noCountry": "No country",
+    "noFilterMatch": "No places in the selected categories.",
+    "sort": {
+      "added": "Recently added",
+      "name": "Name",
+      "rating": "Rating",
+      "category": "Category"
+    }
   }
 }

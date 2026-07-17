@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
-import type { Place } from '../types/place'
+import type { FocusPoint } from '../lib/focusPoint'
 
 type Props = {
-  place: Place | null
+  place: FocusPoint | null
 }
 
 function MapFocuser({ place }: Props) {
