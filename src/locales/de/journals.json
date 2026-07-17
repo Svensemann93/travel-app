@@ -31,5 +31,8 @@
     "editTitle": "Tagebuch bearbeiten",
     "title": "Titel",
     "description": "Beschreibung"
-  }
+  },
+  "eyebrow": "Deine Reisegeschichten",
+  "subtitle": "Erinnerungen, Fotos und Erlebnisse deiner Reisen.",
+  "updatedAt": "Bearbeitet am {{date}}"
 }
