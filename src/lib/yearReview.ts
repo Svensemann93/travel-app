@@ -1,4 +1,4 @@
-import type { Place, VisitedPlace } from '../types/place'
+import type { Place, PlacePhoto, VisitedPlace } from '../types/place'
 import type { Trip } from '../types/trip'
 import type { Journal } from '../types/journal'
 import type { CategoryId } from './categories'
@@ -37,12 +37,47 @@ function inSelection(year: number | null, selection: YearSelection): boolean {
   return selection === 'all' || year === selection
 }
 
-function placeYear(place: Place): number | null {
-  return yearOf(place.visited_on ?? place.created_at)
+type VisitEvent = {
+  placeId: string
+  name: string
+  category: CategoryId
+  countryCode: string | null
+  rating: number | null
+  date: string
+  photos: PlacePhoto[]
 }
 
-function visitYear(visit: VisitedPlace): number | null {
-  return yearOf(visit.visited_on ?? visit.created_at)
+function visitEvents(places: Place[], visits: VisitedPlace[]): VisitEvent[] {
+  const events: VisitEvent[] = []
+  for (const place of places) {
+    for (const visit of place.visits) {
+      events.push({
+        placeId: place.id,
+        name: place.name,
+        category: place.category,
+        countryCode: place.country_code,
+        rating: visit.rating,
+        date: visit.visited_on ?? visit.created_at,
+        photos: place.photos ?? [],
+      })
+    }
+  }
+  for (const visit of visits) {
+    events.push({
+      placeId: visit.place_id ?? visit.name,
+      name: visit.name,
+      category: visit.category,
+      countryCode: visit.country_code,
+      rating: visit.rating,
+      date: visit.visited_on ?? visit.created_at,
+      photos: [],
+    })
+  }
+  return events
+}
+
+function eventYear(event: VisitEvent): number | null {
+  return yearOf(event.date)
 }
 
 function tripStartMap(trips: Trip[]): Map<string, string> {
@@ -78,49 +113,30 @@ export function computeYearReview(
   journals: Journal[],
   selection: YearSelection,
 ): YearReview {
-  const selectedPlaces = places.filter((place) => inSelection(placeYear(place), selection))
-  const selectedVisits = visits.filter((visit) => inSelection(visitYear(visit), selection))
+  const events = visitEvents(places, visits)
+  const selected = events.filter((event) => inSelection(eventYear(event), selection))
   const countries = new Set<string>()
   const continents = new Set<string>()
   const categoryCounts = new Map<CategoryId, number>()
-
   const rated: BestPlace[] = []
 
-  const collect = (
-    category: CategoryId,
-    countryCode: string | null,
-    name: string,
-    rating: number | null,
-    date: string,
-  ) => {
-    if (countryCode) {
-      countries.add(countryCode)
-      const continent = COUNTRY_CONTINENT[countryCode]
+  for (const event of selected) {
+    if (event.countryCode) {
+      countries.add(event.countryCode)
+      const continent = COUNTRY_CONTINENT[event.countryCode]
       if (continent) continents.add(continent)
     }
-    categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1)
-    if (rating == null) return
-    rated.push({ name, countryCode, rating, date: date.slice(0, 10) })
+    categoryCounts.set(event.category, (categoryCounts.get(event.category) ?? 0) + 1)
+    if (event.rating != null) {
+      rated.push({
+        name: event.name,
+        countryCode: event.countryCode,
+        rating: event.rating,
+        date: event.date.slice(0, 10),
+      })
+    }
   }
 
-  for (const place of selectedPlaces) {
-    collect(
-      place.category,
-      place.country_code,
-      place.name,
-      place.rating,
-      place.visited_on ?? place.created_at,
-    )
-  }
-  for (const visit of selectedVisits) {
-    collect(
-      visit.category,
-      visit.country_code,
-      visit.name,
-      visit.rating,
-      visit.visited_on ?? visit.created_at,
-    )
-  }
   let best: BestPlace | null = null
   for (const candidate of rated) {
     if (!best || beats(candidate, best)) best = candidate
@@ -129,34 +145,39 @@ export function computeYearReview(
     ? { name: best.name, countryCode: best.countryCode, rating: best.rating }
     : null
 
-  const placesWithPhotos = selectedPlaces.filter((place) => place.photos.length > 0)
+  const withPhotos = new Map<string, VisitEvent>()
+  for (const event of selected) {
+    if (event.photos.length > 0 && !withPhotos.has(event.placeId)) {
+      withPhotos.set(event.placeId, event)
+    }
+  }
+
   const photos: ReviewPhoto[] = []
   for (let round = 0; ; round += 1) {
     let added = false
-    for (const place of placesWithPhotos) {
-      const photo = place.photos[round]
+    for (const event of withPhotos.values()) {
+      const photo = event.photos[round]
       if (!photo) continue
-      photos.push({ path: photo.thumb_url ?? photo.url, placeId: place.id, name: place.name })
+      photos.push({ path: photo.thumb_url ?? photo.url, placeId: event.placeId, name: event.name })
       added = true
     }
     if (!added) break
   }
 
   let photoCount = 0
-  for (const place of selectedPlaces) {
-    photoCount += place.photos.length
+  for (const event of withPhotos.values()) {
+    photoCount += event.photos.length
   }
 
   let newCountryCount = 0
   if (selection !== 'all') {
     const firstYear = new Map<string, number>()
-    const noteFirst = (code: string | null, year: number | null) => {
-      if (!code || year == null) return
-      const prev = firstYear.get(code)
-      if (prev == null || year < prev) firstYear.set(code, year)
+    for (const event of events) {
+      const year = eventYear(event)
+      if (!event.countryCode || year == null) continue
+      const prev = firstYear.get(event.countryCode)
+      if (prev == null || year < prev) firstYear.set(event.countryCode, year)
     }
-    for (const place of places) noteFirst(place.country_code, placeYear(place))
-    for (const visit of visits) noteFirst(visit.country_code, visitYear(visit))
     for (const code of countries) {
       if (firstYear.get(code) === selection) newCountryCount += 1
     }
@@ -177,7 +198,7 @@ export function computeYearReview(
 
   return {
     year: selection,
-    placeCount: selectedPlaces.length + selectedVisits.length,
+    placeCount: selected.length,
     countryCount: countries.size,
     newCountryCount,
     continentCount: continents.size,
@@ -197,18 +218,13 @@ export function availableYears(
   journals: Journal[],
 ): number[] {
   const years = new Set<number>()
-  const add = (iso: string | null | undefined) => {
-    const year = yearOf(iso)
+  const add = (year: number | null) => {
     if (year != null) years.add(year)
   }
-  for (const place of places) add(place.visited_on ?? place.created_at)
-  for (const visit of visits) add(visit.visited_on ?? visit.created_at)
-  for (const trip of trips) add(trip.start_date ?? trip.created_at)
+  for (const event of visitEvents(places, visits)) add(eventYear(event))
+  for (const trip of trips) add(yearOf(trip.start_date ?? trip.created_at))
   const tripStarts = tripStartMap(trips)
-  for (const journal of journals) {
-    const year = journalYear(journal, tripStarts)
-    if (year != null) years.add(year)
-  }
+  for (const journal of journals) add(journalYear(journal, tripStarts))
   years.add(new Date().getFullYear())
   return [...years].sort((a, b) => b - a)
 }

@@ -19,7 +19,14 @@ function photo(created_at: string): PlacePhoto {
   }
 }
 
-function place(overrides: Partial<Place> & { created_at: string }): Place {
+type PlaceOverrides = Partial<Omit<Place, 'visits'>> & {
+  created_at: string
+  rating?: number | null
+  visited_on?: string | null
+  planned?: boolean
+}
+
+function place({ rating = null, visited_on = null, planned, ...overrides }: PlaceOverrides): Place {
   return {
     id: `place-${Math.random()}`,
     user_id: 'u',
@@ -28,14 +35,24 @@ function place(overrides: Partial<Place> & { created_at: string }): Place {
     latitude: 47,
     longitude: 8,
     category: 'other' as CategoryId,
-    rating: null,
-    price_level: null,
     website_url: null,
     is_public: false,
     country_code: null,
-    visited_on: null,
     adopted: false,
     photos: [],
+    visits: planned
+      ? []
+      : [
+          {
+            id: `visit-${Math.random()}`,
+            place_id: 'p',
+            user_id: 'u',
+            rating,
+            price_level: null,
+            visited_on,
+            created_at: overrides.created_at,
+          },
+        ],
     ...overrides,
   }
 }
@@ -213,7 +230,11 @@ describe('computeYearReview', () => {
     const r = computeYearReview([], [orphan], [], [], 2023)
     expect(r.placeCount).toBe(1)
     expect(r.countryCount).toBe(1)
-    expect(r.highlight).toEqual({ name: 'Gone but visited', countryCode: 'JP', rating: 4 })
+    expect(r.highlight).toEqual({
+      name: 'Gone but visited',
+      countryCode: 'JP',
+      rating: 4,
+    })
   })
 
   it('combines own places and visits within the same year', () => {
@@ -334,6 +355,26 @@ describe('computeYearReview', () => {
     expect(r.photoCount).toBe(1)
   })
 
+  it('leaves planned places out of the review', () => {
+    const planned: Place[] = [
+      place({
+        created_at: '2025-04-01T00:00:00Z',
+        planned: true,
+        country_code: 'JP',
+        photos: [photo('2025-04-01T00:00:00Z')],
+      }),
+      place({
+        created_at: '2025-04-02T00:00:00Z',
+        country_code: 'JP',
+        rating: 4,
+      }),
+    ]
+    const r = computeYearReview(planned, [], [], [], 2025)
+    expect(r.placeCount).toBe(1)
+    expect(r.photoCount).toBe(0)
+    expect(availableYears([planned[0]], [], [], [])).toEqual([new Date().getFullYear()])
+  })
+
   it('returns an empty review for a year without data', () => {
     const r = computeYearReview(places, [], trips, journals, 2019)
     expect(r.placeCount).toBe(0)
@@ -367,7 +408,13 @@ describe('availableYears', () => {
     const years = availableYears(
       [],
       [],
-      [trip({ id: 'trip-9', created_at: '2026-01-01T00:00:00Z', start_date: '2015-06-01' })],
+      [
+        trip({
+          id: 'trip-9',
+          created_at: '2026-01-01T00:00:00Z',
+          start_date: '2015-06-01',
+        }),
+      ],
       [journal('2026-05-05T00:00:00Z', 'trip-9')],
     )
     expect(years).toEqual([new Date().getFullYear(), 2015])

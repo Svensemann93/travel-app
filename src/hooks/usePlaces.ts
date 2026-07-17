@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from './useAuth'
 import {
   deletePlaceRow,
+  deletePlaceVisit,
   fetchPlacesForUser,
   insertPhotoRows,
   insertPlaceRow,
@@ -10,8 +11,10 @@ import {
   updatePhotoVisibility,
   updatePlaceLocation,
   updatePlaceRow,
+  upsertPlaceVisit,
 } from '../lib/placesApi'
 import type { NewPhoto, Place, PlaceCreateInput, PlaceUpdateInput } from '../types/place'
+import type { PlaceVisit, VisitInput } from '../types/place'
 import { reverseGeocodeCountry } from '../lib/reverseGeocode'
 
 export const placesKeys = {
@@ -30,6 +33,25 @@ export function usePlaces() {
   })
 }
 
+async function saveVisit(
+  userId: string,
+  placeId: string,
+  visit: VisitInput | null,
+): Promise<PlaceVisit[]> {
+  if (!visit) {
+    await deletePlaceVisit(userId, placeId)
+    return []
+  }
+  const row = await upsertPlaceVisit(
+    userId,
+    placeId,
+    visit.rating,
+    visit.price_level,
+    visit.visited_on,
+  )
+  return [row]
+}
+
 export function useCreatePlace() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
@@ -39,15 +61,18 @@ export function useCreatePlace() {
     mutationFn: async ({
       data,
       photos,
+      visit,
     }: {
       data: PlaceCreateInput
       photos: NewPhoto[]
+      visit: VisitInput | null
     }): Promise<Place> => {
       if (!userId) throw new Error('Not authenticated')
       const country_code = await reverseGeocodeCountry(data.latitude, data.longitude)
       const row = await insertPlaceRow(userId, { ...data, country_code })
+      const visits = await saveVisit(userId, row.id, visit)
       const photoRows = await insertPhotoRows(userId, row.id, photos, 0)
-      return { ...row, photos: photoRows }
+      return { ...row, photos: photoRows, visits }
     },
     onSuccess: (newPlace) => {
       if (!userId) return
@@ -70,12 +95,14 @@ export function useUpdatePlace() {
     mutationFn: async ({
       id,
       data,
+      visit,
       photosToAdd,
       photoIdsToDelete,
       photoVisibility,
     }: {
       id: string
       data: PlaceUpdateInput
+      visit: VisitInput | null
       photosToAdd: NewPhoto[]
       photoIdsToDelete: string[]
       photoVisibility: Record<string, boolean>
@@ -88,6 +115,7 @@ export function useUpdatePlace() {
       if (!existing) throw new Error('Place not found')
 
       const row = await updatePlaceRow(id, data)
+      const visits = await saveVisit(userId, id, visit)
 
       const visibilityChanges = photoVisibility ?? {}
       if (Object.keys(visibilityChanges).length > 0) {
@@ -109,6 +137,7 @@ export function useUpdatePlace() {
       return {
         ...row,
         photos: [...remainingPhotos, ...addedPhotos],
+        visits,
       }
     },
     onSuccess: (updatedPlace) => {
@@ -148,7 +177,7 @@ export function useUpdatePlaceLocation() {
       if (!existing) throw new Error('Place not found')
 
       const row = await updatePlaceLocation(id, latitude, longitude)
-      return { ...row, photos: existing.photos }
+      return { ...row, photos: existing.photos, visits: existing.visits }
     },
     onMutate: async ({ id, latitude, longitude }) => {
       if (!userId) return

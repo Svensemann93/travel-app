@@ -1,11 +1,11 @@
 import { supabase } from './supabase'
 import { deletePhotos as deletePhotoFiles, uploadPhoto } from './photoStorage'
-import type { NewPhoto, Place, PlacePhoto, PublicPlace } from '../types/place'
+import type { NewPhoto, Place, PlacePhoto, PlaceVisit, PublicPlace } from '../types/place'
 import type { PlaceCreateInput, PlaceUpdateInput, VisitedPlace } from '../types/place'
 import type { PublicBounds } from './publicBounds'
 import type { CategoryId } from './categories'
 
-type PlaceRow = Omit<Place, 'photos'>
+type PlaceRow = Omit<Place, 'photos' | 'visits'>
 
 function collectStoragePaths(photos: PlacePhoto[]): string[] {
   return photos.flatMap((p) => (p.thumb_url ? [p.url, p.thumb_url] : [p.url]))
@@ -14,7 +14,7 @@ function collectStoragePaths(photos: PlacePhoto[]): string[] {
 export async function fetchPlacesForUser(signal?: AbortSignal): Promise<Place[]> {
   let query = supabase
     .from('places')
-    .select('*, photos:place_photos(*)')
+    .select('*, photos:place_photos(*), visits:place_visits(*)')
     .order('created_at', { ascending: false })
 
   if (signal) {
@@ -25,7 +25,7 @@ export async function fetchPlacesForUser(signal?: AbortSignal): Promise<Place[]>
   if (error) throw new Error(error.message)
   return (data ?? []).map((p: Place) => ({
     ...p,
-    rating: p.rating != null ? Number(p.rating) : null,
+    visits: p.visits.map(toVisit),
   }))
 }
 
@@ -49,7 +49,6 @@ export async function fetchPublicPlaces(
   if (error) throw new Error(error.message)
   return (data ?? []).map((row: PublicPlace) => ({
     ...row,
-    rating: row.rating != null ? Number(row.rating) : null,
     avg_rating: row.avg_rating != null ? Number(row.avg_rating) : null,
     avg_price: row.avg_price != null ? Number(row.avg_price) : null,
     my_rating: row.my_rating != null ? Number(row.my_rating) : null,
@@ -78,24 +77,33 @@ export async function fetchMyPlaceStats(signal?: AbortSignal): Promise<MyPlaceSt
   }))
 }
 
+function toVisit(row: PlaceVisit): PlaceVisit {
+  return { ...row, rating: row.rating != null ? Number(row.rating) : null }
+}
+
 export async function upsertPlaceVisit(
   userId: string,
   placeId: string,
   rating: number | null,
   priceLevel: number | null,
   visitedOn: string | null,
-): Promise<void> {
-  const { error } = await supabase.from('place_visits').upsert(
-    {
-      place_id: placeId,
-      user_id: userId,
-      rating,
-      price_level: priceLevel,
-      visited_on: visitedOn,
-    },
-    { onConflict: 'place_id,user_id' },
-  )
+): Promise<PlaceVisit> {
+  const { data, error } = await supabase
+    .from('place_visits')
+    .upsert(
+      {
+        place_id: placeId,
+        user_id: userId,
+        rating,
+        price_level: priceLevel,
+        visited_on: visitedOn,
+      },
+      { onConflict: 'place_id,user_id' },
+    )
+    .select('*')
+    .single()
   if (error) throw new Error(error.message)
+  return toVisit(data)
 }
 
 export async function deletePlaceVisit(userId: string, placeId: string): Promise<void> {
