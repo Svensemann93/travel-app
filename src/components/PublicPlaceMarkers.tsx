@@ -3,7 +3,8 @@ import { Marker } from 'react-leaflet'
 import type { PublicPlace } from '../types/place'
 import Lightbox from './Lightbox'
 import PublicPlacePopup from './PublicPlacePopup'
-import { getPublicMarkerIcon, getVisitedMarkerIcon } from '../lib/leafletIcons'
+import { getPublicMarkerIcon, getVisitedMarkerIcon, getWishedMarkerIcon } from '../lib/leafletIcons'
+import { publicMarkerVariant } from '../lib/publicMarkers'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 
 type Props = {
@@ -11,19 +12,31 @@ type Props = {
   onMarkVisited: (placeId: string) => void
   onEditVisit: (place: PublicPlace) => void
   onAddToTrip: (place: PublicPlace) => void
+  onToggleWish: (place: PublicPlace) => void
   isSaving: boolean
 }
 
-function PublicPlaceMarkers({ places, onMarkVisited, onEditVisit, onAddToTrip, isSaving }: Props) {
+const ICON_FOR = {
+  visited: getVisitedMarkerIcon,
+  wished: getWishedMarkerIcon,
+  plain: getPublicMarkerIcon,
+}
+
+function PublicPlaceMarkers({
+  places,
+  onMarkVisited,
+  onEditVisit,
+  onAddToTrip,
+  onToggleWish,
+  isSaving,
+}: Props) {
   const [lightbox, setLightbox] = useState<{ place: PublicPlace; index: number } | null>(null)
 
   return (
     <>
       {places.map((place) => {
         const category = CATEGORY_MAP[place.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
-        const icon = place.visited_by_me
-          ? getVisitedMarkerIcon(category.color)
-          : getPublicMarkerIcon(category.color)
+        const icon = ICON_FOR[publicMarkerVariant(place)](category.color)
         return (
           <Marker key={place.id} position={[place.latitude, place.longitude]} icon={icon}>
             <PublicPlacePopup
@@ -32,6 +45,7 @@ function PublicPlaceMarkers({ places, onMarkVisited, onEditVisit, onAddToTrip, i
               onMarkVisited={onMarkVisited}
               onEditVisit={onEditVisit}
               onAddToTrip={onAddToTrip}
+              onToggleWish={onToggleWish}
               isSaving={isSaving}
             />
           </Marker>

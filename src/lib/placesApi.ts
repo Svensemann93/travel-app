@@ -106,6 +106,22 @@ export async function upsertPlaceVisit(
   return toVisit(data)
 }
 
+export async function addPlaceWish(userId: string, placeId: string): Promise<void> {
+  const { error } = await supabase
+    .from('place_wishes')
+    .upsert({ place_id: placeId, user_id: userId }, { onConflict: 'place_id,user_id' })
+  if (error) throw new Error(error.message)
+}
+
+export async function removePlaceWish(userId: string, placeId: string): Promise<void> {
+  const { error } = await supabase
+    .from('place_wishes')
+    .delete()
+    .eq('place_id', placeId)
+    .eq('user_id', userId)
+  if (error) throw new Error(error.message)
+}
+
 export async function deletePlaceVisit(userId: string, placeId: string): Promise<void> {
   const { error } = await supabase
     .from('place_visits')

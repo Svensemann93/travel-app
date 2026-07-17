@@ -14,6 +14,7 @@ type Props = {
   onMarkVisited: (placeId: string) => void
   onEditVisit: (place: PublicPlace) => void
   onAddToTrip: (place: PublicPlace) => void
+  onToggleWish: (place: PublicPlace) => void
   isSaving: boolean
 }
 
@@ -23,6 +24,7 @@ function PublicPlacePopup({
   onMarkVisited,
   onEditVisit,
   onAddToTrip,
+  onToggleWish,
   isSaving,
 }: Props) {
   const { t } = useTranslation(['map', 'category'])
@@ -114,6 +116,14 @@ function PublicPlacePopup({
               className="text-sm leading-tight text-green-700 hover:underline"
             >
               {t('addToTrip')}
+            </button>
+            <button
+              type="button"
+              onClick={() => onToggleWish(place)}
+              disabled={isSaving}
+              className="text-sm leading-tight text-amber-600 hover:underline disabled:opacity-50"
+            >
+              {place.wished_by_me ? t('wishlist.remove') : t('wishlist.add')}
             </button>
             {place.visited_by_me ? (
               <button
