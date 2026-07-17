@@ -3,11 +3,10 @@ import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import TripFormModal from './TripFormModal'
 import { useAddPlaceToTrip, useCreateTrip, useTrips } from '../hooks/useTrips'
-import type { Place } from '../types/place'
-import type { TripInput } from '../types/trip'
+import type { TripCandidate, TripInput } from '../types/trip'
 
 type Props = {
-  place: Place | null
+  place: TripCandidate | null
   onClose: () => void
 }
 
