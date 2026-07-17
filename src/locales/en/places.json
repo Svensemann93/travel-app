@@ -27,5 +27,20 @@
     "unknownError": "Unknown error",
     "visitedOn": "Travel date",
     "visitedOnHint": "When were you there? Leave empty if unknown."
+  },
+  "search": {
+    "label": "Search places",
+    "placeholder": "Search a place …",
+    "noMatch": "No place matches \"{{query}}\"."
+  },
+  "sortLabel": "Sort order",
+  "groupByCountry": "By country",
+  "noCountry": "No country",
+  "sort": {
+    "visited": "Travel date",
+    "name": "Name",
+    "rating": "Rating",
+    "category": "Category",
+    "country": "Country"
   }
 }

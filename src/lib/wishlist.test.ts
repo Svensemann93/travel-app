@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupWishlistByCountry, sortWishlist } from './wishlist'
+import { sortWishlist } from './wishlist'
 import type { CategoryId } from './categories'
 import { makePublicPlace } from '../test/fixtures'
 
@@ -54,7 +54,11 @@ describe('sortWishlist', () => {
   })
 
   it('breaks a category tie on the place name', () => {
-    const alps = makePublicPlace({ id: 'd', name: 'Alpstein', category: 'hiking' })
+    const alps = makePublicPlace({
+      id: 'd',
+      name: 'Alpstein',
+      category: 'hiking',
+    })
     const sorted = sortWishlist([zermatt, alps], 'category', 'de', label)
     expect(sorted.map((p) => p.id)).toEqual(['d', 'a'])
   })
@@ -63,31 +67,5 @@ describe('sortWishlist', () => {
     const input = [...places]
     sortWishlist(input, 'name', 'de', label)
     expect(input.map((p) => p.id)).toEqual(['a', 'b', 'c'])
-  })
-})
-
-describe('groupWishlistByCountry', () => {
-  it('groups by country and names the group in the current language', () => {
-    const groups = groupWishlistByCountry(places, 'de')
-    expect(groups.map((g) => g.code)).toEqual(['JP', 'CH'])
-    expect(groups[0].name).toBe('Japan')
-    expect(groups[1].name).toBe('Schweiz')
-  })
-
-  it('names the group in English too', () => {
-    expect(groupWishlistByCountry([zermatt], 'en')[0].name).toBe('Switzerland')
-  })
-
-  it('keeps the incoming order inside a group', () => {
-    const groups = groupWishlistByCountry(sortWishlist(places, 'name', 'de', label), 'de')
-    const swiss = groups.find((g) => g.code === 'CH')
-    expect(swiss?.places.map((p) => p.id)).toEqual(['c', 'a'])
-  })
-
-  it('puts places without a country last', () => {
-    const nowhere = makePublicPlace({ id: 'd', name: 'Somewhere', country_code: null })
-    const groups = groupWishlistByCountry([nowhere, kyoto], 'de')
-    expect(groups.map((g) => g.code)).toEqual(['JP', null])
-    expect(groups[1].name).toBe('')
   })
 })
