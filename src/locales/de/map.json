@@ -39,5 +39,9 @@
     "remove": "Besuch entfernen",
     "clear": "zurücksetzen",
     "visitedOnLabel": "Dein Besuchsdatum"
+  },
+  "wishlist": {
+    "add": "Auf die Wishlist",
+    "remove": "Von der Wishlist"
   }
 }

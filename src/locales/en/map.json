@@ -39,5 +39,9 @@
     "remove": "Remove visit",
     "clear": "clear",
     "visitedOnLabel": "Your visit date"
+  },
+  "wishlist": {
+    "add": "Add to wishlist",
+    "remove": "Remove from wishlist"
   }
 }

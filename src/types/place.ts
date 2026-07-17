@@ -67,6 +67,7 @@ export type PublicPlace = {
   my_price: number | null
   my_visited_on: string | null
   visited_by_me: boolean
+  wished_by_me: boolean
 }
 
 export type VisitedPlace = {

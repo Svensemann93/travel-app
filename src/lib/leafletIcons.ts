@@ -109,3 +109,27 @@ export function getVisitedMarkerIcon(color: string): DivIcon {
   visitedIconCache.set(color, icon)
   return icon
 }
+
+const wishedIconCache = new Map<string, DivIcon>()
+
+export function getWishedMarkerIcon(color: string): DivIcon {
+  const cached = wishedIconCache.get(color)
+  if (cached) return cached
+
+  const html = `
+    <svg viewBox="0 0 25 41" width="25" height="41" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.5 1 C 6.1 1, 1 6.1, 1 12.5 C 1 21.5, 12.5 39.5, 12.5 39.5 C 12.5 39.5, 24 21.5, 24 12.5 C 24 6.1, 18.9 1, 12.5 1 Z" fill="white" stroke="${color}" stroke-width="2.5"/>
+      <path d="M12.5 6.9 L 13.97 10.48 L 17.83 10.77 L 14.88 13.27 L 15.79 17.03 L 12.5 15 L 9.21 17.03 L 10.12 13.27 L 7.17 10.77 L 11.03 10.48 Z" fill="${color}"/>
+    </svg>
+  `
+
+  const icon = new DivIcon({
+    html,
+    className: '',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+  })
+  wishedIconCache.set(color, icon)
+  return icon
+}

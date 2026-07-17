@@ -31,6 +31,7 @@ import PublicPlaceMarkers from '../components/PublicPlaceMarkers'
 import PublicPlacesToggle from '../components/PublicPlacesToggle'
 import VisitEditModal from '../components/VisitEditModal'
 import { useSetPlaceVisit, useRemovePlaceVisit } from '../hooks/usePlaceVisits'
+import { useAddPlaceWish, useRemovePlaceWish } from '../hooks/usePlaceWishes'
 import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 import MapBoundsWatcher from '../components/MapBoundsWatcher'
@@ -64,6 +65,8 @@ function MapPage() {
   const { data: publicPlaces = [] } = usePublicPlaces(!!bounds, bounds)
   const setVisit = useSetPlaceVisit()
   const removeVisit = useRemovePlaceVisit()
+  const addWish = useAddPlaceWish()
+  const removeWish = useRemovePlaceWish()
   const [editingVisit, setEditingVisit] = useState<PublicPlace | null>(null)
   const myPlaceStats = useMyPlaceStats()
 
@@ -172,7 +175,15 @@ function MapPage() {
               }
               onEditVisit={(place) => setEditingVisit(place)}
               onAddToTrip={(place) => setAddingToTripPlace(place)}
-              isSaving={setVisit.isPending || removeVisit.isPending}
+              onToggleWish={(place) =>
+                place.wished_by_me ? removeWish.mutate(place.id) : addWish.mutate(place.id)
+              }
+              isSaving={
+                setVisit.isPending ||
+                removeVisit.isPending ||
+                addWish.isPending ||
+                removeWish.isPending
+              }
             />
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace} />
