@@ -4,6 +4,7 @@ import type { Place } from '../types/place'
 import PopupPhoto from './PopupPhoto'
 import PopupDescription from './PopupDescription'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
+import { visitOf } from '../lib/placeVisits'
 import StarDisplay from './StarDisplay'
 import type { MyPlaceStats } from '../lib/placesApi'
 
@@ -25,6 +26,7 @@ function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip 
     ? place.website_url.replace('https://', '').replace('http://', '')
     : ''
   const category = CATEGORY_MAP[place.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
+  const visit = visitOf(place)
 
   return (
     <Popup minWidth={280} autoPan={false}>
@@ -54,6 +56,11 @@ function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip 
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category.color }} />
               {t(`category:${category.id}`)}
             </span>
+            {visit ? null : (
+              <span className="ml-1.5 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                {t('planned')}
+              </span>
+            )}
           </div>
 
           {stats && stats.avg_rating != null ? (
@@ -62,25 +69,25 @@ function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip 
                 <StarDisplay value={stats.avg_rating} />
                 <span className="text-slate-600">{stats.avg_rating.toFixed(1)}</span>
                 <span className="text-slate-400">
-                  · {t('visits.count', { count: stats.visit_count + 1 })}
+                  · {t('visits.count', { count: stats.visit_count })}
                 </span>
               </div>
-              {place.rating ? (
+              {visit?.rating ? (
                 <div className="flex items-center gap-1.5 text-xs leading-none text-slate-500">
                   <span>{t('visits.yourRatingLabel')}:</span>
-                  <StarDisplay value={place.rating} className="text-xs" />
+                  <StarDisplay value={visit.rating} className="text-xs" />
                 </div>
               ) : null}
             </div>
-          ) : place.rating ? (
+          ) : visit?.rating ? (
             <div className="text-sm leading-none">
-              <StarDisplay value={place.rating} />
+              <StarDisplay value={visit.rating} />
             </div>
           ) : null}
 
-          {place.price_level ? (
+          {visit?.price_level ? (
             <div className="text-sm font-medium leading-none text-green-700">
-              {'$'.repeat(place.price_level)}
+              {'$'.repeat(visit.price_level)}
             </div>
           ) : null}
         </div>

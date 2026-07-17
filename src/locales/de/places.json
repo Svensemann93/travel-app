@@ -26,6 +26,10 @@
     "adoptedHint": "Dieser Ort stammt von einer öffentlichen Nadel, die der Ersteller gelöscht hat. Er gehört jetzt dir, kann aber nicht öffentlich geteilt werden.",
     "unknownError": "Unbekannter Fehler",
     "visitedOn": "Reisedatum",
-    "visitedOnHint": "Wann warst du dort? Leer lassen, wenn unbekannt."
-  }
+    "visitedOnHint": "Wann warst du dort? Leer lassen, wenn unbekannt.",
+    "visited": "Ich war schon hier",
+    "visitedHint": "Zählt in Statistik und Rückblick.",
+    "plannedHint": "Geplant - zählt noch nicht mit."
+  },
+  "planned": "Geplant"
 }

@@ -1,4 +1,5 @@
 import type { Place } from '../types/place'
+import { isVisited } from './placeVisits'
 import type { CategoryId } from './categories'
 import { CATEGORIES } from './categories'
 import { COUNTRY_CONTINENT } from './continents'
@@ -46,10 +47,13 @@ export function computeTravelStats(
 
   let photoCount = 0
   let publicPlaceCount = 0
+  const ownVisited = ownPlaces.filter(isVisited)
   for (const place of ownPlaces) {
+    if (place.is_public) publicPlaceCount += 1
+  }
+  for (const place of ownVisited) {
     count(place.category, place.country_code)
     photoCount += place.photos.length
-    if (place.is_public) publicPlaceCount += 1
   }
   for (const place of visitedPlaces) {
     count(place.category, place.country_code)
@@ -58,7 +62,7 @@ export function computeTravelStats(
   const categoriesCovered = CATEGORIES.filter((c) => categoryCounts[c.id] > 0).length
 
   return {
-    placeCount: ownPlaces.length + visitedPlaces.length,
+    placeCount: ownVisited.length + visitedPlaces.length,
     photoCount,
     publicPlaceCount,
     tripCount,

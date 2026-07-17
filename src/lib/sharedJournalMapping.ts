@@ -62,12 +62,9 @@ export function toJournalWithEntries(data: SharedJournal): JournalWithEntries {
             latitude: e.place.latitude,
             longitude: e.place.longitude,
             category: DEFAULT_CATEGORY,
-            rating: null,
-            price_level: null,
             website_url: null,
             is_public: false,
             country_code: null,
-            visited_on: null,
             adopted: false,
             created_at: '',
             photos: e.place_photos.map((p, pi) => ({
@@ -80,6 +77,7 @@ export function toJournalWithEntries(data: SharedJournal): JournalWithEntries {
               is_public: false,
               created_at: '',
             })),
+            visits: [],
           }
         : null,
     })),

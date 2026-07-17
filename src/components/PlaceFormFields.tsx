@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import PhotoUploader from './PhotoUploader'
-import PriceLevel from './PriceLevel'
-import StarRating from './StarRating'
+import PlaceVisitFields from './PlaceVisitFields'
 import CollapsibleSection from './CollapsibleSection'
 import { CATEGORIES } from '../lib/categories'
 import type { PlaceFormApi } from '../hooks/usePlaceForm'
@@ -76,25 +75,7 @@ function PlaceFormFields({ form, onError }: Props) {
         </div>
       </div>
 
-      <CollapsibleSection title={t('form.visitedOn')}>
-        <input
-          id="place-visited-on"
-          type="date"
-          aria-label={t('form.visitedOn')}
-          value={form.visitedOn}
-          onChange={(e) => form.setVisitedOn(e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <p className="mt-1 text-xs text-slate-500">{t('form.visitedOnHint')}</p>
-      </CollapsibleSection>
-
-      <CollapsibleSection title={t('form.rating')}>
-        <StarRating value={form.rating} onChange={form.setRating} />
-      </CollapsibleSection>
-
-      <CollapsibleSection title={t('form.price')}>
-        <PriceLevel value={form.priceLevel} onChange={form.setPriceLevel} />
-      </CollapsibleSection>
+      <PlaceVisitFields form={form} />
 
       <CollapsibleSection title={t('form.website')}>
         <input

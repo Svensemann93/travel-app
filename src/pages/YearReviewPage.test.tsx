@@ -1,6 +1,6 @@
 import type { UseQueryResult } from '@tanstack/react-query'
 import { fireEvent, renderWithProviders, screen, within } from '../test/utils'
-import { makePlace } from '../test/fixtures'
+import { makePlace, makePlaceVisit } from '../test/fixtures'
 import { useJournals } from '../hooks/useJournals'
 import { useMyVisitedStats } from '../hooks/useMyVisitedStats'
 import { usePlaces } from '../hooks/usePlaces'
@@ -80,7 +80,13 @@ describe('YearReviewPage', () => {
   it('renders the review once the data is there', () => {
     mockQueries({
       places: queryResult({
-        data: [makePlace({ name: 'Cinque Terre', rating: 5, country_code: 'IT' })],
+        data: [
+          makePlace({
+            name: 'Cinque Terre',
+            country_code: 'IT',
+            visits: [makePlaceVisit({ rating: 5 })],
+          }),
+        ],
       }),
     })
     renderWithProviders(<YearReviewPage />)
@@ -92,8 +98,14 @@ describe('YearReviewPage', () => {
     mockQueries({
       places: queryResult({
         data: [
-          makePlace({ name: 'Old trip', visited_on: '2019-05-05', rating: 5 }),
-          makePlace({ name: 'New trip', visited_on: '2024-05-05', rating: 4 }),
+          makePlace({
+            name: 'Old trip',
+            visits: [makePlaceVisit({ visited_on: '2019-05-05', rating: 5 })],
+          }),
+          makePlace({
+            name: 'New trip',
+            visits: [makePlaceVisit({ visited_on: '2024-05-05', rating: 4 })],
+          }),
         ],
       }),
     })

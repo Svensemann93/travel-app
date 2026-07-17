@@ -7,7 +7,7 @@ import { useReposition } from '../hooks/useReposition'
 import { useFocusedPlace } from '../hooks/useFocusedPlace'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 import { filterPlacesByCategory } from '../lib/filterPlaces'
-import { placeToFormInitial } from '../hooks/usePlaceForm'
+import { formValuesToVisit, placeToFormInitial } from '../hooks/usePlaceForm'
 import type { PlaceFormValues } from '../hooks/usePlaceForm'
 import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
@@ -100,14 +100,12 @@ function MapPage() {
         name: data.name,
         description: data.description || null,
         category: data.category,
-        rating: data.rating,
-        price_level: data.price_level,
         website_url: data.website_url || null,
         is_public: data.isPublic,
-        visited_on: data.visitedOn || null,
         latitude: clickedPosition.lat,
         longitude: clickedPosition.lng,
       },
+      visit: formValuesToVisit(data),
       photos: data.newPhotos,
     })
   }
@@ -120,12 +118,10 @@ function MapPage() {
         name: data.name,
         description: data.description || null,
         category: data.category,
-        rating: data.rating,
-        price_level: data.price_level,
         website_url: data.website_url || null,
         is_public: data.isPublic,
-        visited_on: data.visitedOn || null,
       },
+      visit: formValuesToVisit(data),
       photosToAdd: data.newPhotos,
       photoIdsToDelete: data.photosToDelete,
       photoVisibility: data.photoVisibility,

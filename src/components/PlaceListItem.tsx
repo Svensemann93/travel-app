@@ -1,5 +1,7 @@
+import { useTranslation } from 'react-i18next'
 import SignedImage from './SignedImage'
 import StarDisplay from './StarDisplay'
+import { visitOf } from '../lib/placeVisits'
 import type { Place } from '../types/place'
 
 type Props = {
@@ -8,7 +10,9 @@ type Props = {
 }
 
 function PlaceListItem({ place, onClick }: Props) {
+  const { t } = useTranslation('places')
   const firstPhoto = place.photos?.slice().sort((a, b) => a.position - b.position)[0]
+  const visit = visitOf(place)
 
   return (
     <button
@@ -31,10 +35,15 @@ function PlaceListItem({ place, onClick }: Props) {
         <h3 className="font-semibold text-slate-800">{place.name}</h3>
 
         <div className="flex items-center gap-2 mt-1">
-          {place.rating ? <StarDisplay value={place.rating} className="text-sm" /> : null}
-          {place.price_level ? (
+          {visit ? null : (
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+              {t('planned')}
+            </span>
+          )}
+          {visit?.rating ? <StarDisplay value={visit.rating} className="text-sm" /> : null}
+          {visit?.price_level ? (
             <span className="text-sm font-medium text-green-700">
-              {'$'.repeat(place.price_level)}
+              {'$'.repeat(visit.price_level)}
             </span>
           ) : null}
         </div>
