@@ -31,5 +31,8 @@
     "editTitle": "Edit journal",
     "title": "Title",
     "description": "Description"
-  }
+  },
+  "eyebrow": "Your travel stories",
+  "subtitle": "Memories, photos and moments from your travels.",
+  "updatedAt": "Updated {{date}}"
 }
