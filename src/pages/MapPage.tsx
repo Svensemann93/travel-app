@@ -35,6 +35,7 @@ import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 import MapBoundsWatcher from '../components/MapBoundsWatcher'
 import type { PublicBounds } from '../lib/publicBounds'
+import type { TripCandidate } from '../types/trip'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -75,7 +76,7 @@ function MapPage() {
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
-  const [addingToTripPlace, setAddingToTripPlace] = useState<Place | null>(null)
+  const [addingToTripPlace, setAddingToTripPlace] = useState<TripCandidate | null>(null)
   const [welcomeDismissed, setWelcomeDismissed] = useState(isWelcomeDismissed)
 
   function handleDismissWelcome() {
@@ -170,6 +171,7 @@ function MapPage() {
                 setVisit.mutate({ placeId, rating: null, priceLevel: null, visitedOn: null })
               }
               onEditVisit={(place) => setEditingVisit(place)}
+              onAddToTrip={(place) => setAddingToTripPlace(place)}
               isSaving={setVisit.isPending || removeVisit.isPending}
             />
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}

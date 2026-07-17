@@ -13,10 +13,18 @@ type Props = {
   onPhotoClick: (place: PublicPlace, index: number) => void
   onMarkVisited: (placeId: string) => void
   onEditVisit: (place: PublicPlace) => void
+  onAddToTrip: (place: PublicPlace) => void
   isSaving: boolean
 }
 
-function PublicPlacePopup({ place, onPhotoClick, onMarkVisited, onEditVisit, isSaving }: Props) {
+function PublicPlacePopup({
+  place,
+  onPhotoClick,
+  onMarkVisited,
+  onEditVisit,
+  onAddToTrip,
+  isSaving,
+}: Props) {
   const { t } = useTranslation(['map', 'category'])
   const photos = place.photos ?? []
   const websiteText = place.website_url
@@ -100,6 +108,13 @@ function PublicPlacePopup({ place, onPhotoClick, onMarkVisited, onEditVisit, isS
           ) : null}
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-1">
+            <button
+              type="button"
+              onClick={() => onAddToTrip(place)}
+              className="text-sm leading-tight text-green-700 hover:underline"
+            >
+              {t('addToTrip')}
+            </button>
             {place.visited_by_me ? (
               <button
                 type="button"
@@ -113,7 +128,7 @@ function PublicPlacePopup({ place, onPhotoClick, onMarkVisited, onEditVisit, isS
                 type="button"
                 onClick={() => onMarkVisited(place.id)}
                 disabled={isSaving}
-                className="text-sm leading-tight text-green-700 hover:underline disabled:opacity-50"
+                className="text-sm leading-tight text-slate-600 hover:underline disabled:opacity-50"
               >
                 {t('visits.markVisited')}
               </button>

@@ -18,14 +18,25 @@ export type TripPlace = {
   planned_date: string | null
   notes: string | null
   created_at: string
+  place_name: string | null
+  place_latitude: number | null
+  place_longitude: number | null
+  place_category: string | null
+  place_country_code: string | null
 }
 
 export type TripPlaceWithPlace = TripPlace & {
   place: Place
+  is_foreign: boolean
 }
 
 export type TripWithPlaces = Trip & {
   trip_places: TripPlaceWithPlace[]
+}
+
+export type TripCandidate = {
+  id: string
+  name: string
 }
 
 export type TripInput = {

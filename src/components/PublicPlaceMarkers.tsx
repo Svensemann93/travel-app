@@ -10,10 +10,11 @@ type Props = {
   places: PublicPlace[]
   onMarkVisited: (placeId: string) => void
   onEditVisit: (place: PublicPlace) => void
+  onAddToTrip: (place: PublicPlace) => void
   isSaving: boolean
 }
 
-function PublicPlaceMarkers({ places, onMarkVisited, onEditVisit, isSaving }: Props) {
+function PublicPlaceMarkers({ places, onMarkVisited, onEditVisit, onAddToTrip, isSaving }: Props) {
   const [lightbox, setLightbox] = useState<{ place: PublicPlace; index: number } | null>(null)
 
   return (
@@ -30,6 +31,7 @@ function PublicPlaceMarkers({ places, onMarkVisited, onEditVisit, isSaving }: Pr
               onPhotoClick={(p, index) => setLightbox({ place: p, index })}
               onMarkVisited={onMarkVisited}
               onEditVisit={onEditVisit}
+              onAddToTrip={onAddToTrip}
               isSaving={isSaving}
             />
           </Marker>

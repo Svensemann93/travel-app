@@ -1,4 +1,6 @@
 import { supabase } from './supabase'
+import { toTripPlace } from './tripPlaces'
+import type { TripPlaceRow } from './tripPlaces'
 import type {
   Trip,
   TripInput,
@@ -33,7 +35,8 @@ export async function fetchTripWithPlaces(
 
   const { data, error } = await query.maybeSingle()
   if (error) throw new Error(error.message)
-  return data
+  if (!data) return null
+  return { ...data, trip_places: (data.trip_places as TripPlaceRow[]).map(toTripPlace) }
 }
 
 export async function insertTripRow(userId: string, data: TripInput): Promise<Trip> {

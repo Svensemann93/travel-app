@@ -54,6 +54,7 @@ export function makePlacePhoto(overrides: Partial<PlacePhoto> = {}): PlacePhoto 
     ...overrides,
   }
 }
+
 export function makeTripPlace(overrides: Partial<TripPlace> = {}): TripPlace {
   return {
     trip_id: 'trip-1',
@@ -62,21 +63,21 @@ export function makeTripPlace(overrides: Partial<TripPlace> = {}): TripPlace {
     planned_date: null,
     notes: null,
     created_at: '2025-01-15T00:00:00.000Z',
+    place_name: 'Test Place',
+    place_latitude: 47.3769,
+    place_longitude: 8.5417,
+    place_category: 'other',
+    place_country_code: null,
     ...overrides,
   }
 }
-
 export function makeTripPlaceWithPlace(
   overrides: Partial<TripPlaceWithPlace> = {},
 ): TripPlaceWithPlace {
   return {
-    trip_id: 'trip-1',
-    place_id: 'place-1',
-    position: 0,
-    planned_date: null,
-    notes: null,
-    created_at: '2025-01-15T00:00:00.000Z',
+    ...makeTripPlace(),
     place: makePlace(),
+    is_foreign: false,
     ...overrides,
   }
 }
