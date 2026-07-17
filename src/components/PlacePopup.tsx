@@ -56,11 +56,6 @@ function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip 
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category.color }} />
               {t(`category:${category.id}`)}
             </span>
-            {visit ? null : (
-              <span className="ml-1.5 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
-                {t('planned')}
-              </span>
-            )}
           </div>
 
           {stats && stats.avg_rating != null ? (
