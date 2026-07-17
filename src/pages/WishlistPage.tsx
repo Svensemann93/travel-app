@@ -5,7 +5,8 @@ import { useWishlist } from '../hooks/useWishlist'
 import { useRemovePlaceWish } from '../hooks/usePlaceWishes'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 import { filterPlacesByCategory } from '../lib/filterPlaces'
-import { groupWishlistByCountry, sortWishlist } from '../lib/wishlist'
+import { sortWishlist } from '../lib/wishlist'
+import { groupByCountry } from '../lib/groupByCountry'
 import type { WishlistSort } from '../lib/wishlist'
 import type { CategoryId } from '../lib/categories'
 import AppHeader from '../components/AppHeader'
@@ -33,11 +34,11 @@ function WishlistPage() {
     const label = (id: CategoryId) => t(`category:${id}`)
     const filtered = filterPlacesByCategory(places, selected)
     const visible = sortWishlist(filtered, sort, i18n.language, label)
-    if (!grouped) return [{ code: null, name: '', places: visible }]
-    return groupWishlistByCountry(visible, i18n.language)
+    if (!grouped) return [{ code: null, name: '', items: visible }]
+    return groupByCountry(visible, i18n.language)
   }, [places, selected, sort, grouped, i18n.language, t])
 
-  const visibleCount = groups.reduce((sum, group) => sum + group.places.length, 0)
+  const visibleCount = groups.reduce((sum, group) => sum + group.items.length, 0)
 
   function handleShow(place: PublicPlace) {
     navigate(`/?lat=${place.latitude}&lng=${place.longitude}`)
@@ -77,7 +78,7 @@ function WishlistPage() {
                 <WishlistGroup
                   key={group.code ?? 'all'}
                   title={grouped ? group.name : null}
-                  places={group.places}
+                  places={group.items}
                   onShow={handleShow}
                   onAddToTrip={(place) => setAddingToTripPlace(place)}
                   onRemove={(placeId) => removeWish.mutate(placeId)}

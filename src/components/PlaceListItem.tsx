@@ -15,24 +15,24 @@ function PlaceListItem({ place, onClick }: Props) {
   return (
     <button
       onClick={() => onClick(place.id)}
-      className="w-full text-left bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex"
+      className="flex w-full overflow-hidden rounded-lg bg-white text-left shadow-sm transition-shadow hover:shadow-md"
     >
       {firstPhoto ? (
         <SignedImage
           path={firstPhoto.thumb_url ?? firstPhoto.url}
           alt={place.name}
-          className="w-24 h-24 object-cover flex-shrink-0"
+          className="w-24 flex-shrink-0 self-stretch object-cover"
         />
       ) : (
-        <div className="w-24 h-24 bg-slate-100 flex-shrink-0 flex items-center justify-center text-slate-300 text-2xl">
+        <div className="flex w-24 flex-shrink-0 items-center justify-center self-stretch bg-slate-100 text-2xl text-slate-300">
           📍
         </div>
       )}
 
-      <div className="p-4 flex-1 min-w-0">
+      <div className="min-w-0 flex-1 p-4">
         <h3 className="font-semibold text-slate-800">{place.name}</h3>
 
-        <div className="flex items-center gap-2 mt-1">
+        <div className="mt-1 flex items-center gap-2">
           {visit?.rating ? <StarDisplay value={visit.rating} className="text-sm" /> : null}
           {visit?.price_level ? (
             <span className="text-sm font-medium text-green-700">
@@ -42,10 +42,10 @@ function PlaceListItem({ place, onClick }: Props) {
         </div>
 
         {place.description && (
-          <p className="text-sm text-slate-600 mt-1 truncate">{place.description}</p>
+          <p className="mt-1 truncate text-sm text-slate-600">{place.description}</p>
         )}
 
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="mt-1 text-xs text-slate-400">
           {place.latitude.toFixed(5)}, {place.longitude.toFixed(5)}
         </p>
       </div>

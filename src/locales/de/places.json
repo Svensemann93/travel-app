@@ -27,5 +27,20 @@
     "unknownError": "Unbekannter Fehler",
     "visitedOn": "Reisedatum",
     "visitedOnHint": "Wann warst du dort? Leer lassen, wenn unbekannt."
+  },
+  "search": {
+    "label": "Orte durchsuchen",
+    "placeholder": "Ort suchen …",
+    "noMatch": "Kein Ort passt zu \"{{query}}\"."
+  },
+  "sortLabel": "Sortierung",
+  "groupByCountry": "Nach Land",
+  "noCountry": "Ohne Land",
+  "sort": {
+    "visited": "Reisedatum",
+    "name": "Name",
+    "rating": "Bewertung",
+    "category": "Kategorie",
+    "country": "Land"
   }
 }
