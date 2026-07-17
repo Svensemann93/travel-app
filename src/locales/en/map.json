@@ -39,6 +39,5 @@
     "remove": "Remove visit",
     "clear": "clear",
     "visitedOnLabel": "Your visit date"
-  },
-  "planned": "Planned"
+  }
 }

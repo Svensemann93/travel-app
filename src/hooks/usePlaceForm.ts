@@ -8,7 +8,6 @@ export type PlaceFormValues = {
   name: string
   description: string
   category: CategoryId
-  visited: boolean
   rating: number | null
   price_level: number | null
   website_url: string
@@ -34,8 +33,6 @@ export type PlaceFormApi = {
   setDescription: (value: string) => void
   category: CategoryId
   setCategory: (value: CategoryId) => void
-  visited: boolean
-  setVisited: (value: boolean) => void
   rating: number | null
   setRating: (value: number | null) => void
   priceLevel: number | null
@@ -63,7 +60,6 @@ export function placeToFormInitial(place: Place): PlaceFormInitial {
     name: place.name,
     description: place.description ?? '',
     category: place.category,
-    visited: visit !== null,
     rating: visit?.rating ?? null,
     price_level: visit?.price_level ?? null,
     website_url: place.website_url ?? '',
@@ -74,8 +70,7 @@ export function placeToFormInitial(place: Place): PlaceFormInitial {
   }
 }
 
-export function formValuesToVisit(values: PlaceFormValues): VisitInput | null {
-  if (!values.visited) return null
+export function formValuesToVisit(values: PlaceFormValues): VisitInput {
   return {
     rating: values.rating,
     price_level: values.price_level,
@@ -87,7 +82,6 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
   const [category, setCategory] = useState<CategoryId>(initialData?.category ?? DEFAULT_CATEGORY)
-  const [visited, setVisited] = useState(initialData?.visited ?? true)
   const [rating, setRating] = useState<number | null>(initialData?.rating ?? null)
   const [priceLevel, setPriceLevel] = useState<number | null>(initialData?.price_level ?? null)
   const [websiteUrl, setWebsiteUrl] = useState(initialData?.website_url ?? '')
@@ -133,11 +127,10 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
       name,
       description,
       category,
-      visited,
-      rating: visited && rating !== 0 ? rating : null,
-      price_level: visited && priceLevel !== 0 ? priceLevel : null,
+      rating: rating === 0 ? null : rating,
+      price_level: priceLevel === 0 ? null : priceLevel,
       website_url: websiteUrl,
-      visitedOn: visited ? visitedOn : '',
+      visitedOn,
       isPublic,
       newPhotos: photos.map((file, i) => ({
         file,
@@ -155,8 +148,6 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
     setDescription,
     category,
     setCategory,
-    visited,
-    setVisited,
     rating,
     setRating,
     priceLevel,
