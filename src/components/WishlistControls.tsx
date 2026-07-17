@@ -31,6 +31,7 @@ function WishlistControls({ sort, onSortChange, grouped, onGroupedChange }: Prop
       <button
         type="button"
         aria-pressed={grouped}
+        aria-label={t('wishlist.groupByCountry')}
         onClick={() => onGroupedChange(!grouped)}
         className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm ring-1 transition-colors ${
           grouped
@@ -52,10 +53,10 @@ function WishlistControls({ sort, onSortChange, grouped, onGroupedChange }: Prop
           <circle cx="12" cy="12" r="9" />
           <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
         </svg>
-        {t('wishlist.groupByCountry')}
+        <span className="hidden sm:inline">{t('wishlist.groupByCountry')}</span>
       </button>
 
-      <CategoryFilter />
+      <CategoryFilter className="hidden md:block" />
     </div>
   )
 }
