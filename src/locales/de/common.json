@@ -11,7 +11,8 @@
     "journal": "Tagebuch",
     "profile": "Profil",
     "label": "Hauptnavigation",
-    "pass": "Reisepass"
+    "pass": "Reisepass",
+    "wishlist": "Wishlist"
   },
   "auth": {
     "logout": "Abmelden"

@@ -68,6 +68,7 @@ export type PublicPlace = {
   my_visited_on: string | null
   visited_by_me: boolean
   wished_by_me: boolean
+  wished_on: string | null
 }
 
 export type VisitedPlace = {

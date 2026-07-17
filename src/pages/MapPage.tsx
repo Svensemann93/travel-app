@@ -5,6 +5,7 @@ import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../ho
 import { useEntryPoint } from '../hooks/useEntryPoint'
 import { useReposition } from '../hooks/useReposition'
 import { useFocusedPlace } from '../hooks/useFocusedPlace'
+import { useFocusedPoint } from '../hooks/useFocusedPoint'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 import { filterPlacesByCategory } from '../lib/filterPlaces'
 import { formValuesToVisit, placeToFormInitial } from '../hooks/usePlaceForm'
@@ -47,6 +48,7 @@ function MapPage() {
   const deletePlace = useDeletePlace()
   const reposition = useReposition()
   const focusedPlace = useFocusedPlace(places)
+  const focusedPoint = useFocusedPoint()
   const { selected } = useCategoryFilter()
   const [showPublic, setShowPublic] = useState(true)
   const [bounds, setBounds] = useState<PublicBounds | undefined>(undefined)
@@ -186,7 +188,7 @@ function MapPage() {
               }
             />
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
-            <MapFocuser place={focusedPlace} />
+            <MapFocuser place={focusedPlace ?? focusedPoint} />
             <PopupAutoCenter />
           </Map>
         )}

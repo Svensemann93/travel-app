@@ -42,6 +42,21 @@
   },
   "wishlist": {
     "add": "Auf die Wishlist",
-    "remove": "Von der Wishlist"
+    "remove": "Von der Wishlist",
+    "title": "Meine Wishlist",
+    "emptyTitle": "Noch nichts auf der Wishlist",
+    "emptyMessage": "Öffne eine fremde Nadel auf der Karte und setz sie auf die Wishlist.",
+    "toMap": "Zur Karte",
+    "done": "Warst du schon",
+    "groupByCountry": "Nach Land",
+    "sortLabel": "Sortierung",
+    "noCountry": "Ohne Land",
+    "noFilterMatch": "Keine Orte in den gewählten Kategorien.",
+    "sort": {
+      "added": "Zuletzt hinzugefügt",
+      "name": "Name",
+      "rating": "Bewertung",
+      "category": "Kategorie"
+    }
   }
 }

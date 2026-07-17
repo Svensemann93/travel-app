@@ -11,7 +11,8 @@
     "journal": "Journal",
     "profile": "Profile",
     "label": "Main navigation",
-    "pass": "Passport"
+    "pass": "Passport",
+    "wishlist": "Wishlist"
   },
   "auth": {
     "logout": "Sign out"

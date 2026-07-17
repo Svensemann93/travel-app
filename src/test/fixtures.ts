@@ -1,4 +1,4 @@
-import type { Place, PlacePhoto, PlaceVisit } from '../types/place'
+import type { Place, PlacePhoto, PlaceVisit, PublicPlace } from '../types/place'
 import type { Trip, TripPlace, TripPlaceWithPlace, TripWithPlaces } from '../types/trip'
 import type {
   Journal,
@@ -7,6 +7,31 @@ import type {
   JournalEntryWithPlace,
   JournalWithEntries,
 } from '../types/journal'
+
+export function makePublicPlace(overrides: Partial<PublicPlace> = {}): PublicPlace {
+  return {
+    id: 'public-1',
+    name: 'Bockmattlipass',
+    description: null,
+    latitude: 47.05,
+    longitude: 8.95,
+    category: 'other',
+    website_url: null,
+    username: 'testuser',
+    country_code: 'CH',
+    photos: [],
+    avg_rating: null,
+    avg_price: null,
+    visit_count: 0,
+    my_rating: null,
+    my_price: null,
+    my_visited_on: null,
+    visited_by_me: false,
+    wished_by_me: true,
+    wished_on: '2026-07-01T00:00:00.000Z',
+    ...overrides,
+  }
+}
 
 export function makePlaceVisit(overrides: Partial<PlaceVisit> = {}): PlaceVisit {
   return {

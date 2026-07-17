@@ -29,18 +29,10 @@ export async function fetchPlacesForUser(signal?: AbortSignal): Promise<Place[]>
   }))
 }
 
-export async function fetchPublicPlaces(
-  bounds?: PublicBounds,
+async function callPublicPlaces(
+  args: Record<string, unknown>,
   signal?: AbortSignal,
 ): Promise<PublicPlace[]> {
-  const args = bounds
-    ? {
-        min_lat: bounds.minLat,
-        max_lat: bounds.maxLat,
-        min_lng: bounds.minLng,
-        max_lng: bounds.maxLng,
-      }
-    : {}
   let query = supabase.rpc('get_public_places', args)
   if (signal) {
     query = query.abortSignal(signal)
@@ -53,6 +45,25 @@ export async function fetchPublicPlaces(
     avg_price: row.avg_price != null ? Number(row.avg_price) : null,
     my_rating: row.my_rating != null ? Number(row.my_rating) : null,
   }))
+}
+
+export async function fetchPublicPlaces(
+  bounds?: PublicBounds,
+  signal?: AbortSignal,
+): Promise<PublicPlace[]> {
+  const args = bounds
+    ? {
+        min_lat: bounds.minLat,
+        max_lat: bounds.maxLat,
+        min_lng: bounds.minLng,
+        max_lng: bounds.maxLng,
+      }
+    : {}
+  return callPublicPlaces(args, signal)
+}
+
+export async function fetchWishlist(signal?: AbortSignal): Promise<PublicPlace[]> {
+  return callPublicPlaces({ only_wished: true }, signal)
 }
 
 export type MyPlaceStats = {
