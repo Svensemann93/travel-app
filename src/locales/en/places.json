@@ -26,7 +26,8 @@
     "adoptedHint": "This place comes from a public pin its creator deleted. It is yours now, but it cannot be shared publicly.",
     "unknownError": "Unknown error",
     "visitedOn": "Travel date",
-    "visitedOnHint": "When were you there? Leave empty if unknown."
+    "visitedOnHint": "When were you there? Leave empty if unknown.",
+    "invalidWebsite": "Please enter a valid web address (http:// or https://)."
   },
   "search": {
     "label": "Search places",
