@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": ["supabase/**"],
+  "ignore": ["supabase/**", "scripts/**"],
   "ignoreDependencies": ["supabase"],
   "ignoreExportsUsedInFile": true,
   "entry": ["src/test/utils.tsx"]
