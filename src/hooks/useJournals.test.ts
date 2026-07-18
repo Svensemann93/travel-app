@@ -24,14 +24,12 @@ import {
 import { createTestQueryWrapper } from '../test/utils'
 import {
   journalsKeys,
-  useAddEntry,
   useCreateJournal,
   useCreateJournalFromTrip,
-  useDeleteEntry,
   useDeleteJournal,
-  useUpdateEntry,
   useUpdateJournal,
 } from './useJournals'
+import { useAddEntry, useDeleteEntry, useUpdateEntry } from './useJournalEntries'
 
 vi.mock('../lib/journalsApi', () => ({
   fetchJournalsForUser: vi.fn(),
