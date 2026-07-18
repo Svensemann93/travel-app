@@ -5,7 +5,7 @@ import ConfirmDialog from './ConfirmDialog'
 import JournalEntryModal from './JournalEntryModal'
 import type { JournalEntrySavePayload } from './JournalEntryModal'
 import JournalEntryListItem from './JournalEntryListItem'
-import { useAddEntry, useDeleteEntry, useUpdateEntry } from '../hooks/useJournals'
+import { useAddEntry, useDeleteEntry, useUpdateEntry } from '../hooks/useJournalEntries'
 import type { JournalEntryWithPlace } from '../types/journal'
 
 type Props = {
