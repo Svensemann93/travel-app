@@ -2,7 +2,7 @@ import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import PlaceFormFields from './PlaceFormFields'
-import { usePlaceForm } from '../hooks/usePlaceForm'
+import { InvalidWebsiteUrlError, usePlaceForm } from '../hooks/usePlaceForm'
 import type { PlaceFormInitial, PlaceFormValues } from '../hooks/usePlaceForm'
 
 type Props = {
@@ -35,9 +35,19 @@ function PlaceFormModal({
   async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
     setErrorMessage('')
+    let values
+    try {
+      values = form.getValues()
+    } catch (error) {
+      if (error instanceof InvalidWebsiteUrlError) {
+        setErrorMessage(t('form.invalidWebsite'))
+        return
+      }
+      throw error
+    }
     setIsSaving(true)
     try {
-      await onSave(form.getValues())
+      await onSave(values)
       onClose()
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : t('form.unknownError'))

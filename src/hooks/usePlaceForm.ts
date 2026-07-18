@@ -3,6 +3,14 @@ import { DEFAULT_CATEGORY } from '../lib/categories'
 import type { CategoryId } from '../lib/categories'
 import type { NewPhoto, Place, PlacePhoto, VisitInput } from '../types/place'
 import { visitOf } from '../lib/placeVisits'
+import { normalizeWebsiteUrl } from '../lib/websiteUrl'
+
+export class InvalidWebsiteUrlError extends Error {
+  constructor() {
+    super('invalid-website-url')
+    this.name = 'InvalidWebsiteUrlError'
+  }
+}
 
 export type PlaceFormValues = {
   name: string
@@ -123,13 +131,15 @@ export function usePlaceForm(initialData?: PlaceFormInitial): PlaceFormApi {
   }
 
   function getValues(): PlaceFormValues {
+    const website = normalizeWebsiteUrl(websiteUrl)
+    if (!website.ok) throw new InvalidWebsiteUrlError()
     return {
       name,
       description,
       category,
       rating: rating === 0 ? null : rating,
       price_level: priceLevel === 0 ? null : priceLevel,
-      website_url: websiteUrl,
+      website_url: website.value ?? '',
       visitedOn,
       isPublic,
       newPhotos: photos.map((file, i) => ({
