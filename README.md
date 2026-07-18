@@ -97,6 +97,17 @@ The `supabase/` folder is excluded from ESLint and Prettier.
 
 ## Deployment
 
-The app is deployed on **Vercel**. Before going live, the deployed URL must be added to
-the Supabase **URL Configuration** (Site URL + Redirect Allowlist) so authentication
-works on the production domain.
+The app is deployed on **Vercel**. Authentication (login redirects, password reset
+emails) only works if the deployed URL is registered under Supabase **Authentication →
+URL Configuration**. Without it, email links point at `localhost` and fail for anyone
+but the developer.
+
+Current configuration:
+
+- **Site URL:** `https://travel-app-lovat-eight.vercel.app`
+- **Redirect URLs (allowlist):**
+  - `https://travel-app-lovat-eight.vercel.app/**`
+  - `http://localhost:5173/**` (kept for local development)
+
+The `/**` suffix allows any sub-path. If the production domain ever changes, both the
+Site URL and its redirect entry must be updated here and in the dashboard.
