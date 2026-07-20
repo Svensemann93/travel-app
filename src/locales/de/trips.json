@@ -37,5 +37,15 @@
     "notes": "Notizen",
     "notesPlaceholder": "Notizen für deinen Besuch",
     "counter": "{{count}} / {{max}}"
+  },
+  "cover": {
+    "button": "Titelbild",
+    "change": "Titelbild ändern",
+    "adjust": "Ausschnitt anpassen",
+    "pickerTitle": "Titelbild wählen",
+    "fromPlaces": "Aus deinen Orten",
+    "standard": "Standardbilder",
+    "remove": "Titelbild entfernen",
+    "alt": "Titelbild"
   }
 }

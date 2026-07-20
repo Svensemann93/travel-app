@@ -60,6 +60,22 @@ export async function updateTripRow(id: string, data: TripInput): Promise<Trip> 
   return row
 }
 
+export async function updateTripCover(
+  id: string,
+  coverPhotoPath: string | null,
+  focusX: number,
+  focusY: number,
+): Promise<Trip> {
+  const { data: row, error } = await supabase
+    .from('trips')
+    .update({ cover_photo_path: coverPhotoPath, cover_focus_x: focusX, cover_focus_y: focusY })
+    .eq('id', id)
+    .select('*')
+    .single()
+  if (error) throw new Error(error.message)
+  return row
+}
+
 export async function deleteTripRow(id: string): Promise<void> {
   const { error } = await supabase.from('trips').delete().eq('id', id)
   if (error) throw new Error(error.message)

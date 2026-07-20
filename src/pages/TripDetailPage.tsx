@@ -7,6 +7,8 @@ import MapFitBounds from '../components/MapFitBounds'
 import MapFocuser from '../components/MapFocuser'
 import CategoryFilter from '../components/CategoryFilter'
 import TripDetailHeader from '../components/TripDetailHeader'
+import TripCoverPicker from '../components/TripCoverPicker'
+import CoverFocusEditor from '../components/CoverFocusEditor'
 import TripDetailModals from '../components/TripDetailModals'
 import DetailStatus from '../components/DetailStatus'
 import EmptyState from '../components/EmptyState'
@@ -16,6 +18,7 @@ import { useCategoryFilter } from '../contexts/categoryFilter'
 import {
   useDeleteTrip,
   useRemovePlaceFromTrip,
+  useSetTripCover,
   useTripWithPlaces,
   useUpdateTrip,
   useUpdateTripPlace,
@@ -34,6 +37,7 @@ function TripDetailPage() {
   const deleteTrip = useDeleteTrip()
   const removePlaceFromTrip = useRemovePlaceFromTrip()
   const updateTripPlace = useUpdateTripPlace()
+  const setCover = useSetTripCover()
   const createJournalFromTrip = useCreateJournalFromTrip()
   const { selected } = useCategoryFilter()
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -43,6 +47,8 @@ function TripDetailPage() {
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
   const [editingTripPlace, setEditingTripPlace] = useState<TripPlaceWithPlace | null>(null)
   const { formatDateRange } = useFormatDate()
+  const [isCoverPickerOpen, setIsCoverPickerOpen] = useState(false)
+  const [focusState, setFocusState] = useState<{ path: string; x: number; y: number } | null>(null)
 
   const places = useMemo(() => trip?.trip_places.map((tp) => tp.place) ?? [], [trip?.trip_places])
   const numbered = useMemo(
@@ -112,6 +118,37 @@ function TripDetailPage() {
     }
   }
 
+  function handlePickCover(path: string) {
+    setIsCoverPickerOpen(false)
+    const same = path === trip?.cover_photo_path
+    setFocusState({
+      path,
+      x: same ? (trip?.cover_focus_x ?? 50) : 50,
+      y: same ? (trip?.cover_focus_y ?? 50) : 50,
+    })
+  }
+
+  function handleAdjustCover() {
+    if (!trip?.cover_photo_path) return
+    setFocusState({
+      path: trip.cover_photo_path,
+      x: trip.cover_focus_x ?? 50,
+      y: trip.cover_focus_y ?? 50,
+    })
+  }
+
+  function handleSaveFocus(x: number, y: number) {
+    if (!trip || !focusState) return
+    setCover.mutate({ id: trip.id, coverPhotoPath: focusState.path, focusX: x, focusY: y })
+    setFocusState(null)
+  }
+
+  function handleRemoveCover() {
+    if (!trip) return
+    setCover.mutate({ id: trip.id, coverPhotoPath: null, focusX: 50, focusY: 50 })
+    setIsCoverPickerOpen(false)
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
@@ -134,10 +171,34 @@ function TripDetailPage() {
               name={trip.name}
               description={trip.description}
               dateRange={formatDateRange(trip.start_date, trip.end_date)}
+              coverPhotoPath={trip.cover_photo_path}
+              coverFocusX={trip.cover_focus_x}
+              coverFocusY={trip.cover_focus_y}
+              onChangeCover={() => setIsCoverPickerOpen(true)}
+              onAdjustCover={handleAdjustCover}
               onEdit={() => setIsEditOpen(true)}
               onDelete={() => setIsDeleteOpen(true)}
               onCreateJournal={() => setIsCreateJournalOpen(true)}
             />
+
+            <TripCoverPicker
+              isOpen={isCoverPickerOpen}
+              trip={trip}
+              currentPath={trip.cover_photo_path ?? null}
+              onPick={handlePickCover}
+              onRemove={handleRemoveCover}
+              onClose={() => setIsCoverPickerOpen(false)}
+            />
+
+            {focusState && (
+              <CoverFocusEditor
+                path={focusState.path}
+                focusX={focusState.x}
+                focusY={focusState.y}
+                onCancel={() => setFocusState(null)}
+                onSave={handleSaveFocus}
+              />
+            )}
 
             {trip.trip_places.length === 0 ? (
               <EmptyState message={t('noPlaces')} />

@@ -7,6 +7,9 @@ export type Trip = {
   description: string | null
   start_date: string | null
   end_date: string | null
+  cover_photo_path: string | null
+  cover_focus_x: number
+  cover_focus_y: number
   created_at: string
   updated_at: string
 }

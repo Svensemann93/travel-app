@@ -10,8 +10,10 @@ import {
   updateTripPlaceRow,
   updateTripPlacePositions,
   updateTripRow,
+  updateTripCover,
 } from '../lib/tripsApi'
 import type { Trip, TripInput, TripPlaceUpdateInput, TripWithPlaces } from '../types/trip'
+
 export const tripsKeys = {
   all: ['trips'] as const,
   lists: () => [...tripsKeys.all, 'list'] as const,
@@ -73,6 +75,43 @@ export function useUpdateTrip() {
     mutationFn: async ({ id, data }: { id: string; data: TripInput }): Promise<Trip> => {
       if (!userId) throw new Error('Not authenticated')
       return updateTripRow(id, data)
+    },
+    onSuccess: (updatedTrip) => {
+      if (!userId) return
+      queryClient.setQueryData<Trip[]>(tripsKeys.list(userId), (old = []) =>
+        old.map((t) => (t.id === updatedTrip.id ? updatedTrip : t)),
+      )
+      queryClient.setQueryData<TripWithPlaces | null>(tripsKeys.detail(updatedTrip.id), (old) =>
+        old ? { ...old, ...updatedTrip } : old,
+      )
+    },
+    onError: () => {
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: tripsKeys.lists() })
+      }
+    },
+  })
+}
+
+export function useSetTripCover() {
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const userId = user?.id
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      coverPhotoPath,
+      focusX,
+      focusY,
+    }: {
+      id: string
+      coverPhotoPath: string | null
+      focusX: number
+      focusY: number
+    }): Promise<Trip> => {
+      if (!userId) throw new Error('Not authenticated')
+      return updateTripCover(id, coverPhotoPath, focusX, focusY)
     },
     onSuccess: (updatedTrip) => {
       if (!userId) return
