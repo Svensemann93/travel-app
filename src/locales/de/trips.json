@@ -47,5 +47,16 @@
     "standard": "Standardbilder",
     "remove": "Titelbild entfernen",
     "alt": "Titelbild"
+  },
+  "open": "Öffnen",
+  "eyebrow": "Reiseplanung",
+  "subtitle": "Behalte geplante, aktuelle und vergangene Reisen im Blick.",
+  "placeCount_one": "{{count}} Ort",
+  "placeCount_other": "{{count}} Orte",
+  "status": {
+    "planning": "In Planung",
+    "upcoming": "Bevorstehend",
+    "ongoing": "Aktuell",
+    "completed": "Abgeschlossen"
   }
 }

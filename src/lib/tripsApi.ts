@@ -1,22 +1,32 @@
 import { supabase } from './supabase'
-import { toTripPlace } from './tripPlaces'
+import { mergePublicPhotos, placeIdsMissingPhotos, toTripPlace } from './tripPlaces'
 import type { TripPlaceRow } from './tripPlaces'
+import type { PlacePhoto } from '../types/place'
 import type {
   Trip,
   TripInput,
+  TripListItem,
   TripPlace,
   TripPlaceUpdateInput,
   TripWithPlaces,
 } from '../types/trip'
 
-export async function fetchTripsForUser(signal?: AbortSignal): Promise<Trip[]> {
-  let query = supabase.from('trips').select('*').order('created_at', { ascending: false })
+export async function fetchTripsForUser(signal?: AbortSignal): Promise<TripListItem[]> {
+  let query = supabase
+    .from('trips')
+    .select('*, trip_places(count)')
+    .order('created_at', { ascending: false })
   if (signal) {
     query = query.abortSignal(signal)
   }
   const { data, error } = await query
   if (error) throw new Error(error.message)
-  return data ?? []
+  return (data ?? []).map((row) => {
+    const { trip_places, ...trip } = row as Trip & {
+      trip_places: { count: number }[]
+    }
+    return { ...trip, place_count: trip_places[0]?.count ?? 0 }
+  })
 }
 
 export async function fetchTripWithPlaces(
@@ -36,7 +46,12 @@ export async function fetchTripWithPlaces(
   const { data, error } = await query.maybeSingle()
   if (error) throw new Error(error.message)
   if (!data) return null
-  return { ...data, trip_places: (data.trip_places as TripPlaceRow[]).map(toTripPlace) }
+
+  const rows = data.trip_places as TripPlaceRow[]
+  const publicPhotos = await fetchPublicPlacePhotos(placeIdsMissingPhotos(rows), signal)
+  const merged = mergePublicPhotos(rows, publicPhotos)
+
+  return { ...data, trip_places: merged.map(toTripPlace) }
 }
 
 export async function insertTripRow(userId: string, data: TripInput): Promise<Trip> {
@@ -68,7 +83,11 @@ export async function updateTripCover(
 ): Promise<Trip> {
   const { data: row, error } = await supabase
     .from('trips')
-    .update({ cover_photo_path: coverPhotoPath, cover_focus_x: focusX, cover_focus_y: focusY })
+    .update({
+      cover_photo_path: coverPhotoPath,
+      cover_focus_x: focusX,
+      cover_focus_y: focusY,
+    })
     .eq('id', id)
     .select('*')
     .single()
@@ -133,4 +152,26 @@ export async function updateTripPlaceRow(
     .single()
   if (error) throw new Error(error.message)
   return row
+}
+
+export async function fetchPublicPlacePhotos(
+  placeIds: string[],
+  signal?: AbortSignal,
+): Promise<Map<string, PlacePhoto[]>> {
+  const byPlace = new Map<string, PlacePhoto[]>()
+  if (placeIds.length === 0) return byPlace
+
+  let query = supabase.rpc('get_public_place_photos', { place_ids: placeIds })
+  if (signal) {
+    query = query.abortSignal(signal)
+  }
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+
+  for (const row of (data ?? []) as PlacePhoto[]) {
+    const existing = byPlace.get(row.place_id)
+    if (existing) existing.push(row)
+    else byPlace.set(row.place_id, [row])
+  }
+  return byPlace
 }

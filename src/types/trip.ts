@@ -14,6 +14,10 @@ export type Trip = {
   updated_at: string
 }
 
+export type TripListItem = Trip & {
+  place_count: number
+}
+
 export type TripPlace = {
   trip_id: string
   place_id: string
