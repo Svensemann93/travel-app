@@ -3,16 +3,22 @@ import { useAuth } from './useAuth'
 import {
   deleteTripPlaceRow,
   deleteTripRow,
-  fetchTripWithPlaces,
   fetchTripsForUser,
+  fetchTripWithPlaces,
   insertTripPlaceRow,
   insertTripRow,
-  updateTripPlaceRow,
-  updateTripPlacePositions,
-  updateTripRow,
   updateTripCover,
+  updateTripPlacePositions,
+  updateTripPlaceRow,
+  updateTripRow,
 } from '../lib/tripsApi'
-import type { Trip, TripInput, TripPlaceUpdateInput, TripWithPlaces } from '../types/trip'
+import type {
+  Trip,
+  TripInput,
+  TripListItem,
+  TripPlaceUpdateInput,
+  TripWithPlaces,
+} from '../types/trip'
 
 export const tripsKeys = {
   all: ['trips'] as const,
@@ -56,7 +62,10 @@ export function useCreateTrip() {
     },
     onSuccess: (newTrip) => {
       if (!userId) return
-      queryClient.setQueryData<Trip[]>(tripsKeys.list(userId), (old = []) => [newTrip, ...old])
+      queryClient.setQueryData<TripListItem[]>(tripsKeys.list(userId), (old = []) => [
+        { ...newTrip, place_count: 0 },
+        ...old,
+      ])
     },
     onError: () => {
       if (userId) {
@@ -81,8 +90,8 @@ export function useUpdateTrip() {
       queryClient.setQueryData<Trip[]>(tripsKeys.list(userId), (old = []) =>
         old.map((t) => (t.id === updatedTrip.id ? updatedTrip : t)),
       )
-      queryClient.setQueryData<TripWithPlaces | null>(tripsKeys.detail(updatedTrip.id), (old) =>
-        old ? { ...old, ...updatedTrip } : old,
+      queryClient.setQueryData<TripListItem[]>(tripsKeys.list(userId), (old = []) =>
+        old.map((t) => (t.id === updatedTrip.id ? { ...t, ...updatedTrip } : t)),
       )
     },
     onError: () => {
@@ -115,8 +124,8 @@ export function useSetTripCover() {
     },
     onSuccess: (updatedTrip) => {
       if (!userId) return
-      queryClient.setQueryData<Trip[]>(tripsKeys.list(userId), (old = []) =>
-        old.map((t) => (t.id === updatedTrip.id ? updatedTrip : t)),
+      queryClient.setQueryData<TripListItem[]>(tripsKeys.list(userId), (old = []) =>
+        old.map((t) => (t.id === updatedTrip.id ? { ...t, ...updatedTrip } : t)),
       )
       queryClient.setQueryData<TripWithPlaces | null>(tripsKeys.detail(updatedTrip.id), (old) =>
         old ? { ...old, ...updatedTrip } : old,
@@ -143,7 +152,7 @@ export function useDeleteTrip() {
     },
     onSuccess: (deletedId) => {
       if (!userId) return
-      queryClient.setQueryData<Trip[]>(tripsKeys.list(userId), (old = []) =>
+      queryClient.setQueryData<TripListItem[]>(tripsKeys.list(userId), (old = []) =>
         old.filter((t) => t.id !== deletedId),
       )
       queryClient.removeQueries({ queryKey: tripsKeys.detail(deletedId) })

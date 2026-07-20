@@ -47,5 +47,16 @@
     "standard": "Standard images",
     "remove": "Remove cover image",
     "alt": "Cover image"
+  },
+  "open": "Open",
+  "eyebrow": "Trip planning",
+  "subtitle": "Keep planned, current and past trips in one place.",
+  "placeCount_one": "{{count}} place",
+  "placeCount_other": "{{count}} places",
+  "status": {
+    "planning": "In planning",
+    "upcoming": "Upcoming",
+    "ongoing": "Ongoing",
+    "completed": "Completed"
   }
 }
