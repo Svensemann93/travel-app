@@ -37,5 +37,15 @@
     "notes": "Notes",
     "notesPlaceholder": "Notes for your visit",
     "counter": "{{count}} / {{max}}"
+  },
+  "cover": {
+    "button": "Cover image",
+    "change": "Change cover image",
+    "adjust": "Adjust crop",
+    "pickerTitle": "Choose cover image",
+    "fromPlaces": "From your places",
+    "standard": "Standard images",
+    "remove": "Remove cover image",
+    "alt": "Cover image"
   }
 }

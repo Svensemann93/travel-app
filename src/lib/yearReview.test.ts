@@ -77,6 +77,9 @@ function trip(overrides: Partial<Trip> & { created_at: string }): Trip {
     description: null,
     start_date: null,
     end_date: null,
+    cover_photo_path: null,
+    cover_focus_x: 50,
+    cover_focus_y: 50,
     updated_at: overrides.created_at,
     ...overrides,
   }
