@@ -14,7 +14,9 @@ import type {
 export async function fetchTripsForUser(signal?: AbortSignal): Promise<TripListItem[]> {
   let query = supabase
     .from('trips')
-    .select('*, trip_places(count)')
+    .select(
+      '*, place_count:trip_places(count), first_stop:trip_places(place_latitude, place_longitude, position)',
+    )
     .order('created_at', { ascending: false })
   if (signal) {
     query = query.abortSignal(signal)
@@ -22,10 +24,21 @@ export async function fetchTripsForUser(signal?: AbortSignal): Promise<TripListI
   const { data, error } = await query
   if (error) throw new Error(error.message)
   return (data ?? []).map((row) => {
-    const { trip_places, ...trip } = row as Trip & {
-      trip_places: { count: number }[]
+    const { place_count, first_stop, ...trip } = row as Trip & {
+      place_count: { count: number }[]
+      first_stop: {
+        place_latitude: number | null
+        place_longitude: number | null
+        position: number
+      }[]
     }
-    return { ...trip, place_count: trip_places[0]?.count ?? 0 }
+    const ordered = [...first_stop].sort((a, b) => a.position - b.position)
+    const head = ordered[0]
+    const firstStop =
+      head && head.place_latitude != null && head.place_longitude != null
+        ? { latitude: head.place_latitude, longitude: head.place_longitude }
+        : null
+    return { ...trip, place_count: place_count[0]?.count ?? 0, first_stop: firstStop }
   })
 }
 

@@ -16,6 +16,7 @@ export type Trip = {
 
 export type TripListItem = Trip & {
   place_count: number
+  first_stop: { latitude: number; longitude: number } | null
 }
 
 export type TripPlace = {

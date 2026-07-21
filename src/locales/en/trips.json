@@ -67,5 +67,9 @@
   "controls": {
     "hideCompleted": "Hide completed",
     "byStatus": "By status"
+  },
+  "weather": {
+    "loading": "Weather …",
+    "degrees": "{{value}} °C"
   }
 }
