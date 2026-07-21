@@ -90,11 +90,9 @@ export function useUpdateTrip() {
       queryClient.setQueryData<TripListItem[]>(tripsKeys.list(userId), (old = []) =>
         old.map((t) => (t.id === updatedTrip.id ? { ...t, ...updatedTrip } : t)),
       )
-    },
-    onError: () => {
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: tripsKeys.lists() })
-      }
+      queryClient.setQueryData<TripWithPlaces | null>(tripsKeys.detail(updatedTrip.id), (old) =>
+        old ? { ...old, ...updatedTrip } : old,
+      )
     },
   })
 }
