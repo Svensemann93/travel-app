@@ -56,7 +56,16 @@
   "status": {
     "planning": "In Planung",
     "upcoming": "Bevorstehend",
-    "ongoing": "Aktuell",
+    "ongoing": "Auf Reise",
     "completed": "Abgeschlossen"
+  },
+  "search": {
+    "label": "Trips durchsuchen",
+    "placeholder": "Trip suchen …",
+    "noMatch": "Kein Trip passt zu \"{{query}}\"."
+  },
+  "controls": {
+    "hideCompleted": "Abgeschlossene ausblenden",
+    "byStatus": "Nach Status"
   }
 }
