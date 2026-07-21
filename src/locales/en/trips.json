@@ -56,7 +56,16 @@
   "status": {
     "planning": "In planning",
     "upcoming": "Upcoming",
-    "ongoing": "Ongoing",
+    "ongoing": "On the trip",
     "completed": "Completed"
+  },
+  "search": {
+    "label": "Search trips",
+    "placeholder": "Search a trip …",
+    "noMatch": "No trip matches \"{{query}}\"."
+  },
+  "controls": {
+    "hideCompleted": "Hide completed",
+    "byStatus": "By status"
   }
 }
