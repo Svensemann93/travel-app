@@ -38,7 +38,6 @@ function ProfilePage() {
 
     await supabase.auth.signOut()
     resetWelcome()
-    await supabase.auth.signOut()
     queryClient.clear()
     navigate('/login')
   }
