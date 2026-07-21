@@ -6,11 +6,22 @@ import type { TripInput } from '../types/trip'
 type Props = {
   isOpen: boolean
   initialData?: TripInput
+  hasCover?: boolean
+  onChangeCover?: () => void
+  onAdjustCover?: () => void
   onClose: () => void
   onSave: (data: TripInput) => Promise<void>
 }
 
-function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
+function TripFormModal({
+  isOpen,
+  initialData,
+  hasCover = false,
+  onChangeCover,
+  onAdjustCover,
+  onClose,
+  onSave,
+}: Props) {
   const { t } = useTranslation(['trips', 'common'])
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
@@ -111,6 +122,32 @@ function TripFormModal({ isOpen, initialData, onClose, onSave }: Props) {
             />
           </div>
         </div>
+
+        {onChangeCover && (
+          <div>
+            <span className="mb-1 block text-sm font-medium text-slate-700">
+              {t('cover.label')}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={onChangeCover}
+                className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                {t('cover.change')}
+              </button>
+              {hasCover && onAdjustCover && (
+                <button
+                  type="button"
+                  onClick={onAdjustCover}
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                >
+                  {t('cover.adjust')}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-md text-sm">

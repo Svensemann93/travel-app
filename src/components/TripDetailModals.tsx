@@ -24,6 +24,8 @@ type Props = {
   onCloseDelete: () => void
   onCloseJournal: () => void
   onCloseEditingPlace: () => void
+  onChangeCover: () => void
+  onAdjustCover: () => void
   onSaveTrip: (data: TripInput) => Promise<void>
   onSaveTripPlace: (data: TripPlaceUpdateInput) => Promise<void>
   onConfirmDelete: () => Promise<void>
@@ -43,6 +45,8 @@ function TripDetailModals({
   onCloseDelete,
   onCloseJournal,
   onCloseEditingPlace,
+  onChangeCover,
+  onAdjustCover,
   onSaveTrip,
   onSaveTripPlace,
   onConfirmDelete,
@@ -60,6 +64,9 @@ function TripDetailModals({
           start_date: trip.start_date,
           end_date: trip.end_date,
         }}
+        hasCover={trip.cover_photo_path != null}
+        onChangeCover={onChangeCover}
+        onAdjustCover={onAdjustCover}
         onClose={onCloseEdit}
         onSave={onSaveTrip}
       />

@@ -46,7 +46,8 @@
     "fromPlaces": "From your places",
     "standard": "Standard images",
     "remove": "Remove cover image",
-    "alt": "Cover image"
+    "alt": "Cover image",
+    "label": "Cover image"
   },
   "open": "Open",
   "eyebrow": "Trip planning",

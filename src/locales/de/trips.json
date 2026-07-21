@@ -46,7 +46,8 @@
     "fromPlaces": "Aus deinen Orten",
     "standard": "Standardbilder",
     "remove": "Titelbild entfernen",
-    "alt": "Titelbild"
+    "alt": "Titelbild",
+    "label": "Titelbild"
   },
   "open": "Öffnen",
   "eyebrow": "Reiseplanung",

@@ -26,7 +26,6 @@ import {
 import { useCreateJournalFromTrip } from '../hooks/useJournals'
 import type { JournalInput } from '../types/journal'
 import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../types/trip'
-import { useFormatDate } from '../hooks/useFormatDate'
 import TripForecast from '../components/TripForecast'
 
 function TripDetailPage() {
@@ -47,7 +46,6 @@ function TripDetailPage() {
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
   const [editingTripPlace, setEditingTripPlace] = useState<TripPlaceWithPlace | null>(null)
-  const { formatDateRange } = useFormatDate()
   const [isCoverPickerOpen, setIsCoverPickerOpen] = useState(false)
   const [focusState, setFocusState] = useState<{ path: string; x: number; y: number } | null>(null)
 
@@ -169,14 +167,7 @@ function TripDetailPage() {
         {trip && (
           <>
             <TripDetailHeader
-              name={trip.name}
-              description={trip.description}
-              dateRange={formatDateRange(trip.start_date, trip.end_date)}
-              coverPhotoPath={trip.cover_photo_path}
-              coverFocusX={trip.cover_focus_x}
-              coverFocusY={trip.cover_focus_y}
-              onChangeCover={() => setIsCoverPickerOpen(true)}
-              onAdjustCover={handleAdjustCover}
+              trip={trip}
               onEdit={() => setIsEditOpen(true)}
               onDelete={() => setIsDeleteOpen(true)}
               onCreateJournal={() => setIsCreateJournalOpen(true)}
@@ -249,6 +240,14 @@ function TripDetailPage() {
               onCloseDelete={() => setIsDeleteOpen(false)}
               onCloseJournal={() => setIsCreateJournalOpen(false)}
               onCloseEditingPlace={() => setEditingTripPlace(null)}
+              onChangeCover={() => {
+                setIsEditOpen(false)
+                setIsCoverPickerOpen(true)
+              }}
+              onAdjustCover={() => {
+                setIsEditOpen(false)
+                handleAdjustCover()
+              }}
               onSaveTrip={handleUpdate}
               onSaveTripPlace={handleUpdateTripPlace}
               onConfirmDelete={handleConfirmDelete}
