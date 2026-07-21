@@ -6,18 +6,33 @@ import type { TripListItem } from '../types/trip'
 const today = new Date('2026-07-20T12:00:00.000Z')
 
 function trip(overrides: Partial<TripListItem>): TripListItem {
-  return { ...makeTrip(), place_count: 0, ...overrides }
+  return { ...makeTrip(), place_count: 0, first_stop: null, ...overrides }
 }
 
-const completed = trip({ id: 'c', name: 'Alpen', start_date: '2026-06-01', end_date: '2026-06-10' })
-const planning = trip({ id: 'p', name: 'Ägäis', start_date: null, end_date: null })
+const completed = trip({
+  id: 'c',
+  name: 'Alpen',
+  start_date: '2026-06-01',
+  end_date: '2026-06-10',
+})
+const planning = trip({
+  id: 'p',
+  name: 'Ägäis',
+  start_date: null,
+  end_date: null,
+})
 const upcoming = trip({
   id: 'u',
   name: 'Umbrien',
   start_date: '2026-08-01',
   end_date: '2026-08-10',
 })
-const ongoing = trip({ id: 'o', name: 'Oslo', start_date: '2026-07-15', end_date: '2026-07-25' })
+const ongoing = trip({
+  id: 'o',
+  name: 'Oslo',
+  start_date: '2026-07-15',
+  end_date: '2026-07-25',
+})
 const all = [completed, planning, upcoming, ongoing]
 
 describe('searchTrips', () => {
@@ -78,7 +93,12 @@ describe('completedLast', () => {
   })
 
   it('preserves order among the completed ones too', () => {
-    const c2 = trip({ id: 'c2', name: 'Berge', start_date: '2025-01-01', end_date: '2025-01-05' })
+    const c2 = trip({
+      id: 'c2',
+      name: 'Berge',
+      start_date: '2025-01-01',
+      end_date: '2025-01-05',
+    })
     expect(completedLast([completed, c2, ongoing], today).map((t) => t.id)).toEqual([
       'o',
       'c',

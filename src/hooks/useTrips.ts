@@ -63,7 +63,7 @@ export function useCreateTrip() {
     onSuccess: (newTrip) => {
       if (!userId) return
       queryClient.setQueryData<TripListItem[]>(tripsKeys.list(userId), (old = []) => [
-        { ...newTrip, place_count: 0 },
+        { ...newTrip, place_count: 0, first_stop: null },
         ...old,
       ])
     },
@@ -87,9 +87,6 @@ export function useUpdateTrip() {
     },
     onSuccess: (updatedTrip) => {
       if (!userId) return
-      queryClient.setQueryData<Trip[]>(tripsKeys.list(userId), (old = []) =>
-        old.map((t) => (t.id === updatedTrip.id ? updatedTrip : t)),
-      )
       queryClient.setQueryData<TripListItem[]>(tripsKeys.list(userId), (old = []) =>
         old.map((t) => (t.id === updatedTrip.id ? { ...t, ...updatedTrip } : t)),
       )

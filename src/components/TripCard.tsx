@@ -6,6 +6,7 @@ import { tripStatus } from '../lib/tripStatus'
 import { fallbackCoverPath } from '../lib/tripCoverFallback'
 import { useFormatDate } from '../hooks/useFormatDate'
 import type { TripListItem } from '../types/trip'
+import WeatherBadge from './WeatherBadge'
 
 type Props = {
   trip: TripListItem
@@ -37,6 +38,7 @@ function TripCard({ trip, hero = false }: Props) {
 
       <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4">
         <TripStatusBadge status={status} />
+        {hero && <WeatherBadge coords={trip.first_stop} />}
       </div>
 
       <div className="absolute inset-x-0 bottom-0 p-5 text-white">
