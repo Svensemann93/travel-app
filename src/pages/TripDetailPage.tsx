@@ -27,6 +27,7 @@ import { useCreateJournalFromTrip } from '../hooks/useJournals'
 import type { JournalInput } from '../types/journal'
 import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../types/trip'
 import { useFormatDate } from '../hooks/useFormatDate'
+import TripForecast from '../components/TripForecast'
 
 function TripDetailPage() {
   const { t } = useTranslation('trips')
@@ -199,6 +200,8 @@ function TripDetailPage() {
                 onSave={handleSaveFocus}
               />
             )}
+
+            <TripForecast trip={trip} />
 
             {trip.trip_places.length === 0 ? (
               <EmptyState message={t('noPlaces')} />

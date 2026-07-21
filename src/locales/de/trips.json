@@ -70,6 +70,8 @@
   },
   "weather": {
     "loading": "Wetter …",
-    "degrees": "{{value}} °C"
+    "degrees": "{{value}} °C",
+    "now": "Aktuell",
+    "forecast": "Wettervorhersage"
   }
 }

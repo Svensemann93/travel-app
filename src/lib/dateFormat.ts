@@ -44,3 +44,7 @@ export function formatDateRange(
   if (start) return `${prefixes.from} ${fmt(start)}`
   return `${prefixes.until} ${fmt(end!)}`
 }
+
+export function formatWeekday(dateString: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(dateString))
+}
