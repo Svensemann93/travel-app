@@ -38,6 +38,7 @@ import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 import MapBoundsWatcher from '../components/MapBoundsWatcher'
 import type { PublicBounds } from '../lib/publicBounds'
 import type { TripCandidate } from '../types/trip'
+import MarkerCluster from '../components/MarkerCluster'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -160,33 +161,35 @@ function MapPage() {
             <MapBoundsWatcher onChange={handleBoundsChange} />
             <SearchControl />
             <LocateControl />
-            <PlaceMarkers
-              places={visiblePlaces}
-              stats={myPlaceStats}
-              repositioningId={reposition.place?.id ?? null}
-              pendingPosition={reposition.pendingPosition}
-              onDragMove={reposition.dragMove}
-              onEdit={(place) => setEditingPlace(place)}
-              onDelete={(place) => setDeletingPlace(place)}
-              onAddToTrip={(place) => setAddingToTripPlace(place)}
-            />
-            <PublicPlaceMarkers
-              places={visiblePublicPlaces}
-              onMarkVisited={(placeId) =>
-                setVisit.mutate({ placeId, rating: null, priceLevel: null, visitedOn: null })
-              }
-              onEditVisit={(place) => setEditingVisit(place)}
-              onAddToTrip={(place) => setAddingToTripPlace(place)}
-              onToggleWish={(place) =>
-                place.wished_by_me ? removeWish.mutate(place.id) : addWish.mutate(place.id)
-              }
-              isSaving={
-                setVisit.isPending ||
-                removeVisit.isPending ||
-                addWish.isPending ||
-                removeWish.isPending
-              }
-            />
+            <MarkerCluster clustered={!reposition.place}>
+              <PlaceMarkers
+                places={visiblePlaces}
+                stats={myPlaceStats}
+                repositioningId={reposition.place?.id ?? null}
+                pendingPosition={reposition.pendingPosition}
+                onDragMove={reposition.dragMove}
+                onEdit={(place) => setEditingPlace(place)}
+                onDelete={(place) => setDeletingPlace(place)}
+                onAddToTrip={(place) => setAddingToTripPlace(place)}
+              />
+              <PublicPlaceMarkers
+                places={visiblePublicPlaces}
+                onMarkVisited={(placeId) =>
+                  setVisit.mutate({ placeId, rating: null, priceLevel: null, visitedOn: null })
+                }
+                onEditVisit={(place) => setEditingVisit(place)}
+                onAddToTrip={(place) => setAddingToTripPlace(place)}
+                onToggleWish={(place) =>
+                  place.wished_by_me ? removeWish.mutate(place.id) : addWish.mutate(place.id)
+                }
+                isSaving={
+                  setVisit.isPending ||
+                  removeVisit.isPending ||
+                  addWish.isPending ||
+                  removeWish.isPending
+                }
+              />
+            </MarkerCluster>
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace ?? focusedPoint} />
             <PopupAutoCenter />
