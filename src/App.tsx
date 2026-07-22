@@ -1,28 +1,29 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
+import { lazyWithReload } from './lib/lazyWithReload'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorFallback from './components/ErrorFallback'
 import PageLoader from './components/PageLoader'
 import CategoryFilterProvider from './components/CategoryFilterProvider'
 import AchievementToast from './components/AchievementToast'
 
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const RegisterPage = lazy(() => import('./pages/RegisterPage'))
-const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
-const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
-const MapPage = lazy(() => import('./pages/MapPage'))
-const PlacesListPage = lazy(() => import('./pages/PlacesListPage'))
-const WishlistPage = lazy(() => import('./pages/WishlistPage'))
-const TripsListPage = lazy(() => import('./pages/TripsListPage'))
-const TripDetailPage = lazy(() => import('./pages/TripDetailPage'))
-const JournalsListPage = lazy(() => import('./pages/JournalsListPage'))
-const JournalDetailPage = lazy(() => import('./pages/JournalDetailPage'))
-const JournalReadPage = lazy(() => import('./pages/JournalReadPage'))
-const ProfilePage = lazy(() => import('./pages/ProfilePage'))
-const JournalSharePage = lazy(() => import('./pages/JournalSharePage'))
-const PassportPage = lazy(() => import('./pages/PassportPage'))
-const YearReviewPage = lazy(() => import('./pages/YearReviewPage'))
+const LoginPage = lazyWithReload(() => import('./pages/LoginPage'))
+const RegisterPage = lazyWithReload(() => import('./pages/RegisterPage'))
+const ForgotPasswordPage = lazyWithReload(() => import('./pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazyWithReload(() => import('./pages/ResetPasswordPage'))
+const MapPage = lazyWithReload(() => import('./pages/MapPage'))
+const PlacesListPage = lazyWithReload(() => import('./pages/PlacesListPage'))
+const WishlistPage = lazyWithReload(() => import('./pages/WishlistPage'))
+const TripsListPage = lazyWithReload(() => import('./pages/TripsListPage'))
+const TripDetailPage = lazyWithReload(() => import('./pages/TripDetailPage'))
+const JournalsListPage = lazyWithReload(() => import('./pages/JournalsListPage'))
+const JournalDetailPage = lazyWithReload(() => import('./pages/JournalDetailPage'))
+const JournalReadPage = lazyWithReload(() => import('./pages/JournalReadPage'))
+const ProfilePage = lazyWithReload(() => import('./pages/ProfilePage'))
+const JournalSharePage = lazyWithReload(() => import('./pages/JournalSharePage'))
+const PassportPage = lazyWithReload(() => import('./pages/PassportPage'))
+const YearReviewPage = lazyWithReload(() => import('./pages/YearReviewPage'))
 
 function App() {
   return (
