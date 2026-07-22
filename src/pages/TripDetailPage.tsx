@@ -26,7 +26,7 @@ import {
 import { useCreateJournalFromTrip } from '../hooks/useJournals'
 import type { JournalInput } from '../types/journal'
 import type { TripInput, TripPlaceUpdateInput, TripPlaceWithPlace } from '../types/trip'
-import TripForecast from '../components/TripForecast'
+import TripSummary from '../components/TripSummary'
 
 function TripDetailPage() {
   const { t } = useTranslation('trips')
@@ -152,8 +152,24 @@ function TripDetailPage() {
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
       <main className="mx-auto max-w-7xl p-4 md:p-8">
-        <Link to="/trips" className="mb-4 inline-block text-sm text-slate-600 hover:text-slate-900">
-          ← {t('back')}
+        <Link
+          to="/trips"
+          className="mb-4 inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm ring-1 ring-slate-100 transition-colors hover:text-slate-900"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          {t('back')}
         </Link>
 
         <DetailStatus
@@ -192,8 +208,7 @@ function TripDetailPage() {
               />
             )}
 
-            <TripForecast trip={trip} />
-
+            <TripSummary trip={trip} />
             {trip.trip_places.length === 0 ? (
               <EmptyState message={t('noPlaces')} />
             ) : (
@@ -216,7 +231,7 @@ function TripDetailPage() {
                   <div className="mb-2 hidden justify-end md:flex">
                     <CategoryFilter />
                   </div>
-                  <div className="h-full md:h-[calc(100%-3rem)]">
+                  <div className="h-full overflow-hidden rounded-2xl ring-1 ring-slate-200 md:h-[calc(100%-3rem)]">
                     <Map>
                       <TripPlaceMarkers places={visibleNumbered} />
                       <MapFitBounds places={places} />

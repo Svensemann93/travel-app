@@ -37,11 +37,11 @@ function TripPlaceItem({
 
   return (
     <div
-      className={`rounded-lg bg-white p-3 shadow-sm ${
-        isDragging ? 'shadow-lg ring-2 ring-blue-200' : ''
+      className={`rounded-xl bg-white p-4 shadow-sm ${
+        isDragging ? 'ring-2 ring-blue-200 shadow-lg' : 'ring-1 ring-slate-100'
       }`}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3.5">
         {dragHandleProps && <DragHandle handleProps={dragHandleProps} />}
         {number !== undefined && (
           <div
@@ -55,7 +55,7 @@ function TripPlaceItem({
           <SignedImage
             path={firstPhoto.thumb_url ?? firstPhoto.url}
             alt={place.name}
-            className="h-14 w-14 flex-shrink-0 rounded object-cover"
+            className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
           />
         )}
         <button

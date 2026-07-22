@@ -61,7 +61,7 @@ function TripPlaceList({
         items={tripPlaces.map((tp) => tp.place_id)}
         strategy={verticalListSortingStrategy}
       >
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           {tripPlaces.map((tp, index) => (
             <li key={tp.place_id}>
               <SortableTripPlaceItem
