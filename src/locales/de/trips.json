@@ -73,6 +73,32 @@
     "loading": "Wetter …",
     "degrees": "{{value}} °C",
     "now": "Aktuell",
-    "forecast": "Wettervorhersage"
+    "forecast": "Wettervorhersage",
+    "showForecast": "Prognose zeigen",
+    "hideForecast": "Prognose ausblenden",
+    "precipitation": "Niederschlag",
+    "precipitationValue": "{{value}} %",
+    "wind": "Wind",
+    "windValue": "{{value}} km/h",
+    "kind": {
+      "clear": "Klar",
+      "cloudy": "Teilweise bewölkt",
+      "fog": "Neblig",
+      "rain": "Regen",
+      "snow": "Schnee",
+      "storm": "Gewitter"
+    }
+  },
+  "description": {
+    "more": "Mehr anzeigen",
+    "less": "Weniger anzeigen"
+  },
+  "moreActions": "Weitere Aktionen",
+  "summary": {
+    "durationLabel": "Dauer",
+    "days_one": "{{count}} Tag",
+    "days_other": "{{count}} Tage",
+    "untilStart": "bis Start",
+    "travelDay": "Reisetag"
   }
 }

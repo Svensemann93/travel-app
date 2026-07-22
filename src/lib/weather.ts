@@ -44,6 +44,8 @@ export type DailyForecast = {
   tempMax: number
   tempMin: number
   weatherCode: number
+  precipitationProbability: number | null
+  windMax: number
 }
 
 export async function fetchForecast(
@@ -56,7 +58,10 @@ export async function fetchForecast(
   const url = new URL('https://api.open-meteo.com/v1/forecast')
   url.searchParams.set('latitude', latitude.toString())
   url.searchParams.set('longitude', longitude.toString())
-  url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,weather_code')
+  url.searchParams.set(
+    'daily',
+    'temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,wind_speed_10m_max',
+  )
   url.searchParams.set('start_date', startDate)
   url.searchParams.set('end_date', endDate)
   url.searchParams.set('timezone', 'auto')
@@ -70,6 +75,8 @@ export async function fetchForecast(
       temperature_2m_max?: number[]
       temperature_2m_min?: number[]
       weather_code?: number[]
+      precipitation_probability_max?: (number | null)[]
+      wind_speed_10m_max?: number[]
     }
   }
   const daily = data.daily
@@ -87,5 +94,7 @@ export async function fetchForecast(
     tempMax: Math.round(daily.temperature_2m_max![i]),
     tempMin: Math.round(daily.temperature_2m_min![i]),
     weatherCode: daily.weather_code![i],
+    precipitationProbability: daily.precipitation_probability_max?.[i] ?? null,
+    windMax: daily.wind_speed_10m_max?.[i] ?? 0,
   }))
 }

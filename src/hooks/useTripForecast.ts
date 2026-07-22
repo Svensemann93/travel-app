@@ -6,7 +6,7 @@ type Coords = { latitude: number; longitude: number } | null
 
 export function useTripForecast(coords: Coords, startDate: string | null, endDate: string | null) {
   const plan = planTripWeather(startDate, endDate)
-  const forecastRange = plan.kind === 'forecast' ? plan : null
+  const forecastRange = plan.kind === 'ongoing' || plan.kind === 'upcoming' ? plan : null
   const enabled = coords != null && forecastRange != null
 
   const query = useQuery({

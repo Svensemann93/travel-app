@@ -73,6 +73,32 @@
     "loading": "Weather …",
     "degrees": "{{value}} °C",
     "now": "Now",
-    "forecast": "Forecast"
+    "forecast": "Forecast",
+    "showForecast": "Show forecast",
+    "hideForecast": "Hide forecast",
+    "precipitation": "Precipitation",
+    "precipitationValue": "{{value}}%",
+    "wind": "Wind",
+    "windValue": "{{value}} km/h",
+    "kind": {
+      "clear": "Clear",
+      "cloudy": "Partly cloudy",
+      "fog": "Foggy",
+      "rain": "Rain",
+      "snow": "Snow",
+      "storm": "Storm"
+    }
+  },
+  "description": {
+    "more": "Show more",
+    "less": "Show less"
+  },
+  "moreActions": "More actions",
+  "summary": {
+    "durationLabel": "Duration",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "untilStart": "until start",
+    "travelDay": "Trip day"
   }
 }
