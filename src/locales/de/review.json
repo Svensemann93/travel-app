@@ -20,5 +20,8 @@
   },
   "topCategory": "Top-Kategorie",
   "topCategoryValue": "{{count}} Orte",
-  "highlight": "Bestbewerteter Ort"
+  "highlight": "Bestbewerteter Ort",
+  "map": {
+    "title": "Wo du warst"
+  }
 }

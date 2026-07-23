@@ -11,6 +11,7 @@ import AppHeader from '../components/AppHeader'
 import QueryBoundary from '../components/QueryBoundary'
 import YearReviewCard from '../components/YearReviewCard'
 import YearReviewPhotos from '../components/YearReviewPhotos'
+import YearReviewMap from '../components/YearReviewMap'
 
 function YearReviewPage() {
   const { t } = useTranslation('review')
@@ -96,6 +97,10 @@ function YearReviewPage() {
           ) : (
             <YearReviewCard review={review} />
           )}
+          <YearReviewMap
+            points={review.points}
+            onSelect={(placeId) => navigate(`/?focus=${placeId}`)}
+          />
         </QueryBoundary>
       </main>
     </div>

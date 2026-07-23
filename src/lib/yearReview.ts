@@ -12,6 +12,14 @@ export type ReviewPhoto = {
   name: string
 }
 
+export type ReviewPoint = {
+  placeId: string
+  name: string
+  category: CategoryId
+  latitude: number
+  longitude: number
+}
+
 export type YearReview = {
   year: YearSelection
   placeCount: number
@@ -24,6 +32,7 @@ export type YearReview = {
   topCategory: { id: CategoryId; count: number } | null
   highlight: { name: string; countryCode: string | null; rating: number } | null
   photos: ReviewPhoto[]
+  points: ReviewPoint[]
 }
 
 function yearOf(iso: string | null | undefined): number | null {
@@ -42,6 +51,8 @@ type VisitEvent = {
   name: string
   category: CategoryId
   countryCode: string | null
+  latitude: number | null
+  longitude: number | null
   rating: number | null
   date: string
   photos: PlacePhoto[]
@@ -56,6 +67,8 @@ function visitEvents(places: Place[], visits: VisitedPlace[]): VisitEvent[] {
         name: place.name,
         category: place.category,
         countryCode: place.country_code,
+        latitude: place.latitude,
+        longitude: place.longitude,
         rating: visit.rating,
         date: visit.visited_on ?? visit.created_at,
         photos: place.photos ?? [],
@@ -68,6 +81,8 @@ function visitEvents(places: Place[], visits: VisitedPlace[]): VisitEvent[] {
       name: visit.name,
       category: visit.category,
       countryCode: visit.country_code,
+      latitude: visit.latitude,
+      longitude: visit.longitude,
       rating: visit.rating,
       date: visit.visited_on ?? visit.created_at,
       photos: [],
@@ -158,11 +173,29 @@ export function computeYearReview(
     for (const event of withPhotos.values()) {
       const photo = event.photos[round]
       if (!photo) continue
-      photos.push({ path: photo.thumb_url ?? photo.url, placeId: event.placeId, name: event.name })
+      photos.push({
+        path: photo.thumb_url ?? photo.url,
+        placeId: event.placeId,
+        name: event.name,
+      })
       added = true
     }
     if (!added) break
   }
+
+  const pointByPlace = new Map<string, ReviewPoint>()
+  for (const event of selected) {
+    if (event.latitude == null || event.longitude == null) continue
+    if (pointByPlace.has(event.placeId)) continue
+    pointByPlace.set(event.placeId, {
+      placeId: event.placeId,
+      name: event.name,
+      category: event.category,
+      latitude: event.latitude,
+      longitude: event.longitude,
+    })
+  }
+  const points = [...pointByPlace.values()]
 
   let photoCount = 0
   for (const event of withPhotos.values()) {
@@ -208,6 +241,7 @@ export function computeYearReview(
     topCategory,
     highlight,
     photos,
+    points,
   }
 }
 
