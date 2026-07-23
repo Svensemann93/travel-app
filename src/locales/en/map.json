@@ -34,11 +34,13 @@
     "yourRatingLabel": "Your rating",
     "yourPriceLabel": "Your price",
     "markVisited": "I've been here",
-    "edit": "Edit rating",
+    "edit": "Edit visit",
     "editTitle": "Edit your visit",
     "remove": "Remove visit",
     "clear": "clear",
-    "visitedOnLabel": "Your visit date"
+    "visitedOnLabel": "Your visit date",
+    "yourPhotosLabel": "Your photos",
+    "photoError": "Your photos could not be saved."
   },
   "wishlist": {
     "add": "Add to wishlist",

@@ -183,6 +183,16 @@ export async function deletePlaceRow(id: string): Promise<void> {
   if (error) throw new Error(error.message)
 }
 
+export async function fetchMyPlacePhotos(
+  placeId: string,
+  signal?: AbortSignal,
+): Promise<PlacePhoto[]> {
+  const query = supabase.from('place_photos').select('*').eq('place_id', placeId).order('position')
+  const { data, error } = await (signal ? query.abortSignal(signal) : query)
+  if (error) throw error
+  return data ?? []
+}
+
 export async function insertPhotoRows(
   userId: string,
   placeId: string,
