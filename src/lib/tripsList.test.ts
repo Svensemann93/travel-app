@@ -67,6 +67,56 @@ describe('hideCompletedTrips', () => {
   })
 })
 
+describe('completedLast', () => {
+  const soon = trip({ id: 'u3', name: 'Wien', start_date: '2026-07-25', end_date: '2026-07-27' })
+  const later = trip({
+    id: 'u2',
+    name: 'Lofoten',
+    start_date: '2026-09-01',
+    end_date: '2026-09-10',
+  })
+  const older = trip({ id: 'c2', name: 'Rügen', start_date: '2026-01-05', end_date: '2026-01-12' })
+
+  it('puts the next upcoming trip first', () => {
+    expect(completedLast([later, upcoming, soon], today).map((t) => t.id)).toEqual([
+      'u3',
+      'u',
+      'u2',
+    ])
+  })
+
+  it('puts an ongoing trip before a later upcoming one', () => {
+    expect(completedLast([upcoming, ongoing], today).map((t) => t.id)).toEqual(['o', 'u'])
+  })
+
+  it('orders completed trips by most recently ended', () => {
+    expect(completedLast([older, completed], today).map((t) => t.id)).toEqual(['c', 'c2'])
+  })
+
+  it('sorts undated trips to the end of the active group by name', () => {
+    const other = trip({ id: 'p2', name: 'Bali', start_date: null, end_date: null })
+    expect(completedLast([other, planning, soon], today).map((t) => t.id)).toEqual([
+      'u3',
+      'p',
+      'p2',
+    ])
+  })
+
+  it('moves completed trips to the end and dated trips ahead of undated ones', () => {
+    expect(completedLast([completed, planning, ongoing], today).map((t) => t.id)).toEqual([
+      'o',
+      'p',
+      'c',
+    ])
+  })
+
+  it('does not mutate the input', () => {
+    const input = [later, soon]
+    completedLast(input, today)
+    expect(input.map((t) => t.id)).toEqual(['u2', 'u3'])
+  })
+})
+
 describe('sortTripsByStatus', () => {
   it('ascending goes completed, planning, upcoming, ongoing', () => {
     expect(sortTripsByStatus(all, 'asc', today).map((t) => t.id)).toEqual(['c', 'p', 'u', 'o'])
@@ -80,35 +130,5 @@ describe('sortTripsByStatus', () => {
     const input = [...all]
     sortTripsByStatus(input, 'asc', today)
     expect(input.map((t) => t.id)).toEqual(['c', 'p', 'u', 'o'])
-  })
-})
-
-describe('completedLast', () => {
-  it('moves completed trips to the end, keeping incoming order otherwise', () => {
-    expect(completedLast([completed, planning, ongoing], today).map((t) => t.id)).toEqual([
-      'p',
-      'o',
-      'c',
-    ])
-  })
-
-  it('preserves order among the completed ones too', () => {
-    const c2 = trip({
-      id: 'c2',
-      name: 'Berge',
-      start_date: '2025-01-01',
-      end_date: '2025-01-05',
-    })
-    expect(completedLast([completed, c2, ongoing], today).map((t) => t.id)).toEqual([
-      'o',
-      'c',
-      'c2',
-    ])
-  })
-
-  it('does not mutate the input', () => {
-    const input = [completed, ongoing]
-    completedLast(input, today)
-    expect(input.map((t) => t.id)).toEqual(['c', 'o'])
   })
 })

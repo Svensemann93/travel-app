@@ -31,6 +31,21 @@ export function hideCompletedTrips(
   return trips.filter((trip) => tripStatus(trip.start_date, trip.end_date, today) !== 'completed')
 }
 
+function compareActive(a: TripListItem, b: TripListItem): number {
+  const left = a.start_date ?? a.end_date ?? ''
+  const right = b.start_date ?? b.end_date ?? ''
+  if (!left && !right) return a.name.localeCompare(b.name)
+  if (!left) return 1
+  if (!right) return -1
+  return left.localeCompare(right) || a.name.localeCompare(b.name)
+}
+
+function compareCompleted(a: TripListItem, b: TripListItem): number {
+  const left = a.end_date ?? a.start_date ?? ''
+  const right = b.end_date ?? b.start_date ?? ''
+  return right.localeCompare(left) || a.name.localeCompare(b.name)
+}
+
 export function completedLast(trips: TripListItem[], today: Date = new Date()): TripListItem[] {
   const active: TripListItem[] = []
   const done: TripListItem[] = []
@@ -38,6 +53,8 @@ export function completedLast(trips: TripListItem[], today: Date = new Date()): 
     if (tripStatus(trip.start_date, trip.end_date, today) === 'completed') done.push(trip)
     else active.push(trip)
   }
+  active.sort(compareActive)
+  done.sort(compareCompleted)
   return [...active, ...done]
 }
 
@@ -46,10 +63,12 @@ export function sortTripsByStatus(
   direction: 'asc' | 'desc',
   today: Date = new Date(),
 ): TripListItem[] {
-  const rank = (trip: TripListItem) =>
-    STATUS_ORDER[tripStatus(trip.start_date, trip.end_date, today)]
+  const statusOf = (trip: TripListItem) => tripStatus(trip.start_date, trip.end_date, today)
   const sorted = [...trips].sort((a, b) => {
-    const diff = rank(a) - rank(b)
+    const status = statusOf(a)
+    const diff =
+      STATUS_ORDER[status] - STATUS_ORDER[statusOf(b)] ||
+      (status === 'completed' ? compareCompleted(a, b) : compareActive(a, b))
     return direction === 'asc' ? diff : -diff
   })
   return sorted
