@@ -18,78 +18,109 @@ function shuffle(photos: ReviewPhoto[]): ReviewPhoto[] {
   return result
 }
 
-function pickOther(current: number, total: number): number {
-  if (total <= 1) return current
-  const offset = Math.floor(Math.random() * (total - 1))
-  return offset >= current ? offset + 1 : offset
+function nextHidden(from: number, shown: number[], total: number): number {
+  const visible = new Set(shown)
+  let candidate = from
+  for (let step = 0; step < total; step += 1) {
+    if (!visible.has(candidate)) return candidate
+    candidate = (candidate + 1) % total
+  }
+  return from
 }
 
 type TileProps = {
-  photos: ReviewPhoto[]
-  startDelay: number
+  photo: ReviewPhoto
+  previous: ReviewPhoto | null
   still: boolean
   onSelect: (placeId: string) => void
 }
 
-function RotatingTile({ photos, startDelay, still, onSelect }: TileProps) {
+function MosaicTile({ photo, previous, still, onSelect }: TileProps) {
   const { t } = useTranslation('review')
-  const total = photos.length
-  const [frame, setFrame] = useState(() => ({
-    previous: 0,
-    current: 0,
-    next: pickOther(0, total),
-  }))
-
-  useEffect(() => {
-    if (still || total <= 1) return
-    let interval: number | undefined
-    const advance = () =>
-      setFrame((current) => ({
-        previous: current.current,
-        current: current.next,
-        next: pickOther(current.next, total),
-      }))
-    const timeout = window.setTimeout(() => {
-      advance()
-      interval = window.setInterval(advance, INTERVAL_MS)
-    }, startDelay)
-    return () => {
-      window.clearTimeout(timeout)
-      if (interval !== undefined) window.clearInterval(interval)
-    }
-  }, [still, total, startDelay])
-
-  const safe = (index: number) => (index < total ? index : 0)
-  const current = safe(frame.current)
-  const mounted = new Set([safe(frame.previous), current, safe(frame.next)])
 
   return (
     <button
       type="button"
-      title={t('photoAction', { name: photos[current].name })}
-      aria-label={t('photoAction', { name: photos[current].name })}
-      onClick={() => onSelect(photos[current].placeId)}
+      title={t('photoAction', { name: photo.name })}
+      aria-label={t('photoAction', { name: photo.name })}
+      onClick={() => onSelect(photo.placeId)}
       className="group relative aspect-square overflow-hidden rounded-xl bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#39bbde] md:aspect-auto md:h-full"
     >
-      {photos.map((photo, i) =>
-        mounted.has(i) ? (
-          <div
-            key={photo.path}
-            className={`absolute inset-0 ${still ? '' : 'transition-opacity duration-[3000ms] ease-in-out'} ${
-              i === current ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <SignedImage
-              path={photo.path}
-              alt=""
-              className={`h-full w-full object-cover ${
-                still ? '' : 'transition-transform duration-500 group-hover:scale-105'
-              }`}
-            />
-          </div>
-        ) : null,
-      )}
+      {previous && previous.path !== photo.path ? (
+        <SignedImage
+          key={previous.path}
+          path={previous.path}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : null}
+      <div key={photo.path} className={`absolute inset-0 ${still ? '' : 'review-photo-in'}`}>
+        <SignedImage
+          path={photo.path}
+          alt=""
+          className={`h-full w-full object-cover ${
+            still ? '' : 'transition-transform duration-500 group-hover:scale-105'
+          }`}
+        />
+      </div>
     </button>
+  )
+}
+
+type MosaicProps = {
+  photos: ReviewPhoto[]
+  cellCount: number
+  still: boolean
+  onSelect: (placeId: string) => void
+}
+
+function PhotoMosaic({ photos, cellCount, still, onSelect }: MosaicProps) {
+  const total = photos.length
+  const [state, setState] = useState(() => ({
+    shown: Array.from({ length: cellCount }, (_, i) => i),
+    previous: Array.from({ length: cellCount }, (): number | null => null),
+    incoming: cellCount % total,
+    cell: 0,
+  }))
+
+  const canRotate = !still && total > cellCount
+  const step = Math.round(INTERVAL_MS / cellCount)
+
+  useEffect(() => {
+    if (!canRotate) return
+    const id = window.setInterval(() => {
+      setState((current) => {
+        const photo = nextHidden(current.incoming, current.shown, total)
+        const shown = [...current.shown]
+        const previous = [...current.previous]
+        previous[current.cell] = shown[current.cell]
+        shown[current.cell] = photo
+        return {
+          shown,
+          previous,
+          incoming: (photo + 1) % total,
+          cell: (current.cell + 1) % cellCount,
+        }
+      })
+    }, step)
+    return () => window.clearInterval(id)
+  }, [canRotate, total, cellCount, step])
+
+  return (
+    <div className="grid grid-cols-3 gap-2 md:h-full md:grid-rows-3">
+      {state.shown.map((photoIndex, cell) => {
+        const previousIndex = state.previous[cell]
+        return (
+          <MosaicTile
+            key={cell}
+            photo={photos[photoIndex]}
+            previous={previousIndex === null ? null : photos[previousIndex]}
+            still={still}
+            onSelect={onSelect}
+          />
+        )
+      })}
+    </div>
   )
 }
 
@@ -103,23 +134,15 @@ function YearReviewPhotos({ photos, onSelect }: Props) {
   const shuffled = useMemo(() => shuffle(photos), [photos])
 
   if (shuffled.length === 0) return null
-  const cellCount = Math.min(VISIBLE, shuffled.length)
-  const cells: ReviewPhoto[][] = Array.from({ length: cellCount }, () => [])
-  shuffled.forEach((photo, i) => cells[i % cellCount].push(photo))
-  const step = INTERVAL_MS / cellCount
 
   return (
-    <div className="grid grid-cols-3 gap-2 md:h-full md:grid-rows-3">
-      {cells.map((cellPhotos, c) => (
-        <RotatingTile
-          key={cellPhotos.map((photo) => photo.path).join('|')}
-          photos={cellPhotos}
-          startDelay={Math.round(c * step)}
-          still={still}
-          onSelect={onSelect}
-        />
-      ))}
-    </div>
+    <PhotoMosaic
+      key={shuffled.map((photo) => photo.path).join('|')}
+      photos={shuffled}
+      cellCount={Math.min(VISIBLE, shuffled.length)}
+      still={still}
+      onSelect={onSelect}
+    />
   )
 }
 
