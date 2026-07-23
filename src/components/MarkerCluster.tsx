@@ -33,7 +33,7 @@ function MarkerCluster({ clustered = true, children }: Props) {
       iconCreateFunction={createClusterIcon}
       chunkedLoading
       showCoverageOnHover={false}
-      maxClusterRadius={20}
+      maxClusterRadius={10}
     >
       {children}
     </MarkerClusterGroup>
