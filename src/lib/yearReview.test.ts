@@ -63,6 +63,8 @@ function visit(overrides: Partial<VisitedPlace> & { created_at: string }): Visit
     name: 'Visited place',
     category: 'other' as CategoryId,
     country_code: null,
+    latitude: null,
+    longitude: null,
     rating: null,
     visited_on: null,
     ...overrides,
@@ -383,6 +385,91 @@ describe('computeYearReview', () => {
     expect(r.placeCount).toBe(0)
     expect(r.topCategory).toBeNull()
     expect(r.highlight).toBeNull()
+  })
+})
+
+describe('computeYearReview — map points', () => {
+  it('returns one point per visited place with coordinates', () => {
+    const review = computeYearReview(
+      [
+        place({
+          id: 'a',
+          name: 'Bern',
+          latitude: 46.9,
+          longitude: 7.4,
+          created_at: '2026-03-01T00:00:00Z',
+        }),
+        place({
+          id: 'b',
+          name: 'Chur',
+          latitude: 46.8,
+          longitude: 9.5,
+          created_at: '2026-04-01T00:00:00Z',
+        }),
+      ],
+      [],
+      [],
+      [],
+      2026,
+    )
+    expect(review.points.map((point) => point.name).sort()).toEqual(['Bern', 'Chur'])
+    expect(review.points[0]).toMatchObject({ placeId: 'a', latitude: 46.9, longitude: 7.4 })
+  })
+
+  it('keeps one point for a place visited twice in the same year', () => {
+    const twice = place({ id: 'a', name: 'Bern', created_at: '2026-03-01T00:00:00Z' })
+    twice.visits = [
+      { ...twice.visits[0], id: 'v1', visited_on: '2026-03-01' },
+      { ...twice.visits[0], id: 'v2', visited_on: '2026-08-01' },
+    ]
+    const review = computeYearReview([twice], [], [], [], 2026)
+    expect(review.points).toHaveLength(1)
+  })
+
+  it('includes visited foreign places once the read model carries coordinates', () => {
+    const review = computeYearReview(
+      [],
+      [
+        visit({
+          place_id: 'foreign',
+          name: 'Oslo',
+          latitude: 59.9,
+          longitude: 10.7,
+          created_at: '2026-05-01T00:00:00Z',
+        }),
+      ],
+      [],
+      [],
+      2026,
+    )
+    expect(review.points).toEqual([
+      { placeId: 'foreign', name: 'Oslo', category: 'other', latitude: 59.9, longitude: 10.7 },
+    ])
+  })
+
+  it('drops visits whose place is no longer visible and has no coordinates', () => {
+    const review = computeYearReview(
+      [],
+      [visit({ place_id: 'gone', name: 'Gone', created_at: '2026-05-01T00:00:00Z' })],
+      [],
+      [],
+      2026,
+    )
+    expect(review.points).toEqual([])
+  })
+
+  it('only includes places from the selected year', () => {
+    const review = computeYearReview(
+      [
+        place({ id: 'a', name: 'Bern', created_at: '2026-03-01T00:00:00Z' }),
+        place({ id: 'b', name: 'Alt', created_at: '2024-03-01T00:00:00Z' }),
+      ],
+      [],
+      [],
+      [],
+      2026,
+    )
+    expect(review.points.map((point) => point.name)).toEqual(['Bern'])
   })
 })
 

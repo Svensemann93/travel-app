@@ -1,10 +1,14 @@
 import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
 import { LatLngBounds } from 'leaflet'
-import type { Place } from '../types/place'
+
+type MapPoint = {
+  latitude: number
+  longitude: number
+}
 
 type Props = {
-  places: Place[]
+  places: MapPoint[]
 }
 
 function MapFitBounds({ places }: Props) {

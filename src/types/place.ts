@@ -76,6 +76,8 @@ export type VisitedPlace = {
   name: string
   category: CategoryId
   country_code: string | null
+  latitude: number | null
+  longitude: number | null
   rating: number | null
   visited_on: string | null
   created_at: string

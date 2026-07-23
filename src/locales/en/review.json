@@ -20,5 +20,8 @@
   },
   "topCategory": "Top category",
   "topCategoryValue": "{{count}} places",
-  "highlight": "Top rated place"
+  "highlight": "Top rated place",
+  "map": {
+    "title": "Where you were"
+  }
 }

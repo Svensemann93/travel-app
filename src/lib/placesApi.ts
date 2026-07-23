@@ -118,9 +118,12 @@ export async function upsertPlaceVisit(
 }
 
 export async function addPlaceWish(userId: string, placeId: string): Promise<void> {
-  const { error } = await supabase
-    .from('place_wishes')
-    .upsert({ place_id: placeId, user_id: userId }, { onConflict: 'place_id,user_id' })
+  const { error } = await supabase.from('place_wishes').upsert(
+    { place_id: placeId, user_id: userId },
+    {
+      onConflict: 'place_id,user_id',
+    },
+  )
   if (error) throw new Error(error.message)
 }
 
@@ -264,6 +267,8 @@ type VisitedPlaceRow = {
   name: string
   category: string
   country_code: string | null
+  latitude: number | null
+  longitude: number | null
   rating: number | null
   visited_on: string | null
   created_at: string
@@ -281,6 +286,8 @@ export async function fetchMyVisitedStats(signal?: AbortSignal): Promise<Visited
     name: row.name,
     category: row.category as CategoryId,
     country_code: row.country_code,
+    latitude: row.latitude,
+    longitude: row.longitude,
     rating: row.rating,
     visited_on: row.visited_on,
     created_at: row.created_at,
