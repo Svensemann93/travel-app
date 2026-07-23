@@ -34,11 +34,13 @@
     "yourRatingLabel": "Deine Bewertung",
     "yourPriceLabel": "Dein Preis",
     "markVisited": "Ich war hier",
-    "edit": "Bewertung bearbeiten",
+    "edit": "Besuch bearbeiten",
     "editTitle": "Deinen Besuch bearbeiten",
     "remove": "Besuch entfernen",
     "clear": "zurücksetzen",
-    "visitedOnLabel": "Dein Besuchsdatum"
+    "visitedOnLabel": "Dein Besuchsdatum",
+    "yourPhotosLabel": "Deine Fotos",
+    "photoError": "Deine Fotos konnten nicht gespeichert werden."
   },
   "wishlist": {
     "add": "Auf die Wishlist",

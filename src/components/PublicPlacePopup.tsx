@@ -1,8 +1,8 @@
 import { Popup } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
-import type { PublicPlace } from '../types/place'
-import PopupPhoto from './PopupPhoto'
+import type { PublicPlace, PublicPlacePhoto } from '../types/place'
 import PopupDescription from './PopupDescription'
+import PopupPhotoStrip from './PopupPhotoStrip'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 import StarDisplay from './StarDisplay'
 
@@ -10,7 +10,7 @@ const CONTENT_MAX = 372
 
 type Props = {
   place: PublicPlace
-  onPhotoClick: (place: PublicPlace, index: number) => void
+  onPhotoClick: (photos: PublicPlacePhoto[], index: number) => void
   onMarkVisited: (placeId: string) => void
   onEditVisit: (place: PublicPlace) => void
   onAddToTrip: (place: PublicPlace) => void
@@ -28,7 +28,6 @@ function PublicPlacePopup({
   isSaving,
 }: Props) {
   const { t } = useTranslation(['map', 'category'])
-  const photos = place.photos ?? []
   const websiteText = place.website_url
     ? place.website_url.replace('https://', '').replace('http://', '')
     : ''
@@ -42,18 +41,7 @@ function PublicPlacePopup({
         style={{ maxHeight: CONTENT_MAX }}
       >
         <div className="shrink-0 space-y-2">
-          {photos.length > 0 ? (
-            <div className="flex gap-1 overflow-x-auto pb-0.5">
-              {photos.map((p, i) => (
-                <PopupPhoto
-                  key={p.id}
-                  path={p.thumb_url ?? p.url}
-                  alt={place.name}
-                  onClick={() => onPhotoClick(place, i)}
-                />
-              ))}
-            </div>
-          ) : null}
+          <PopupPhotoStrip place={place} onPhotoClick={onPhotoClick} />
 
           <strong className="block text-base leading-tight">{place.name}</strong>
 
