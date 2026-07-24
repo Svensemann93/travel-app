@@ -100,5 +100,10 @@
     "days_other": "{{count}} days",
     "untilStart": "until start",
     "travelDay": "Trip day"
+  },
+  "days": {
+    "day": "Day {{number}}",
+    "unplanned": "Not scheduled yet",
+    "empty": "Drag places here"
   }
 }

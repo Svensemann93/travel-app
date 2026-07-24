@@ -100,5 +100,10 @@
     "days_other": "{{count}} Tage",
     "untilStart": "bis Start",
     "travelDay": "Reisetag"
+  },
+  "days": {
+    "day": "Tag {{number}}",
+    "unplanned": "Noch nicht eingeplant",
+    "empty": "Orte hierher ziehen"
   }
 }
