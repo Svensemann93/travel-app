@@ -19,11 +19,11 @@ function YearReviewMap({ points, onSelect }: Props) {
 
   return (
     <section className="mt-6">
-      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+      <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.22em] text-slate-400">
         {t('map.title')}
       </h2>
       <div className="h-[22rem] overflow-hidden rounded-2xl shadow-sm ring-1 ring-slate-200">
-        <Map>
+        <Map basemap="muted">
           <MarkerCluster>
             {points.map((point) => {
               const category = CATEGORY_MAP[point.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
