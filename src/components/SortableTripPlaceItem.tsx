@@ -13,6 +13,7 @@ type Props = {
   onEdit: () => void
   onRemove: () => void
   isRemoving: boolean
+  hideWhileDragging?: boolean
 }
 
 function SortableTripPlaceItem({
@@ -25,6 +26,7 @@ function SortableTripPlaceItem({
   onEdit,
   onRemove,
   isRemoving,
+  hideWhileDragging = false,
 }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -33,7 +35,7 @@ function SortableTripPlaceItem({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
+    opacity: isDragging ? (hideWhileDragging ? 0 : 0.4) : 1,
     zIndex: isDragging ? 10 : 'auto',
   }
 

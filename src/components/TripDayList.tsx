@@ -8,7 +8,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
+import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import TripDaySection from './TripDaySection'
 import TripPlaceItem from './TripPlaceItem'
@@ -40,6 +40,7 @@ function TripDayList({
   const reorderTripPlaces = useReorderTripPlaces()
   const updateTripPlace = useUpdateTripPlace()
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [overGroupId, setOverGroupId] = useState<string | null>(null)
 
   const days = tripDays(startDate, endDate)
   const groups = groupByDay(tripPlaces, days)
@@ -51,21 +52,29 @@ function TripDayList({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
+  function groupIdOf(overId: string): string | null {
+    if (groups.some((group) => group.id === overId)) return overId
+    return groups.find((group) => group.places.some((tp) => tp.place_id === overId))?.id ?? null
+  }
+
   function handleDragStart(event: DragStartEvent) {
     setActiveId(String(event.active.id))
   }
 
+  function handleDragOver(event: DragOverEvent) {
+    setOverGroupId(event.over ? groupIdOf(String(event.over.id)) : null)
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     setActiveId(null)
+    setOverGroupId(null)
     const { active, over } = event
     if (!over) return
 
     const placeId = String(active.id)
     const overId = String(over.id)
     const isContainer = groups.some((group) => group.id === overId)
-    const targetId = isContainer
-      ? overId
-      : groups.find((group) => group.places.some((tp) => tp.place_id === overId))?.id
+    const targetId = groupIdOf(overId)
     if (!targetId) return
 
     const next = applyMove(groups, placeId, targetId, isContainer ? null : overId)
@@ -90,14 +99,19 @@ function TripDayList({
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveId(null)}
+      onDragCancel={() => {
+        setActiveId(null)
+        setOverGroupId(null)
+      }}
     >
       <div className="space-y-3">
         {groups.map((group, index) => (
           <TripDaySection
             key={group.id}
             group={group}
+            isTarget={overGroupId === group.id}
             dayNumber={group.date ? index + 1 : null}
             numberOf={(placeId) => numbers.get(placeId) ?? 0}
             removingPlaceId={removingPlaceId}
@@ -108,7 +122,7 @@ function TripDayList({
         ))}
       </div>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activePlace ? (
           <TripPlaceItem
             place={activePlace.place}

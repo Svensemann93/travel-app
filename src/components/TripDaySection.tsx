@@ -9,6 +9,7 @@ import type { TripPlaceWithPlace } from '../types/trip'
 
 type Props = {
   group: DayGroup
+  isTarget: boolean
   dayNumber: number | null
   numberOf: (placeId: string) => number
   removingPlaceId: string | null
@@ -19,6 +20,7 @@ type Props = {
 
 function TripDaySection({
   group,
+  isTarget,
   dayNumber,
   numberOf,
   removingPlaceId,
@@ -28,7 +30,7 @@ function TripDaySection({
 }: Props) {
   const { t } = useTranslation('trips')
   const { formatDate } = useFormatDate()
-  const { setNodeRef, isOver } = useDroppable({ id: group.id })
+  const { setNodeRef } = useDroppable({ id: group.id })
   const [isOpen, setIsOpen] = useState(true)
 
   const title = group.date
@@ -39,7 +41,7 @@ function TripDaySection({
     <section
       ref={setNodeRef}
       className={`rounded-xl ring-1 transition-colors ${
-        isOver ? 'bg-blue-50 ring-blue-300' : 'bg-slate-50/70 ring-slate-200'
+        isTarget ? 'bg-blue-50 ring-blue-400' : 'bg-slate-50/70 ring-slate-200'
       }`}
     >
       <button
@@ -75,7 +77,11 @@ function TripDaySection({
             strategy={verticalListSortingStrategy}
           >
             {group.places.length === 0 ? (
-              <p className="flex min-h-16 items-center justify-center rounded-lg border border-dashed border-slate-300 px-2 text-sm text-slate-400">
+              <p
+                className={`flex min-h-16 items-center justify-center rounded-lg border border-dashed px-2 text-sm ${
+                  isTarget ? 'border-blue-400 text-blue-500' : 'border-slate-300 text-slate-400'
+                }`}
+              >
                 {t('days.empty')}
               </p>
             ) : (
@@ -92,6 +98,7 @@ function TripDaySection({
                       onEdit={() => onEditPlace(tp)}
                       onRemove={() => onRemovePlace(tp.place_id)}
                       isRemoving={removingPlaceId === tp.place_id}
+                      hideWhileDragging
                     />
                   </li>
                 ))}
