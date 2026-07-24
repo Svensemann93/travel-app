@@ -108,5 +108,9 @@
     "today": "Heute",
     "planTitle": "Reiseplan",
     "planHint": "Ziehe Orte auf einen Reisetag und ändere ihre Reihenfolge."
+  },
+  "map": {
+    "title": "Karte",
+    "show": "Karte anzeigen"
   }
 }
