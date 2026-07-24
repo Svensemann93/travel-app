@@ -58,8 +58,12 @@ export function applyMove(
 ): DayGroup[] | null {
   const source = groups.find((group) => group.places.some((tp) => tp.place_id === placeId))
   const moving = source?.places.find((tp) => tp.place_id === placeId)
-  if (!moving) return null
-  if (!groups.some((group) => group.id === targetId)) return null
+  const original = groups.find((group) => group.id === targetId)
+  if (!moving || !original) return null
+
+  const overIndex = overPlaceId
+    ? original.places.findIndex((tp) => tp.place_id === overPlaceId)
+    : -1
 
   const next = groups.map((group) => ({
     ...group,
@@ -68,10 +72,8 @@ export function applyMove(
   const destination = next.find((group) => group.id === targetId)
   if (!destination) return null
 
-  const overIndex = overPlaceId
-    ? destination.places.findIndex((tp) => tp.place_id === overPlaceId)
-    : -1
-  const insertAt = overIndex === -1 ? destination.places.length : overIndex
+  const insertAt =
+    overIndex === -1 ? destination.places.length : Math.min(overIndex, destination.places.length)
   destination.places.splice(insertAt, 0, { ...moving, planned_date: destination.date })
 
   return next

@@ -107,6 +107,21 @@ describe('applyMove', () => {
     expect(next?.[3].places[0].planned_date).toBeNull()
   })
 
+  it('moves a place down within the same day', () => {
+    const groups = groupByDay([tripPlace('a', '2026-07-25'), tripPlace('b', '2026-07-25')], days)
+    const next = applyMove(groups, 'a', '2026-07-25', 'b')
+    expect(next && flattenIds(next)).toEqual(['b', 'a'])
+  })
+
+  it('moves a place down across several positions', () => {
+    const groups = groupByDay(
+      [tripPlace('a', '2026-07-25'), tripPlace('b', '2026-07-25'), tripPlace('c', '2026-07-25')],
+      days,
+    )
+    const next = applyMove(groups, 'a', '2026-07-25', 'c')
+    expect(next && flattenIds(next)).toEqual(['b', 'c', 'a'])
+  })
+
   it('reorders within the same day', () => {
     const groups = groupByDay([tripPlace('a', '2026-07-25'), tripPlace('b', '2026-07-25')], days)
     const next = applyMove(groups, 'b', '2026-07-25', 'a')
