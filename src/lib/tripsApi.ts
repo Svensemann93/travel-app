@@ -151,6 +151,23 @@ export async function updateTripPlacePositions(
   if (error) throw new Error(error.message)
 }
 
+export async function moveTripPlace(
+  tripId: string,
+  placeId: string,
+  plannedDate: string | null,
+  notes: string | null,
+  orderedPlaceIds: string[],
+): Promise<void> {
+  const { error } = await supabase.rpc('move_trip_place', {
+    p_trip_id: tripId,
+    p_place_id: placeId,
+    p_planned_date: plannedDate,
+    p_notes: notes,
+    p_ordered_place_ids: orderedPlaceIds,
+  })
+  if (error) throw new Error(error.message)
+}
+
 export async function updateTripPlaceRow(
   tripId: string,
   placeId: string,

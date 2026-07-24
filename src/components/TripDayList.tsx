@@ -23,6 +23,7 @@ import {
   tripDays,
 } from '../lib/tripDays'
 import type { TripPlaceWithPlace } from '../types/trip'
+import { todayIso } from '../lib/localDate'
 
 type Props = {
   tripId: string
@@ -54,7 +55,7 @@ function TripDayList({
   const groups = groupByDay(tripPlaces, days)
   const numbers = new Map(flattenIds(groups).map((placeId, index) => [placeId, index + 1]))
   const activePlace = tripPlaces.find((tp) => tp.place_id === activeId) ?? null
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayIso()
 
   function isOpen(group: (typeof groups)[number]): boolean {
     return openOverrides[group.id] ?? (group.id === UNPLANNED || group.places.length > 0)

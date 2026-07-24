@@ -10,6 +10,7 @@ import WeatherIcon from './WeatherIcon'
 import ForecastDay from './ForecastDay'
 import StatTile from './StatTile'
 import type { TripWithPlaces } from '../types/trip'
+import { todayIso } from '../lib/localDate'
 
 type Props = {
   trip: TripWithPlaces
@@ -79,7 +80,7 @@ function TripSummary({ trip }: Props) {
   const headCode = current.data?.weatherCode ?? today?.weatherCode ?? null
 
   const status = tripStatus(trip.start_date, trip.end_date)
-  const now = new Date().toISOString().slice(0, 10)
+  const now = todayIso()
   const tiles: Tile[] = []
   if (trip.start_date && trip.end_date) {
     tiles.push({
