@@ -13,8 +13,14 @@ function daysBetween(from: string, to: string): number {
   return Math.round(ms / 86_400_000)
 }
 
+function addDaysIso(iso: string, days: number): string {
+  const date = new Date(`${iso}T00:00:00Z`)
+  date.setUTCDate(date.getUTCDate() + days)
+  return date.toISOString().slice(0, 10)
+}
+
 function clampEnd(rawEnd: string, today: Date): string {
-  const maxEnd = toLocalIso(new Date(today.getTime() + FORECAST_HORIZON_DAYS * 86_400_000))
+  const maxEnd = addDaysIso(toLocalIso(today), FORECAST_HORIZON_DAYS)
   return rawEnd < maxEnd ? rawEnd : maxEnd
 }
 
