@@ -7,6 +7,7 @@ import {
   fetchTripWithPlaces,
   insertTripPlaceRow,
   insertTripRow,
+  moveTripPlace,
   updateTripCover,
   updateTripPlacePositions,
   updateTripPlaceRow,
@@ -273,8 +274,7 @@ export function useMoveTripPlace() {
       notes: string | null
       orderedPlaceIds: string[]
     }) => {
-      await updateTripPlaceRow(tripId, placeId, { planned_date: plannedDate, notes })
-      await updateTripPlacePositions(tripId, orderedPlaceIds)
+      await moveTripPlace(tripId, placeId, plannedDate, notes, orderedPlaceIds)
     },
     onMutate: async ({ tripId, placeId, plannedDate, orderedPlaceIds }) => {
       await queryClient.cancelQueries({ queryKey: tripsKeys.detail(tripId) })

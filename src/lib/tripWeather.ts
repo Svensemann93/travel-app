@@ -1,4 +1,5 @@
 import { tripStatus } from './tripStatus'
+import { toLocalIso } from './localDate'
 
 const FORECAST_HORIZON_DAYS = 14
 
@@ -13,9 +14,7 @@ function daysBetween(from: string, to: string): number {
 }
 
 function clampEnd(rawEnd: string, today: Date): string {
-  const maxEnd = new Date(today.getTime() + FORECAST_HORIZON_DAYS * 86_400_000)
-    .toISOString()
-    .slice(0, 10)
+  const maxEnd = toLocalIso(new Date(today.getTime() + FORECAST_HORIZON_DAYS * 86_400_000))
   return rawEnd < maxEnd ? rawEnd : maxEnd
 }
 
@@ -27,7 +26,7 @@ export function planTripWeather(
   const status = tripStatus(startDate, endDate, today)
   if (status === 'completed' || status === 'planning') return { kind: 'none' }
 
-  const now = today.toISOString().slice(0, 10)
+  const now = toLocalIso(today)
 
   if (status === 'ongoing') {
     return { kind: 'ongoing', start: now, end: clampEnd(endDate ?? now, today) }
