@@ -13,6 +13,8 @@ import TripDetailModals from '../components/TripDetailModals'
 import DetailStatus from '../components/DetailStatus'
 import EmptyState from '../components/EmptyState'
 import TripPlaceList from '../components/TripPlaceList'
+import TripDayList from '../components/TripDayList'
+import { tripDays } from '../lib/tripDays'
 import TripPlaceMarkers from '../components/TripPlaceMarkers'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 import {
@@ -58,6 +60,7 @@ function TripDetailPage() {
     () => numbered.filter((n) => selected.has(n.place.category)),
     [numbered, selected],
   )
+  const hasDays = tripDays(trip?.start_date ?? null, trip?.end_date ?? null).length > 0
   const focusedPlace = focusedPlaceId ? (places.find((p) => p.id === focusedPlaceId) ?? null) : null
 
   async function handleUpdate(data: TripInput) {
@@ -218,14 +221,27 @@ function TripDetailPage() {
                     {t('placesHeading')}{' '}
                     <span className="text-sm font-normal text-slate-500">{t('dragToSort')}</span>
                   </h3>
-                  <TripPlaceList
-                    tripId={trip.id}
-                    tripPlaces={trip.trip_places}
-                    removingPlaceId={removingPlaceId}
-                    onSelectPlace={setFocusedPlaceId}
-                    onEditPlace={setEditingTripPlace}
-                    onRemovePlace={handleRemovePlace}
-                  />
+                  {hasDays ? (
+                    <TripDayList
+                      tripId={trip.id}
+                      startDate={trip.start_date}
+                      endDate={trip.end_date}
+                      tripPlaces={trip.trip_places}
+                      removingPlaceId={removingPlaceId}
+                      onSelectPlace={setFocusedPlaceId}
+                      onEditPlace={setEditingTripPlace}
+                      onRemovePlace={handleRemovePlace}
+                    />
+                  ) : (
+                    <TripPlaceList
+                      tripId={trip.id}
+                      tripPlaces={trip.trip_places}
+                      removingPlaceId={removingPlaceId}
+                      onSelectPlace={setFocusedPlaceId}
+                      onEditPlace={setEditingTripPlace}
+                      onRemovePlace={handleRemovePlace}
+                    />
+                  )}
                 </div>
                 <div className="h-[60vh] lg:sticky lg:top-8 lg:h-[70vh]">
                   <div className="mb-2 hidden justify-end md:flex">
