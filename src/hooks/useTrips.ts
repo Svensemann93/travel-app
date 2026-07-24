@@ -255,6 +255,54 @@ export function useReorderTripPlaces() {
     },
   })
 }
+
+export function useMoveTripPlace() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({
+      tripId,
+      placeId,
+      plannedDate,
+      notes,
+      orderedPlaceIds,
+    }: {
+      tripId: string
+      placeId: string
+      plannedDate: string | null
+      notes: string | null
+      orderedPlaceIds: string[]
+    }) => {
+      await updateTripPlaceRow(tripId, placeId, { planned_date: plannedDate, notes })
+      await updateTripPlacePositions(tripId, orderedPlaceIds)
+    },
+    onMutate: async ({ tripId, placeId, plannedDate, orderedPlaceIds }) => {
+      await queryClient.cancelQueries({ queryKey: tripsKeys.detail(tripId) })
+      const previous = queryClient.getQueryData<TripWithPlaces | null>(tripsKeys.detail(tripId))
+      if (previous) {
+        const moved = orderedPlaceIds
+          .map((id, index) => {
+            const tp = previous.trip_places.find((p) => p.place_id === id)
+            if (!tp) return null
+            if (id !== placeId) return { ...tp, position: index }
+            return { ...tp, position: index, planned_date: plannedDate }
+          })
+          .filter((tp): tp is NonNullable<typeof tp> => tp !== null)
+        queryClient.setQueryData<TripWithPlaces>(tripsKeys.detail(tripId), {
+          ...previous,
+          trip_places: moved,
+        })
+      }
+      return { previous }
+    },
+    onError: (_err, { tripId }, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(tripsKeys.detail(tripId), context.previous)
+      }
+    },
+  })
+}
+
 export function useUpdateTripPlace() {
   const queryClient = useQueryClient()
   const { user } = useAuth()

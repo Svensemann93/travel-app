@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +9,9 @@ import type { TripPlaceWithPlace } from '../types/trip'
 type Props = {
   group: DayGroup
   isTarget: boolean
+  isToday: boolean
+  isOpen: boolean
+  onToggle: () => void
   dayNumber: number | null
   numberOf: (placeId: string) => number
   removingPlaceId: string | null
@@ -21,6 +23,9 @@ type Props = {
 function TripDaySection({
   group,
   isTarget,
+  isToday,
+  isOpen,
+  onToggle,
   dayNumber,
   numberOf,
   removingPlaceId,
@@ -31,7 +36,6 @@ function TripDaySection({
   const { t } = useTranslation('trips')
   const { formatDate } = useFormatDate()
   const { setNodeRef } = useDroppable({ id: group.id })
-  const [isOpen, setIsOpen] = useState(true)
 
   const title = group.date
     ? `${t('days.day', { number: dayNumber })} · ${formatDate(group.date)}`
@@ -46,11 +50,18 @@ function TripDaySection({
     >
       <button
         type="button"
-        onClick={() => setIsOpen((value) => !value)}
+        onClick={onToggle}
         aria-expanded={isOpen}
         className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
       >
-        <span className="text-sm font-semibold text-slate-700">{title}</span>
+        <span className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-slate-700">{title}</span>
+          {isToday && (
+            <span className="rounded-full bg-[#39BBDE]/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#1c7f9b]">
+              {t('days.today')}
+            </span>
+          )}
+        </span>
         <span className="flex items-center gap-2">
           <span className="text-xs text-slate-400">
             {t('placeCount', { count: group.places.length })}

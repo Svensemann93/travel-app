@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { UNPLANNED, applyMove, flattenIds, groupByDay, signature, tripDays } from './tripDays'
+import {
+  UNPLANNED,
+  applyMove,
+  displayOrder,
+  flattenIds,
+  groupByDay,
+  signature,
+  tripDays,
+} from './tripDays'
 import type { TripPlaceWithPlace } from '../types/trip'
 
 function tripPlace(placeId: string, plannedDate: string | null): TripPlaceWithPlace {
@@ -177,5 +185,33 @@ describe('signature', () => {
     const next = applyMove(groups, 'a', '2026-07-25', null)
     expect(next && flattenIds(next)).toEqual(flattenIds(groups))
     expect(next && signature(next)).not.toBe(signature(groups))
+  })
+})
+
+describe('displayOrder', () => {
+  const days = tripDays('2026-07-24', '2026-07-25')
+
+  it('lifts the unplanned group to the top while it holds places', () => {
+    const groups = groupByDay([tripPlace('a', '2026-07-24'), tripPlace('b', null)], days)
+    expect(displayOrder(groups).map((group) => group.id)).toEqual([
+      UNPLANNED,
+      '2026-07-24',
+      '2026-07-25',
+    ])
+  })
+
+  it('leaves the unplanned group at the end once it is empty', () => {
+    const groups = groupByDay([tripPlace('a', '2026-07-24')], days)
+    expect(displayOrder(groups).map((group) => group.id)).toEqual([
+      '2026-07-24',
+      '2026-07-25',
+      UNPLANNED,
+    ])
+  })
+
+  it('does not change the order the positions are derived from', () => {
+    const groups = groupByDay([tripPlace('a', '2026-07-24'), tripPlace('b', null)], days)
+    displayOrder(groups)
+    expect(flattenIds(groups)).toEqual(['a', 'b'])
   })
 })

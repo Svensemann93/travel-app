@@ -40,6 +40,12 @@ export function groupByDay(tripPlaces: TripPlaceWithPlace[], days: string[]): Da
   return [...groups, unplanned]
 }
 
+export function displayOrder(groups: DayGroup[]): DayGroup[] {
+  const unplanned = groups.find((group) => group.id === UNPLANNED)
+  if (!unplanned || unplanned.places.length === 0) return groups
+  return [unplanned, ...groups.filter((group) => group.id !== UNPLANNED)]
+}
+
 export function flattenIds(groups: DayGroup[]): string[] {
   return groups.flatMap((group) => group.places.map((tp) => tp.place_id))
 }

@@ -12,8 +12,16 @@ import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import TripDaySection from './TripDaySection'
 import TripPlaceItem from './TripPlaceItem'
-import { useReorderTripPlaces, useUpdateTripPlace } from '../hooks/useTrips'
-import { applyMove, flattenIds, groupByDay, signature, tripDays } from '../lib/tripDays'
+import { useMoveTripPlace } from '../hooks/useTrips'
+import {
+  UNPLANNED,
+  applyMove,
+  displayOrder,
+  flattenIds,
+  groupByDay,
+  signature,
+  tripDays,
+} from '../lib/tripDays'
 import type { TripPlaceWithPlace } from '../types/trip'
 
 type Props = {
@@ -37,15 +45,20 @@ function TripDayList({
   onEditPlace,
   onRemovePlace,
 }: Props) {
-  const reorderTripPlaces = useReorderTripPlaces()
-  const updateTripPlace = useUpdateTripPlace()
+  const moveTripPlace = useMoveTripPlace()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [overGroupId, setOverGroupId] = useState<string | null>(null)
+  const [openOverrides, setOpenOverrides] = useState<Record<string, boolean>>({})
 
   const days = tripDays(startDate, endDate)
   const groups = groupByDay(tripPlaces, days)
   const numbers = new Map(flattenIds(groups).map((placeId, index) => [placeId, index + 1]))
   const activePlace = tripPlaces.find((tp) => tp.place_id === activeId) ?? null
+  const today = new Date().toISOString().slice(0, 10)
+
+  function isOpen(group: (typeof groups)[number]): boolean {
+    return openOverrides[group.id] ?? (group.id === UNPLANNED || group.places.length > 0)
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -84,14 +97,14 @@ function TripDayList({
     const current = tripPlaces.find((tp) => tp.place_id === placeId)
     if (!group || !current) return
 
-    reorderTripPlaces.mutate({ tripId, orderedPlaceIds: flattenIds(next) })
-    if ((current.planned_date ?? null) !== group.date) {
-      updateTripPlace.mutate({
-        tripId,
-        placeId,
-        data: { planned_date: group.date, notes: current.notes },
-      })
-    }
+    setOpenOverrides((value) => ({ ...value, [group.id]: true }))
+    moveTripPlace.mutate({
+      tripId,
+      placeId,
+      plannedDate: group.date,
+      notes: current.notes,
+      orderedPlaceIds: flattenIds(next),
+    })
   }
 
   return (
@@ -107,12 +120,15 @@ function TripDayList({
       }}
     >
       <div className="space-y-3">
-        {groups.map((group, index) => (
+        {displayOrder(groups).map((group) => (
           <TripDaySection
             key={group.id}
             group={group}
             isTarget={overGroupId === group.id}
-            dayNumber={group.date ? index + 1 : null}
+            isToday={group.date === today}
+            isOpen={isOpen(group)}
+            onToggle={() => setOpenOverrides((value) => ({ ...value, [group.id]: !isOpen(group) }))}
+            dayNumber={group.date ? days.indexOf(group.date) + 1 : null}
             numberOf={(placeId) => numbers.get(placeId) ?? 0}
             removingPlaceId={removingPlaceId}
             onSelectPlace={onSelectPlace}
