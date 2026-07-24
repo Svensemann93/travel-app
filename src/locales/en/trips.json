@@ -104,6 +104,9 @@
   "days": {
     "day": "Day {{number}}",
     "unplanned": "Not scheduled yet",
-    "empty": "Drag places here"
+    "empty": "Drag places here",
+    "today": "Today",
+    "planTitle": "Itinerary",
+    "planHint": "Drag places onto a travel day and reorder them."
   }
 }

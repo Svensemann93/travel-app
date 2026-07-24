@@ -217,10 +217,14 @@ function TripDetailPage() {
             ) : (
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div>
-                  <h3 className="mb-3 text-lg font-semibold text-slate-800">
-                    {t('placesHeading')}{' '}
-                    <span className="text-sm font-normal text-slate-500">{t('dragToSort')}</span>
-                  </h3>
+                  <div className="mb-3">
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      {hasDays ? t('days.planTitle') : t('placesHeading')}
+                    </h3>
+                    <p className="text-sm text-slate-500">
+                      {hasDays ? t('days.planHint') : t('dragToSort')}
+                    </p>
+                  </div>
                   {hasDays ? (
                     <TripDayList
                       tripId={trip.id}

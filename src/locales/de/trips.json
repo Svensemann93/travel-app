@@ -104,6 +104,9 @@
   "days": {
     "day": "Tag {{number}}",
     "unplanned": "Noch nicht eingeplant",
-    "empty": "Orte hierher ziehen"
+    "empty": "Orte hierher ziehen",
+    "today": "Heute",
+    "planTitle": "Reiseplan",
+    "planHint": "Ziehe Orte auf einen Reisetag und ändere ihre Reihenfolge."
   }
 }
