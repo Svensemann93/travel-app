@@ -108,5 +108,9 @@
     "today": "Today",
     "planTitle": "Itinerary",
     "planHint": "Drag places onto a travel day and reorder them."
+  },
+  "map": {
+    "title": "Map",
+    "show": "Show map"
   }
 }

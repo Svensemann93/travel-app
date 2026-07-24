@@ -2,10 +2,9 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import AppHeader from '../components/AppHeader'
-import Map from '../components/Map'
-import MapFitBounds from '../components/MapFitBounds'
-import MapFocuser from '../components/MapFocuser'
 import CategoryFilter from '../components/CategoryFilter'
+import TripMap from '../components/TripMap'
+import TripMapOverlay from '../components/TripMapOverlay'
 import TripDetailHeader from '../components/TripDetailHeader'
 import TripCoverPicker from '../components/TripCoverPicker'
 import CoverFocusEditor from '../components/CoverFocusEditor'
@@ -15,8 +14,8 @@ import EmptyState from '../components/EmptyState'
 import TripPlaceList from '../components/TripPlaceList'
 import TripDayList from '../components/TripDayList'
 import { tripDays } from '../lib/tripDays'
-import TripPlaceMarkers from '../components/TripPlaceMarkers'
 import { useCategoryFilter } from '../contexts/categoryFilter'
+import { useIsDesktop } from '../hooks/useIsDesktop'
 import {
   useDeleteTrip,
   useRemovePlaceFromTrip,
@@ -42,11 +41,13 @@ function TripDetailPage() {
   const setCover = useSetTripCover()
   const createJournalFromTrip = useCreateJournalFromTrip()
   const { selected } = useCategoryFilter()
+  const isDesktop = useIsDesktop()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isCreateJournalOpen, setIsCreateJournalOpen] = useState(false)
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
+  const [isMapOpen, setIsMapOpen] = useState(false)
   const [editingTripPlace, setEditingTripPlace] = useState<TripPlaceWithPlace | null>(null)
   const [isCoverPickerOpen, setIsCoverPickerOpen] = useState(false)
   const [focusState, setFocusState] = useState<{ path: string; x: number; y: number } | null>(null)
@@ -217,13 +218,37 @@ function TripDetailPage() {
             ) : (
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div>
-                  <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-slate-800">
-                      {hasDays ? t('days.planTitle') : t('placesHeading')}
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                      {hasDays ? t('days.planHint') : t('dragToSort')}
-                    </p>
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-800">
+                        {hasDays ? t('days.planTitle') : t('placesHeading')}
+                      </h3>
+                      <p className="text-sm text-slate-500">
+                        {hasDays ? t('days.planHint') : t('dragToSort')}
+                      </p>
+                    </div>
+                    {!isDesktop && (
+                      <button
+                        type="button"
+                        onClick={() => setIsMapOpen(true)}
+                        className="flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200"
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="m9 18-6 3V6l6-3m0 15 6 3m-6-3V3m6 18 6-3V3l-6 3m0 15V6m0 0L9 3" />
+                        </svg>
+                        {t('map.show')}
+                      </button>
+                    )}
                   </div>
                   {hasDays ? (
                     <TripDayList
@@ -247,19 +272,30 @@ function TripDetailPage() {
                     />
                   )}
                 </div>
-                <div className="h-[60vh] lg:sticky lg:top-8 lg:h-[70vh]">
-                  <div className="mb-2 hidden justify-end md:flex">
-                    <CategoryFilter />
+                {isDesktop && (
+                  <div className="lg:sticky lg:top-8 lg:h-[70vh]">
+                    <div className="mb-2 flex justify-end">
+                      <CategoryFilter />
+                    </div>
+                    <div className="h-[calc(100%-3rem)] overflow-hidden rounded-2xl ring-1 ring-slate-200">
+                      <TripMap
+                        places={places}
+                        visibleNumbered={visibleNumbered}
+                        focusedPlace={focusedPlace}
+                      />
+                    </div>
                   </div>
-                  <div className="h-full overflow-hidden rounded-2xl ring-1 ring-slate-200 md:h-[calc(100%-3rem)]">
-                    <Map>
-                      <TripPlaceMarkers places={visibleNumbered} />
-                      <MapFitBounds places={places} />
-                      <MapFocuser place={focusedPlace} />
-                    </Map>
-                  </div>
-                </div>
+                )}
               </div>
+            )}
+
+            {isMapOpen && !isDesktop && (
+              <TripMapOverlay
+                places={places}
+                visibleNumbered={visibleNumbered}
+                focusedPlace={focusedPlace}
+                onClose={() => setIsMapOpen(false)}
+              />
             )}
 
             <TripDetailModals
