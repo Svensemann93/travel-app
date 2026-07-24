@@ -29,7 +29,9 @@ describe('planTripWeather', () => {
   })
 
   it('shows nothing for a completed trip', () => {
-    expect(planTripWeather('2026-06-01', '2026-06-10', today)).toEqual({ kind: 'none' })
+    expect(planTripWeather('2026-06-01', '2026-06-10', today)).toEqual({
+      kind: 'none',
+    })
   })
 
   it('shows nothing for a trip with no dates', () => {
@@ -45,7 +47,9 @@ describe('planTripWeather', () => {
   })
 
   it('shows nothing for an upcoming trip beyond 14 days', () => {
-    expect(planTripWeather('2026-08-10', '2026-08-15', today)).toEqual({ kind: 'none' })
+    expect(planTripWeather('2026-08-10', '2026-08-15', today)).toEqual({
+      kind: 'none',
+    })
   })
 
   it('clamps an upcoming trip end to the 14-day horizon', () => {
@@ -62,5 +66,14 @@ describe('planTripWeather', () => {
       start: '2026-07-26',
       end: '2026-07-26',
     })
+  })
+})
+
+it('clamps to 14 calendar days across the switch to winter time', () => {
+  const beforeSwitch = new Date('2026-10-24T22:30:00Z')
+  expect(planTripWeather('2026-10-26', '2026-12-01', beforeSwitch)).toEqual({
+    kind: 'upcoming',
+    start: '2026-10-26',
+    end: '2026-11-08',
   })
 })

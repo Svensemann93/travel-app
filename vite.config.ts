@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       setupFiles: ['./src/test/setup.ts'],
       env: {
-        TZ: 'UTC',
+        TZ: 'Europe/Zurich',
       },
       css: false,
       coverage: {

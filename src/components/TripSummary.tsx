@@ -68,7 +68,8 @@ function TripSummary({ trip }: Props) {
   const { t } = useTranslation('trips')
   const coords = firstStopCoords(trip)
   const { plan, data } = useTripForecast(coords, trip.start_date, trip.end_date)
-  const current = useCurrentWeather(coords)
+  const isOngoing = plan.kind === 'ongoing'
+  const current = useCurrentWeather(isOngoing ? coords : null)
   const [showForecast, setShowForecast] = useState(false)
 
   const forecast: DailyForecast[] = data ?? []
@@ -76,8 +77,12 @@ function TripSummary({ trip }: Props) {
   const rest = forecast.slice(1)
   const hasWeather = plan.kind !== 'none'
 
-  const headTemp = current.data?.temperature ?? today?.tempMax ?? null
-  const headCode = current.data?.weatherCode ?? today?.weatherCode ?? null
+  const headTemp = isOngoing
+    ? (current.data?.temperature ?? today?.tempMax ?? null)
+    : (today?.tempMax ?? null)
+  const headCode = isOngoing
+    ? (current.data?.weatherCode ?? today?.weatherCode ?? null)
+    : (today?.weatherCode ?? null)
 
   const status = tripStatus(trip.start_date, trip.end_date)
   const now = todayIso()
