@@ -1,39 +1,13 @@
 import type { Place } from './place'
+import type { Database } from './database'
 
-export type Journal = {
-  id: string
-  user_id: string
-  trip_id: string | null
-  title: string
-  description: string | null
-  cover_photo_path?: string | null
-  cover_focus_x?: number | null
-  cover_focus_y?: number | null
-  created_at: string
-  updated_at: string
-}
+type Tables = Database['public']['Tables']
 
-export type JournalEntryRow = {
-  id: string
-  journal_id: string
-  place_id: string | null
-  entry_date: string | null
-  title: string | null
-  body: string | null
-  position: number
-  place_photo_ids: string[] | null
-  created_at: string
-}
+export type Journal = Tables['journals']['Row']
 
-export type JournalEntryPhoto = {
-  id: string
-  entry_id: string
-  user_id: string
-  url: string
-  thumb_url: string | null
-  position: number
-  created_at: string
-}
+export type JournalEntryRow = Tables['journal_entries']['Row']
+
+export type JournalEntryPhoto = Tables['journal_entry_photos']['Row']
 
 export type JournalEntry = JournalEntryRow & {
   photos: JournalEntryPhoto[]
@@ -61,11 +35,4 @@ export type JournalEntryInput = {
   place_photo_ids: string[] | null
 }
 
-export type JournalShare = {
-  id: string
-  journal_id: string
-  token: string
-  created_at: string
-  expires_at: string
-  last_accessed_at: string | null
-}
+export type JournalShare = Tables['journal_shares']['Row']

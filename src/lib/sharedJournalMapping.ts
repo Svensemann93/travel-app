@@ -30,8 +30,8 @@ export function toJournalWithEntries(data: SharedJournal): JournalWithEntries {
     title: data.title,
     description: data.description,
     cover_photo_path: data.cover_photo_path,
-    cover_focus_x: data.cover_focus_x,
-    cover_focus_y: data.cover_focus_y,
+    cover_focus_x: data.cover_focus_x ?? 50,
+    cover_focus_y: data.cover_focus_y ?? 50,
     created_at: '',
     updated_at: '',
     journal_entries: data.entries.map((e, i) => ({
