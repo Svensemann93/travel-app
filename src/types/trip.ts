@@ -1,37 +1,16 @@
 import type { Place } from './place'
+import type { Database } from './database'
 
-export type Trip = {
-  id: string
-  user_id: string
-  name: string
-  description: string | null
-  start_date: string | null
-  end_date: string | null
-  cover_photo_path: string | null
-  cover_focus_x: number
-  cover_focus_y: number
-  created_at: string
-  updated_at: string
-}
+type Tables = Database['public']['Tables']
+
+export type Trip = Tables['trips']['Row']
 
 export type TripListItem = Trip & {
   place_count: number
   first_stop: { latitude: number; longitude: number } | null
 }
 
-export type TripPlace = {
-  trip_id: string
-  place_id: string
-  position: number
-  planned_date: string | null
-  notes: string | null
-  created_at: string
-  place_name: string | null
-  place_latitude: number | null
-  place_longitude: number | null
-  place_category: string | null
-  place_country_code: string | null
-}
+export type TripPlace = Tables['trip_places']['Row']
 
 export type TripPlaceWithPlace = TripPlace & {
   place: Place

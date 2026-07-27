@@ -24,7 +24,7 @@ export function searchPlaces(places: Place[], query: string): Place[] {
 
 function visitedAt(place: Place): string {
   const visit = visitOf(place)
-  return visit?.visited_on ?? visit?.created_at ?? place.created_at
+  return visit?.visited_on ?? visit?.created_at ?? place.created_at ?? ''
 }
 
 export function sortPlaces(
