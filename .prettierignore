@@ -5,3 +5,4 @@ build
 *.lock
 package-lock.json
 supabase
+src/types/database.ts

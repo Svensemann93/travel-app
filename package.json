@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -b",
+    "gen:types": "supabase gen types typescript --project-id bomvrpytexfjwtjlnqya --schema public > src/types/database.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "test": "vitest run",
