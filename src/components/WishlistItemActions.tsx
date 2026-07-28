@@ -14,7 +14,7 @@ function WishlistItemActions({ onAddToTrip, onShow, className = '' }: Props) {
       <button
         type="button"
         onClick={onAddToTrip}
-        className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-blue-700"
       >
         <svg
           width="16"
@@ -34,7 +34,7 @@ function WishlistItemActions({ onAddToTrip, onShow, className = '' }: Props) {
       <button
         type="button"
         onClick={onShow}
-        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-slate-50"
+        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-slate-50"
       >
         <svg
           width="16"
