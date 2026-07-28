@@ -7,6 +7,12 @@ export type WishlistSort = (typeof WISHLIST_SORTS)[number]
 
 export type CategoryLabel = (id: CategoryId) => string
 
+export function filterWishlistBySearch(places: PublicPlace[], query: string): PublicPlace[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return places
+  return places.filter((place) => place.name.toLowerCase().includes(q))
+}
+
 export function sortWishlist(
   places: PublicPlace[],
   sort: WishlistSort,

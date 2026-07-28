@@ -59,6 +59,17 @@
       "name": "Name",
       "rating": "Rating",
       "category": "Category"
-    }
+    },
+    "eyebrow": "Travel ideas",
+    "summary": "{{places}} saved places in {{countries}} countries",
+    "addToTripFull": "Add to trip",
+    "summaryPlaces_one": "{{count}} saved place",
+    "summaryPlaces_other": "{{count}} saved places",
+    "summaryCountries_one": "in {{count}} country",
+    "summaryCountries_other": "in {{count}} countries",
+    "visited": "Visited",
+    "onMap": "On map",
+    "placesCount_one": "{{count}} place",
+    "placesCount_other": "{{count}} places"
   }
 }
