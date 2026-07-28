@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sortWishlist } from './wishlist'
+import { filterWishlistBySearch, sortWishlist } from './wishlist'
 import type { CategoryId } from './categories'
 import { makePublicPlace } from '../test/fixtures'
 
@@ -67,5 +67,19 @@ describe('sortWishlist', () => {
     const input = [...places]
     sortWishlist(input, 'name', 'de', label)
     expect(input.map((p) => p.id)).toEqual(['a', 'b', 'c'])
+  })
+})
+
+describe('filterWishlistBySearch', () => {
+  it('returns all places for a blank query', () => {
+    expect(filterWishlistBySearch(places, '  ').map((p) => p.id)).toEqual(['a', 'b', 'c'])
+  })
+
+  it('matches the place name case-insensitively', () => {
+    expect(filterWishlistBySearch(places, 'ber').map((p) => p.id)).toEqual(['c'])
+  })
+
+  it('returns nothing when no name matches', () => {
+    expect(filterWishlistBySearch(places, 'zzz')).toEqual([])
   })
 })

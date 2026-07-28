@@ -5,7 +5,7 @@ import { useWishlist } from '../hooks/useWishlist'
 import { useRemovePlaceWish } from '../hooks/usePlaceWishes'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 import { filterPlacesByCategory } from '../lib/filterPlaces'
-import { sortWishlist } from '../lib/wishlist'
+import { filterWishlistBySearch, sortWishlist } from '../lib/wishlist'
 import { groupByCountry } from '../lib/groupByCountry'
 import type { WishlistSort } from '../lib/wishlist'
 import type { CategoryId } from '../lib/categories'
@@ -16,6 +16,7 @@ import EmptyState from '../components/EmptyState'
 import WishlistEmpty from '../components/WishlistEmpty'
 import WishlistControls from '../components/WishlistControls'
 import WishlistGroup from '../components/WishlistGroup'
+import WishlistList from '../components/WishlistList'
 import AddToTripModal from '../components/AddToTripModal'
 import type { PublicPlace } from '../types/place'
 import type { TripCandidate } from '../types/trip'
@@ -26,40 +27,63 @@ function WishlistPage() {
   const removeWish = useRemovePlaceWish()
   const { selected } = useCategoryFilter()
   const navigate = useNavigate()
+  const [search, setSearch] = useState('')
   const [sort, setSort] = useState<WishlistSort>('added')
-  const [grouped, setGrouped] = useState(false)
+  const [grouped, setGrouped] = useState(true)
   const [addingToTripPlace, setAddingToTripPlace] = useState<TripCandidate | null>(null)
 
   const groups = useMemo(() => {
     const label = (id: CategoryId) => t(`category:${id}`)
-    const filtered = filterPlacesByCategory(places, selected)
-    const visible = sortWishlist(filtered, sort, i18n.language, label)
+    const byCategory = filterPlacesByCategory(places, selected)
+    const bySearch = filterWishlistBySearch(byCategory, search)
+    const visible = sortWishlist(bySearch, sort, i18n.language, label)
     if (!grouped) return [{ code: null, name: '', items: visible }]
     return groupByCountry(visible, i18n.language)
-  }, [places, selected, sort, grouped, i18n.language, t])
+  }, [places, selected, search, sort, grouped, i18n.language, t])
 
   const visibleCount = groups.reduce((sum, group) => sum + group.items.length, 0)
+  const countryCount = new Set(places.map((p) => p.country_code).filter(Boolean)).size
 
   function handleShow(place: PublicPlace) {
     navigate(`/?lat=${place.latitude}&lng=${place.longitude}`)
+  }
+
+  function handleAddToTrip(place: PublicPlace) {
+    setAddingToTripPlace(place)
+  }
+
+  function handleRemove(placeId: string) {
+    removeWish.mutate(placeId)
   }
 
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
 
-      <main className="mx-auto max-w-4xl p-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-2xl font-bold text-slate-800">{t('map:wishlist.title')}</h2>
+      <main className="mx-auto max-w-4xl p-6 sm:p-8">
+        <header className="mb-6">
+          <p className="text-sm font-medium text-sky-600">{t('wishlist.eyebrow')}</p>
+          <h2 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
+            {t('wishlist.title')}
+          </h2>
           {places.length > 0 && (
-            <WishlistControls
-              sort={sort}
-              onSortChange={setSort}
-              grouped={grouped}
-              onGroupedChange={setGrouped}
-            />
+            <p className="mt-2 text-slate-500">
+              {t('wishlist.summaryPlaces', { count: places.length })}{' '}
+              {t('wishlist.summaryCountries', { count: countryCount })}
+            </p>
           )}
-        </div>
+        </header>
+
+        {places.length > 0 && (
+          <WishlistControls
+            search={search}
+            onSearchChange={setSearch}
+            sort={sort}
+            onSortChange={setSort}
+            grouped={grouped}
+            onGroupedChange={setGrouped}
+          />
+        )}
 
         <QueryBoundary
           isLoading={isLoading}
@@ -71,21 +95,29 @@ function WishlistPage() {
           empty={<WishlistEmpty />}
         >
           {visibleCount === 0 ? (
-            <EmptyState message={t('map:wishlist.noFilterMatch')} />
-          ) : (
-            <div className="space-y-6">
+            <EmptyState message={t('wishlist.noFilterMatch')} />
+          ) : grouped ? (
+            <div className="space-y-4">
               {groups.map((group) => (
                 <WishlistGroup
-                  key={group.code ?? 'all'}
-                  title={grouped ? group.name : null}
+                  key={group.code ?? 'none'}
+                  name={group.name}
                   places={group.items}
                   onShow={handleShow}
-                  onAddToTrip={(place) => setAddingToTripPlace(place)}
-                  onRemove={(placeId) => removeWish.mutate(placeId)}
+                  onAddToTrip={handleAddToTrip}
+                  onRemove={handleRemove}
                   isRemoving={removeWish.isPending}
                 />
               ))}
             </div>
+          ) : (
+            <WishlistList
+              places={groups[0].items}
+              onShow={handleShow}
+              onAddToTrip={handleAddToTrip}
+              onRemove={handleRemove}
+              isRemoving={removeWish.isPending}
+            />
           )}
         </QueryBoundary>
       </main>

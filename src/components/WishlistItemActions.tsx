@@ -2,12 +2,11 @@ import { useTranslation } from 'react-i18next'
 
 type Props = {
   onAddToTrip: () => void
-  onRemove: () => void
-  isRemoving: boolean
+  onShow: () => void
   className?: string
 }
 
-function WishlistItemActions({ onAddToTrip, onRemove, isRemoving, className = '' }: Props) {
+function WishlistItemActions({ onAddToTrip, onShow, className = '' }: Props) {
   const { t } = useTranslation('map')
 
   return (
@@ -15,17 +14,43 @@ function WishlistItemActions({ onAddToTrip, onRemove, isRemoving, className = ''
       <button
         type="button"
         onClick={onAddToTrip}
-        className="text-sm whitespace-nowrap text-green-700 hover:underline"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
       >
-        {t('addToTrip')}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        {t('wishlist.addToTripFull')}
       </button>
       <button
         type="button"
-        onClick={onRemove}
-        disabled={isRemoving}
-        className="text-sm whitespace-nowrap text-red-600 hover:underline disabled:opacity-50"
+        onClick={onShow}
+        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-slate-50"
       >
-        {isRemoving ? '…' : t('wishlist.remove')}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 20 3 17V4l6 3 6-3 6 3v13l-6-3-6 3z" />
+          <path d="M9 7v13M15 4v13" />
+        </svg>
+        {t('wishlist.onMap')}
       </button>
     </div>
   )

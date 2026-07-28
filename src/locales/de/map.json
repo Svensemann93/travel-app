@@ -59,6 +59,17 @@
       "name": "Name",
       "rating": "Bewertung",
       "category": "Kategorie"
-    }
+    },
+    "eyebrow": "Reiseideen",
+    "search": "Ort suchen…",
+    "addToTripFull": "Zu Trip hinzufügen",
+    "summaryPlaces_one": "{{count}} gespeicherter Ort",
+    "summaryPlaces_other": "{{count}} gespeicherte Orte",
+    "summaryCountries_one": "in {{count}} Land",
+    "summaryCountries_other": "in {{count}} Ländern",
+    "visited": "Schon besucht",
+    "onMap": "Auf Karte",
+    "placesCount_one": "{{count}} Ort",
+    "placesCount_other": "{{count}} Orte"
   }
 }
