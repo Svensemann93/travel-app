@@ -44,6 +44,8 @@ Personal mobile-first travel app. Solo developer, German-speaking — conversati
 
 - Markers are clustered via `MarkerCluster` (`react-leaflet-cluster`), one shared group for own and public pins — public pins will outnumber own ones. The cluster icon is a neutral teal circle with a count, abbreviated above 1000 (`1.7k`). `maxClusterRadius` is the readability dial: lower means small groups stay separate. Clustering is switched off while repositioning a pin, otherwise the draggable marker disappears into a cluster.
 - Leaflet.markercluster has no minimum cluster size and never will — tune `maxClusterRadius` instead of building one.
+- Never render country flags as emoji: Windows renders regional-indicator pairs as plain letters (`CH`), not a flag. Show the country name instead.
+- An inline overview map is a titled section in the page flow (`Map basemap="muted"` + `MarkerCluster` + `MapFitBounds`), like `YearReviewMap` / `WishlistMap` — not a bespoke side panel. Render it conditionally in JS (never CSS-`hidden`, Leaflet would measure 0×0).
 
 ## Deploy and caching
 

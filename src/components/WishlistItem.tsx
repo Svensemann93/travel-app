@@ -19,21 +19,21 @@ function WishlistItem({ place, onShow, onAddToTrip, onRemove, isRemoving }: Prop
   const category = CATEGORY_MAP[place.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
 
   return (
-    <div className="flex overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-shadow hover:shadow-md">
+    <div className="flex flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-shadow hover:shadow-md sm:flex-row">
       <button
         type="button"
         onClick={() => onShow(place)}
-        className="flex-shrink-0"
+        className="flex w-full flex-shrink-0 sm:w-auto"
         aria-label={place.name}
       >
         {photo ? (
           <SignedImage
             path={photo.thumb_url ?? photo.url}
             alt={place.name}
-            className="h-full w-28 object-cover sm:w-40"
+            className="h-40 w-full object-cover sm:h-full sm:w-40"
           />
         ) : (
-          <div className="flex h-full w-28 items-center justify-center bg-slate-100 text-3xl text-slate-300 sm:w-40">
+          <div className="flex h-40 w-full items-center justify-center bg-slate-100 text-3xl text-slate-300 sm:h-full sm:w-40">
             ⛰
           </div>
         )}
