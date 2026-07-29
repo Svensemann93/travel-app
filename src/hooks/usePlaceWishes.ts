@@ -1,24 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { QueryClient } from '@tanstack/react-query'
 import { useAuth } from './useAuth'
 import { addPlaceWish, removePlaceWish } from '../lib/placesApi'
-import type { PublicPlace } from '../types/place'
-
-function patchWish(queryClient: QueryClient, placeId: string, wished: boolean) {
-  queryClient.setQueriesData<PublicPlace[]>({ queryKey: ['public-places'] }, (current) =>
-    current
-      ? current.map((place) =>
-          place.id === placeId
-            ? {
-                ...place,
-                wished_by_me: wished,
-                wished_on: wished ? new Date().toISOString() : null,
-              }
-            : place,
-        )
-      : current,
-  )
-}
+import { patchPublicPlace } from '../lib/publicPlacesCache'
 
 export function useAddPlaceWish() {
   const queryClient = useQueryClient()
@@ -30,7 +13,10 @@ export function useAddPlaceWish() {
       return addPlaceWish(user.id, placeId)
     },
     onSuccess: (_data, placeId) => {
-      patchWish(queryClient, placeId, true)
+      patchPublicPlace(queryClient, placeId, {
+        wished_by_me: true,
+        wished_on: new Date().toISOString(),
+      })
       queryClient.invalidateQueries({ queryKey: ['wishlist'] })
     },
   })
@@ -46,7 +32,7 @@ export function useRemovePlaceWish() {
       return removePlaceWish(user.id, placeId)
     },
     onSuccess: (_data, placeId) => {
-      patchWish(queryClient, placeId, false)
+      patchPublicPlace(queryClient, placeId, { wished_by_me: false, wished_on: null })
       queryClient.invalidateQueries({ queryKey: ['wishlist'] })
     },
   })
