@@ -15,7 +15,6 @@ type Props = {
   onEditVisit: (place: PublicPlace) => void
   onAddToTrip: (place: PublicPlace) => void
   onToggleWish: (place: PublicPlace) => void
-  isSaving: boolean
 }
 
 function PublicPlacePopup({
@@ -25,7 +24,6 @@ function PublicPlacePopup({
   onEditVisit,
   onAddToTrip,
   onToggleWish,
-  isSaving,
 }: Props) {
   const { t } = useTranslation(['map', 'category'])
   const websiteText = place.website_url
@@ -73,6 +71,15 @@ function PublicPlacePopup({
             </div>
           ) : null}
 
+          {place.visited_by_me && place.my_price ? (
+            <div className="flex items-center gap-1.5 text-xs leading-none text-slate-500">
+              <span>{t('visits.yourPriceLabel')}:</span>
+              <span className="font-medium text-green-700">
+                {'$'.repeat(Math.round(place.my_price))}
+              </span>
+            </div>
+          ) : null}
+
           {place.avg_price != null ? (
             <div className="text-sm font-medium leading-none text-green-700">
               {'$'.repeat(Math.round(place.avg_price))}
@@ -108,8 +115,7 @@ function PublicPlacePopup({
             <button
               type="button"
               onClick={() => onToggleWish(place)}
-              disabled={isSaving}
-              className="text-sm leading-tight text-amber-600 hover:underline disabled:opacity-50"
+              className="text-sm leading-tight text-amber-600 hover:underline"
             >
               {place.wished_by_me ? t('wishlist.remove') : t('wishlist.add')}
             </button>
@@ -125,8 +131,7 @@ function PublicPlacePopup({
               <button
                 type="button"
                 onClick={() => onMarkVisited(place.id)}
-                disabled={isSaving}
-                className="text-sm leading-tight text-slate-600 hover:underline disabled:opacity-50"
+                className="text-sm leading-tight text-slate-600 hover:underline"
               >
                 {t('visits.markVisited')}
               </button>

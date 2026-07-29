@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from './useAuth'
 import { deletePlaceVisit, upsertPlaceVisit } from '../lib/placesApi'
+import { patchPublicPlace } from '../lib/publicPlacesCache'
 
 export function useSetPlaceVisit() {
   const queryClient = useQueryClient()
@@ -21,8 +22,13 @@ export function useSetPlaceVisit() {
       if (!user) throw new Error('Not authenticated')
       return upsertPlaceVisit(user.id, placeId, rating, priceLevel, visitedOn)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['public-places'] })
+    onSuccess: (_data, { placeId, rating, priceLevel, visitedOn }) => {
+      patchPublicPlace(queryClient, placeId, {
+        visited_by_me: true,
+        my_rating: rating,
+        my_price: priceLevel,
+        my_visited_on: visitedOn,
+      })
       queryClient.invalidateQueries({ queryKey: ['my-visited-stats'] })
     },
   })
@@ -37,8 +43,13 @@ export function useRemovePlaceVisit() {
       if (!user) throw new Error('Not authenticated')
       return deletePlaceVisit(user.id, placeId)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['public-places'] })
+    onSuccess: (_data, placeId) => {
+      patchPublicPlace(queryClient, placeId, {
+        visited_by_me: false,
+        my_rating: null,
+        my_price: null,
+        my_visited_on: null,
+      })
       queryClient.invalidateQueries({ queryKey: ['my-visited-stats'] })
     },
   })

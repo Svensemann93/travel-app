@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { LatLng } from 'leaflet'
 import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
 import { useEntryPoint } from '../hooks/useEntryPoint'
 import { useReposition } from '../hooks/useReposition'
@@ -9,7 +8,6 @@ import { useFocusedPoint } from '../hooks/useFocusedPoint'
 import { useCategoryFilter } from '../contexts/categoryFilter'
 import { filterPlacesByCategory } from '../lib/filterPlaces'
 import { formValuesToVisit, placeToFormInitial } from '../hooks/usePlaceForm'
-import type { PlaceFormValues } from '../hooks/usePlaceForm'
 import AppHeader from '../components/AppHeader'
 import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
@@ -24,7 +22,6 @@ import MapEmptyState from '../components/MapEmptyState'
 import MapLoadingIndicator from '../components/MapLoadingIndicator'
 import MapErrorOverlay from '../components/MapErrorOverlay'
 import LocateControl from '../components/LocateControl'
-import type { Place, PublicPlace } from '../types/place'
 import PopupAutoCenter from '../components/PopupAutoCenter'
 import { usePublicPlaces } from '../hooks/usePublicPlaces'
 import PublicPlacesToggle from '../components/PublicPlacesToggle'
@@ -35,9 +32,12 @@ import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 import MapBoundsWatcher from '../components/MapBoundsWatcher'
 import { boundsContain, padBounds } from '../lib/publicBounds'
+import PlacesClusterLayer from '../components/PlacesClusterLayer'
+import type { LatLng } from 'leaflet'
+import type { PlaceFormValues } from '../hooks/usePlaceForm'
+import type { Place, PublicPlace } from '../types/place'
 import type { PublicBounds } from '../lib/publicBounds'
 import type { TripCandidate } from '../types/trip'
-import PlacesClusterLayer from '../components/PlacesClusterLayer'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -190,8 +190,7 @@ function MapPage() {
               onEditVisit={handleEditVisit}
               onAddPublicToTrip={handleAddPublicToTrip}
               onToggleWish={handleToggleWish}
-              isSaving={setVisit.isPending || removeVisit.isPending}
-            />{' '}
+            />
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace ?? focusedPoint} />
             <PopupAutoCenter />

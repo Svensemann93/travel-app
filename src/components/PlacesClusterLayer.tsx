@@ -20,7 +20,6 @@ type Props = {
   onEditVisit: (place: PublicPlace) => void
   onAddPublicToTrip: (place: PublicPlace) => void
   onToggleWish: (place: PublicPlace) => void
-  isSaving: boolean
 }
 
 function PlacesClusterLayer(props: Props) {
@@ -42,7 +41,6 @@ function PlacesClusterLayer(props: Props) {
         onEditVisit={props.onEditVisit}
         onAddToTrip={props.onAddPublicToTrip}
         onToggleWish={props.onToggleWish}
-        isSaving={props.isSaving}
       />
     </MarkerCluster>
   )
@@ -67,7 +65,6 @@ function arePropsEqual(prev: Props, next: Props): boolean {
     prev.clustered === next.clustered &&
     prev.repositioningId === next.repositioningId &&
     prev.pendingPosition === next.pendingPosition &&
-    prev.isSaving === next.isSaving &&
     prev.stats === next.stats &&
     prev.onDragMove === next.onDragMove &&
     prev.onEditOwn === next.onEditOwn &&
