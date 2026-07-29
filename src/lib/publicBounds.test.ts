@@ -1,39 +1,24 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeBounds } from './publicBounds'
+import { boundsContain, padBounds } from './publicBounds'
 
-describe('normalizeBounds', () => {
-  it('snaps outward to the 0.05 grid so the box always covers the viewport', () => {
-    const result = normalizeBounds({
-      minLat: 47.37691,
-      maxLat: 47.38423,
-      minLng: 8.54171,
-      maxLng: 8.55989,
-    })
-    expect(result).toEqual({ minLat: 47.35, maxLat: 47.4, minLng: 8.5, maxLng: 8.6 })
+const viewport = { minLat: 10, maxLat: 20, minLng: 30, maxLng: 50 }
+
+describe('padBounds', () => {
+  it('expands bounds around the center by the factor', () => {
+    expect(padBounds(viewport, 2)).toEqual({ minLat: 5, maxLat: 25, minLng: 20, maxLng: 60 })
   })
 
-  it('leaves grid-aligned bounds unchanged', () => {
-    const bounds = { minLat: 47.3, maxLat: 47.4, minLng: 8.5, maxLng: 8.6 }
-    expect(normalizeBounds(bounds)).toEqual(bounds)
+  it('is a no-op at factor 1', () => {
+    expect(padBounds(viewport, 1)).toEqual(viewport)
+  })
+})
+
+describe('boundsContain', () => {
+  it('is true when the inner box sits fully within the outer box', () => {
+    expect(boundsContain(padBounds(viewport, 2), viewport)).toBe(true)
   })
 
-  it('handles negative coordinates', () => {
-    const result = normalizeBounds({
-      minLat: -34.61521,
-      maxLat: -34.6009,
-      minLng: -58.44182,
-      maxLng: -58.41,
-    })
-    expect(result).toEqual({ minLat: -34.65, maxLat: -34.6, minLng: -58.45, maxLng: -58.4 })
-  })
-
-  it('rounds strictly outward for a thin box straddling a 0.05 grid line', () => {
-    const result = normalizeBounds({
-      minLat: 47.34999,
-      maxLat: 47.35001,
-      minLng: 8.54999,
-      maxLng: 8.55001,
-    })
-    expect(result).toEqual({ minLat: 47.3, maxLat: 47.4, minLng: 8.5, maxLng: 8.6 })
+  it('is false when the inner box extends outside the outer box', () => {
+    expect(boundsContain(viewport, { minLat: 9, maxLat: 20, minLng: 30, maxLng: 50 })).toBe(false)
   })
 })

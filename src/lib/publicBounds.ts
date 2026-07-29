@@ -23,3 +23,23 @@ export function normalizeBounds(bounds: PublicBounds): PublicBounds {
     maxLng: ceilTo(bounds.maxLng),
   }
 }
+
+export function padBounds(bounds: PublicBounds, factor: number): PublicBounds {
+  const latPad = ((bounds.maxLat - bounds.minLat) * (factor - 1)) / 2
+  const lngPad = ((bounds.maxLng - bounds.minLng) * (factor - 1)) / 2
+  return {
+    minLat: bounds.minLat - latPad,
+    maxLat: bounds.maxLat + latPad,
+    minLng: bounds.minLng - lngPad,
+    maxLng: bounds.maxLng + lngPad,
+  }
+}
+
+export function boundsContain(outer: PublicBounds, inner: PublicBounds): boolean {
+  return (
+    outer.minLat <= inner.minLat &&
+    outer.maxLat >= inner.maxLat &&
+    outer.minLng <= inner.minLng &&
+    outer.maxLng >= inner.maxLng
+  )
+}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LatLng } from 'leaflet'
 import { useCreatePlace, useDeletePlace, usePlaces, useUpdatePlace } from '../hooks/usePlaces'
@@ -15,7 +15,6 @@ import Map from '../components/Map'
 import MapClickHandler from '../components/MapClickHandler'
 import MapFocuser from '../components/MapFocuser'
 import SearchControl from '../components/SearchControl'
-import PlaceMarkers from '../components/PlaceMarkers'
 import PlaceFormModal from '../components/PlaceFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import AddToTripModal from '../components/AddToTripModal'
@@ -28,7 +27,6 @@ import LocateControl from '../components/LocateControl'
 import type { Place, PublicPlace } from '../types/place'
 import PopupAutoCenter from '../components/PopupAutoCenter'
 import { usePublicPlaces } from '../hooks/usePublicPlaces'
-import PublicPlaceMarkers from '../components/PublicPlaceMarkers'
 import PublicPlacesToggle from '../components/PublicPlacesToggle'
 import VisitEditModal from '../components/VisitEditModal'
 import { useSetPlaceVisit, useRemovePlaceVisit } from '../hooks/usePlaceVisits'
@@ -36,9 +34,10 @@ import { useAddPlaceWish, useRemovePlaceWish } from '../hooks/usePlaceWishes'
 import { isWelcomeDismissed, dismissWelcome } from '../lib/welcomeBanner'
 import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 import MapBoundsWatcher from '../components/MapBoundsWatcher'
+import { boundsContain, padBounds } from '../lib/publicBounds'
 import type { PublicBounds } from '../lib/publicBounds'
 import type { TripCandidate } from '../types/trip'
-import MarkerCluster from '../components/MarkerCluster'
+import PlacesClusterLayer from '../components/PlacesClusterLayer'
 
 function MapPage() {
   const { t } = useTranslation(['places', 'common'])
@@ -54,17 +53,15 @@ function MapPage() {
   const [showPublic, setShowPublic] = useState(true)
   const [bounds, setBounds] = useState<PublicBounds | undefined>(undefined)
   const boundsTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const boundsInitialized = useRef(false)
-  const handleBoundsChange = useCallback((next: PublicBounds) => {
-    if (!boundsInitialized.current) {
-      boundsInitialized.current = true
-      setBounds(next)
-      return
-    }
+  const loadedBoundsRef = useRef<PublicBounds | undefined>(undefined)
+  const handleBoundsChange = useCallback((viewport: PublicBounds) => {
+    const loaded = loadedBoundsRef.current
+    if (loaded && boundsContain(loaded, viewport)) return
+    const padded = padBounds(viewport, 2)
+    loadedBoundsRef.current = padded
     clearTimeout(boundsTimer.current)
-    boundsTimer.current = setTimeout(() => setBounds(next), 80)
+    boundsTimer.current = setTimeout(() => setBounds(padded), 80)
   }, [])
-  useEffect(() => () => clearTimeout(boundsTimer.current), [])
   const { data: publicPlaces = [] } = usePublicPlaces(!!bounds, bounds)
   const setVisit = useSetPlaceVisit()
   const removeVisit = useRemovePlaceVisit()
@@ -84,7 +81,24 @@ function MapPage() {
   const [deletingPlace, setDeletingPlace] = useState<Place | null>(null)
   const [addingToTripPlace, setAddingToTripPlace] = useState<TripCandidate | null>(null)
   const [welcomeDismissed, setWelcomeDismissed] = useState(isWelcomeDismissed)
-
+  const setVisitMutate = setVisit.mutate
+  const addWishMutate = addWish.mutate
+  const removeWishMutate = removeWish.mutate
+  const handleMarkVisited = useCallback(
+    (placeId: string) =>
+      setVisitMutate({ placeId, rating: null, priceLevel: null, visitedOn: null }),
+    [setVisitMutate],
+  )
+  const handleEditVisit = useCallback((place: PublicPlace) => setEditingVisit(place), [])
+  const handleAddPublicToTrip = useCallback((place: PublicPlace) => setAddingToTripPlace(place), [])
+  const handleToggleWish = useCallback(
+    (place: PublicPlace) =>
+      place.wished_by_me ? removeWishMutate(place.id) : addWishMutate(place.id),
+    [addWishMutate, removeWishMutate],
+  )
+  const handleEditOwn = useCallback((place: Place) => setEditingPlace(place), [])
+  const handleDeleteOwn = useCallback((place: Place) => setDeletingPlace(place), [])
+  const handleAddOwnToTrip = useCallback((place: Place) => setAddingToTripPlace(place), [])
   function handleDismissWelcome() {
     dismissWelcome()
     setWelcomeDismissed(true)
@@ -161,35 +175,23 @@ function MapPage() {
             <MapBoundsWatcher onChange={handleBoundsChange} />
             <SearchControl />
             <LocateControl />
-            <MarkerCluster clustered={!reposition.place}>
-              <PlaceMarkers
-                places={visiblePlaces}
-                stats={myPlaceStats}
-                repositioningId={reposition.place?.id ?? null}
-                pendingPosition={reposition.pendingPosition}
-                onDragMove={reposition.dragMove}
-                onEdit={(place) => setEditingPlace(place)}
-                onDelete={(place) => setDeletingPlace(place)}
-                onAddToTrip={(place) => setAddingToTripPlace(place)}
-              />
-              <PublicPlaceMarkers
-                places={visiblePublicPlaces}
-                onMarkVisited={(placeId) =>
-                  setVisit.mutate({ placeId, rating: null, priceLevel: null, visitedOn: null })
-                }
-                onEditVisit={(place) => setEditingVisit(place)}
-                onAddToTrip={(place) => setAddingToTripPlace(place)}
-                onToggleWish={(place) =>
-                  place.wished_by_me ? removeWish.mutate(place.id) : addWish.mutate(place.id)
-                }
-                isSaving={
-                  setVisit.isPending ||
-                  removeVisit.isPending ||
-                  addWish.isPending ||
-                  removeWish.isPending
-                }
-              />
-            </MarkerCluster>
+            <PlacesClusterLayer
+              clustered={!reposition.place}
+              ownPlaces={visiblePlaces}
+              stats={myPlaceStats}
+              repositioningId={reposition.place?.id ?? null}
+              pendingPosition={reposition.pendingPosition}
+              onDragMove={reposition.dragMove}
+              onEditOwn={handleEditOwn}
+              onDeleteOwn={handleDeleteOwn}
+              onAddOwnToTrip={handleAddOwnToTrip}
+              publicPlaces={visiblePublicPlaces}
+              onMarkVisited={handleMarkVisited}
+              onEditVisit={handleEditVisit}
+              onAddPublicToTrip={handleAddPublicToTrip}
+              onToggleWish={handleToggleWish}
+              isSaving={setVisit.isPending || removeVisit.isPending}
+            />{' '}
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace ?? focusedPoint} />
             <PopupAutoCenter />
