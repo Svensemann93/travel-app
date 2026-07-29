@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useUpdatePlaceLocation } from './usePlaces'
 import type { Place } from '../types/place'
 
@@ -14,9 +14,9 @@ export function useReposition() {
     setPendingPosition(null)
   }
 
-  function dragMove(latitude: number, longitude: number) {
+  const dragMove = useCallback((latitude: number, longitude: number) => {
     setPendingPosition({ lat: latitude, lng: longitude })
-  }
+  }, [])
 
   function cancel() {
     setPlace(null)

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Marker } from 'react-leaflet'
 import type { PublicPlace, PublicPlacePhoto } from '../types/place'
 import Lightbox from './Lightbox'
@@ -66,4 +66,22 @@ function PublicPlaceMarkers({
   )
 }
 
-export default PublicPlaceMarkers
+function placesSignature(places: PublicPlace[]): string {
+  return places
+    .map((p) => JSON.stringify(p))
+    .sort()
+    .join('|')
+}
+
+function arePropsEqual(prev: Props, next: Props): boolean {
+  return (
+    prev.isSaving === next.isSaving &&
+    prev.onMarkVisited === next.onMarkVisited &&
+    prev.onEditVisit === next.onEditVisit &&
+    prev.onAddToTrip === next.onAddToTrip &&
+    prev.onToggleWish === next.onToggleWish &&
+    placesSignature(prev.places) === placesSignature(next.places)
+  )
+}
+
+export default memo(PublicPlaceMarkers, arePropsEqual)

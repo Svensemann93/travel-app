@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from './useAuth'
 import { fetchMyPlaceStats, type MyPlaceStats } from '../lib/placesApi'
@@ -12,5 +13,5 @@ export function useMyPlaceStats(): Map<string, MyPlaceStats> {
     staleTime: 5 * 60 * 1000,
   })
 
-  return new Map((data ?? []).map((s) => [s.place_id, s]))
+  return useMemo(() => new Map((data ?? []).map((s) => [s.place_id, s])), [data])
 }
