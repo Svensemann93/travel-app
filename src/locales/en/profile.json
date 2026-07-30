@@ -3,6 +3,24 @@
   "username": "Username",
   "email": "Email",
   "memberSince": "Member since",
+  "hero": {
+    "memberSince": "Member since {{date}}"
+  },
+  "stats": {
+    "countries": "Countries",
+    "places": "Places",
+    "trips": "Trips",
+    "journals": "Journals",
+    "saved": "Saved"
+  },
+  "tabs": {
+    "highlights": "Highlights",
+    "pins": "Pins",
+    "journals": "Journals",
+    "map": "Travel map",
+    "about": "About",
+    "soon": "soon"
+  },
   "delete": {
     "heading": "Delete account",
     "description": "If you delete your account, all your data will be permanently removed.",
