@@ -51,8 +51,14 @@
     "title": "Settings",
     "subtitle": "Manage language, map and your account."
   },
+  "edit": {
+    "editName": "Edit name",
+    "editBio": "Edit bio",
+    "bioPlaceholder": "Tell others about yourself …"
+  },
   "about": {
-    "emptyTitle": "About me",
-    "emptyMessage": "Bio, region and interests will appear here soon. You can edit them shortly."
+    "interests": "Interests",
+    "editInterests": "Edit interests",
+    "interestsPlaceholder": "Add an interest and press Enter"
   }
 }

@@ -2,16 +2,20 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useFormatDate } from '../hooks/useFormatDate'
+import { useUpdateProfile } from '../hooks/useUpdateProfile'
 import HeaderMenu from './HeaderMenu'
+import InlineEditField from './InlineEditField'
 
 function ProfileHero() {
   const { t } = useTranslation(['profile', 'common'])
   const navigate = useNavigate()
   const { profile } = useAuth()
   const { formatDateLong } = useFormatDate()
+  const update = useUpdateProfile()
 
   const username = profile?.username ?? '–'
   const initial = username.charAt(0).toUpperCase()
+  const name = profile?.display_name?.trim() || username
 
   return (
     <div className="relative rounded-2xl bg-white shadow-sm ring-1 ring-slate-100">
@@ -31,8 +35,26 @@ function ProfileHero() {
           </div>
         </div>
         <div className="mt-4">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">{username}</h2>
+          <InlineEditField
+            value={profile?.display_name ?? ''}
+            displayValue={name}
+            onSave={(v) => update.mutateAsync({ display_name: v || null })}
+            ariaLabel={t('edit.editName')}
+            maxLength={50}
+            valueClassName="text-3xl font-bold tracking-tight text-slate-900"
+          />
           <p className="mt-0.5 text-slate-500">@{username.toLowerCase()}</p>
+          <div className="mt-2">
+            <InlineEditField
+              value={profile?.bio ?? ''}
+              onSave={(v) => update.mutateAsync({ bio: v || null })}
+              ariaLabel={t('edit.editBio')}
+              placeholder={t('edit.bioPlaceholder')}
+              multiline
+              maxLength={300}
+              valueClassName="text-sm text-slate-600"
+            />
+          </div>
           {profile?.created_at && (
             <p className="mt-2 text-sm text-slate-500">
               {t('hero.memberSince', { date: formatDateLong(profile.created_at) })}
