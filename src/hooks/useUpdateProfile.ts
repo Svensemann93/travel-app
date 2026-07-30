@@ -6,6 +6,8 @@ export type ProfilePatch = {
   display_name?: string | null
   bio?: string | null
   interests?: string[]
+  avatar_path?: string | null
+  cover_path?: string | null
 }
 
 export function useUpdateProfile() {
