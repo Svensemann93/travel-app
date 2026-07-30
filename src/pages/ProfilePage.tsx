@@ -9,10 +9,10 @@ function ProfilePage() {
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
 
-      <main className="mx-auto max-w-4xl space-y-6 p-6 sm:p-8">
+      <main className="mx-auto max-w-7xl space-y-6 p-6 sm:p-8">
+        {' '}
         <ProfileHero />
         <ProfileStats />
-
         <div className="space-y-6">
           <ProfileTabs active="about" />
           <ProfileAbout />

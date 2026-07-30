@@ -65,6 +65,14 @@
     "editAvatar": "Change profile picture",
     "editCover": "Edit cover image",
     "avatarAlt": "Profile picture",
-    "coverAlt": "Cover image"
+    "coverAlt": "Cover image",
+    "change": "Change image",
+    "adjustCrop": "Adjust crop"
+  },
+  "focus": {
+    "title": "Adjust image crop",
+    "hint": "Click the spot that should stay centred.",
+    "preview": "Preview",
+    "apply": "Apply"
   }
 }

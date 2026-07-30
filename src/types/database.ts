@@ -382,8 +382,12 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_focus_x: number
+          avatar_focus_y: number
           avatar_path: string | null
           bio: string | null
+          cover_focus_x: number
+          cover_focus_y: number
           cover_path: string | null
           created_at: string | null
           display_name: string | null
@@ -396,8 +400,12 @@ export type Database = {
           username: string
         }
         Insert: {
+          avatar_focus_x?: number
+          avatar_focus_y?: number
           avatar_path?: string | null
           bio?: string | null
+          cover_focus_x?: number
+          cover_focus_y?: number
           cover_path?: string | null
           created_at?: string | null
           display_name?: string | null
@@ -410,8 +418,12 @@ export type Database = {
           username: string
         }
         Update: {
+          avatar_focus_x?: number
+          avatar_focus_y?: number
           avatar_path?: string | null
           bio?: string | null
+          cover_focus_x?: number
+          cover_focus_y?: number
           cover_path?: string | null
           created_at?: string | null
           display_name?: string | null

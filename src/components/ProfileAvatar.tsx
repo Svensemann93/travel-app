@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
-import { useUploadProfileImage } from '../hooks/useUploadProfileImage'
 import { profileImageUrl } from '../lib/profileImages'
-import ImageUploadButton from './ImageUploadButton'
+import ProfileImageControl from './ProfileImageControl'
 
 const camera = (
   <svg
@@ -24,37 +23,38 @@ const camera = (
 function ProfileAvatar() {
   const { t } = useTranslation('profile')
   const { profile } = useAuth()
-  const upload = useUploadProfileImage()
 
   const username = profile?.username ?? '–'
   const initial = username.charAt(0).toUpperCase()
+  const avatarSrc = profile?.avatar_path ? profileImageUrl(profile.avatar_path) : ''
+  const position = `${profile?.avatar_focus_x ?? 50}% ${profile?.avatar_focus_y ?? 50}%`
 
   return (
-    <div>
-      <div className="relative h-24 w-24 sm:h-28 sm:w-28">
-        {profile?.avatar_path ? (
-          <img
-            src={profileImageUrl(profile.avatar_path)}
-            alt={t('image.avatarAlt')}
-            className="h-full w-full rounded-full object-cover ring-4 ring-white"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-[#39BBDE] text-3xl font-bold text-white ring-4 ring-white">
-            {initial}
-          </div>
-        )}
-        <ImageUploadButton
-          onFile={(file) => upload.mutate({ kind: 'avatar', file })}
-          disabled={upload.isPending}
-          ariaLabel={t('image.editAvatar')}
-          className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-600 shadow ring-1 ring-slate-200 transition-colors hover:text-slate-900 disabled:opacity-50"
-        >
-          {camera}
-        </ImageUploadButton>
-      </div>
-      {upload.isError && (
-        <p className="mt-1 text-xs text-red-600">{(upload.error as Error).message}</p>
+    <div className="relative h-24 w-24 sm:h-28 sm:w-28">
+      {avatarSrc ? (
+        <img
+          src={avatarSrc}
+          alt={t('image.avatarAlt')}
+          style={{ objectPosition: position }}
+          className="h-full w-full rounded-full object-cover ring-4 ring-white"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center rounded-full bg-[#39BBDE] text-3xl font-bold text-white ring-4 ring-white">
+          {initial}
+        </div>
       )}
+      <div className="absolute bottom-0 right-0">
+        <ProfileImageControl
+          kind="avatar"
+          src={avatarSrc}
+          focusX={profile?.avatar_focus_x ?? 50}
+          focusY={profile?.avatar_focus_y ?? 50}
+          hasImage={!!profile?.avatar_path}
+          menuLabel={t('image.editAvatar')}
+          triggerClassName="flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-600 shadow ring-1 ring-slate-200 transition-colors hover:bg-white"
+          icon={camera}
+        />
+      </div>
     </div>
   )
 }

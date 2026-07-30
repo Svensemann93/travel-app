@@ -65,6 +65,14 @@
     "editAvatar": "Profilbild ändern",
     "editCover": "Titelbild bearbeiten",
     "avatarAlt": "Profilbild",
-    "coverAlt": "Titelbild"
+    "coverAlt": "Titelbild",
+    "change": "Bild ändern",
+    "adjustCrop": "Ausschnitt anpassen"
+  },
+  "focus": {
+    "title": "Bildausschnitt anpassen",
+    "hint": "Klicke auf die Stelle, die im Mittelpunkt stehen soll.",
+    "preview": "Vorschau",
+    "apply": "Übernehmen"
   }
 }

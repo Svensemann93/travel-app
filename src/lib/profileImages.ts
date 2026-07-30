@@ -8,7 +8,7 @@ const BUCKET = 'profile-images'
 
 const RESIZE = {
   avatar: { maxDimension: 400, quality: 0.8 },
-  cover: { maxDimension: 1600, quality: 0.8 },
+  cover: { maxDimension: 2560, quality: 0.9 },
 } as const
 
 export async function uploadProfileImage(
