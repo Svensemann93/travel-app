@@ -74,5 +74,9 @@
     "hint": "Click the spot that should stay centred.",
     "preview": "Preview",
     "apply": "Apply"
+  },
+  "journalsTab": {
+    "emptyTitle": "No journals yet",
+    "emptyMessage": "Your travel journals will appear here."
   }
 }
