@@ -51,8 +51,14 @@
     "title": "Einstellungen",
     "subtitle": "Verwalte Sprache, Karte und deinen Account."
   },
+  "edit": {
+    "editName": "Namen bearbeiten",
+    "editBio": "Bio bearbeiten",
+    "bioPlaceholder": "Erzähl etwas über dich …"
+  },
   "about": {
-    "emptyTitle": "Über mich",
-    "emptyMessage": "Hier erscheinen bald Bio, Region und Interessen. Bearbeiten kannst du sie in Kürze."
+    "interests": "Interessen",
+    "editInterests": "Interessen bearbeiten",
+    "interestsPlaceholder": "Interesse hinzufügen und Enter drücken"
   }
 }
