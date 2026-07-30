@@ -1,11 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 
 type MenuItem = { label: string; onClick: () => void; destructive?: boolean }
 
-type Props = { label: string; items: MenuItem[] }
+type Props = { label: string; items: MenuItem[]; icon?: ReactNode; triggerClassName?: string }
 
-function HeaderMenu({ label, items }: Props) {
+const dots = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <circle cx="12" cy="5" r="1.8" />
+    <circle cx="12" cy="12" r="1.8" />
+    <circle cx="12" cy="19" r="1.8" />
+  </svg>
+)
+
+const defaultTrigger =
+  'flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white'
+
+function HeaderMenu({ label, items, icon, triggerClassName }: Props) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const menuRef = useFocusTrap<HTMLDivElement>(open)
@@ -35,13 +46,9 @@ function HeaderMenu({ label, items }: Props) {
         aria-expanded={open}
         aria-label={label}
         title={label}
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
+        className={triggerClassName ?? defaultTrigger}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <circle cx="12" cy="5" r="1.8" />
-          <circle cx="12" cy="12" r="1.8" />
-          <circle cx="12" cy="19" r="1.8" />
-        </svg>
+        {icon ?? dots}
       </button>
       {open && (
         <div

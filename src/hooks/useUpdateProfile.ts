@@ -8,6 +8,10 @@ export type ProfilePatch = {
   interests?: string[]
   avatar_path?: string | null
   cover_path?: string | null
+  avatar_focus_x?: number
+  avatar_focus_y?: number
+  cover_focus_x?: number
+  cover_focus_y?: number
 }
 
 export function useUpdateProfile() {

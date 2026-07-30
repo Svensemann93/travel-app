@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useFormatDate } from '../hooks/useFormatDate'
 import { useUpdateProfile } from '../hooks/useUpdateProfile'
-import { useUploadProfileImage } from '../hooks/useUploadProfileImage'
 import { profileImageUrl } from '../lib/profileImages'
 import { fallbackCoverPath } from '../lib/tripCoverFallback'
 import HeaderMenu from './HeaderMenu'
 import InlineEditField from './InlineEditField'
-import ImageUploadButton from './ImageUploadButton'
+import ProfileImageControl from './ProfileImageControl'
 import ProfileAvatar from './ProfileAvatar'
 
 const camera = (
@@ -34,34 +33,37 @@ function ProfileHero() {
   const { profile } = useAuth()
   const { formatDateLong } = useFormatDate()
   const update = useUpdateProfile()
-  const coverUpload = useUploadProfileImage()
 
   const username = profile?.username ?? '–'
   const name = profile?.display_name?.trim() || username
-  const coverSrc = profile?.cover_path
-    ? profileImageUrl(profile.cover_path)
+  const hasCover = !!profile?.cover_path
+  const coverSrc = hasCover
+    ? profileImageUrl(profile!.cover_path!)
     : fallbackCoverPath(profile?.id ?? 'default')
+  const coverPosition = `${profile?.cover_focus_x ?? 50}% ${profile?.cover_focus_y ?? 50}%`
 
   return (
     <div className="relative rounded-2xl bg-white shadow-sm ring-1 ring-slate-100">
-      <div className="relative h-32 overflow-hidden rounded-t-2xl sm:h-40">
-        <img src={coverSrc} alt={t('image.coverAlt')} className="h-full w-full object-cover" />
-        {coverUpload.isError && (
-          <p className="absolute bottom-2 left-3 rounded bg-red-600 px-2 py-1 text-xs text-white">
-            {(coverUpload.error as Error).message}
-          </p>
-        )}
+      <div className="h-48 overflow-hidden rounded-t-2xl sm:h-64">
+        <img
+          src={coverSrc}
+          alt={t('image.coverAlt')}
+          className="h-full w-full object-cover"
+          style={{ objectPosition: coverPosition }}
+        />
       </div>
 
       <div className="absolute right-3 top-3 flex items-center gap-2">
-        <ImageUploadButton
-          onFile={(file) => coverUpload.mutate({ kind: 'cover', file })}
-          disabled={coverUpload.isPending}
-          ariaLabel={t('image.editCover')}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow ring-1 ring-slate-200 backdrop-blur transition-colors hover:text-slate-900 disabled:opacity-50"
-        >
-          {camera}
-        </ImageUploadButton>
+        <ProfileImageControl
+          kind="cover"
+          src={coverSrc}
+          focusX={profile?.cover_focus_x ?? 50}
+          focusY={profile?.cover_focus_y ?? 50}
+          hasImage={hasCover}
+          menuLabel={t('image.editCover')}
+          triggerClassName="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow ring-1 ring-slate-200 backdrop-blur transition-colors hover:bg-white"
+          icon={camera}
+        />
         <HeaderMenu
           label={t('common:menu.open')}
           items={[{ label: t('menu.settings'), onClick: () => navigate('/settings') }]}

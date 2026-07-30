@@ -24,7 +24,10 @@ export async function resizeImage(file: File, options: ResizeOptions): Promise<B
   const validationError = validateImageFile(file)
   if (validationError) throw new Error(validationError)
 
-  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
+  const bitmap = await createImageBitmap(file, {
+    imageOrientation: 'from-image',
+    colorSpaceConversion: 'none',
+  })
 
   let { width, height } = bitmap
 
@@ -44,6 +47,8 @@ export async function resizeImage(file: File, options: ResizeOptions): Promise<B
     throw new Error('Canvas context unavailable')
   }
 
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
   ctx.drawImage(bitmap, 0, 0, width, height)
   bitmap.close()
 
