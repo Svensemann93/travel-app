@@ -3,6 +3,24 @@
   "username": "Benutzername",
   "email": "E-Mail",
   "memberSince": "Mitglied seit",
+  "hero": {
+    "memberSince": "Mitglied seit {{date}}"
+  },
+  "stats": {
+    "countries": "Länder",
+    "places": "Orte",
+    "trips": "Reisen",
+    "journals": "Tagebücher",
+    "saved": "Gespeichert"
+  },
+  "tabs": {
+    "highlights": "Highlights",
+    "pins": "Pins",
+    "journals": "Tagebücher",
+    "map": "Reisekarte",
+    "about": "Über mich",
+    "soon": "bald"
+  },
   "delete": {
     "heading": "Account löschen",
     "description": "Wenn du deinen Account löschst, werden alle deine Daten unwiderruflich entfernt.",
