@@ -1,18 +1,29 @@
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useFormatDate } from '../hooks/useFormatDate'
+import HeaderMenu from './HeaderMenu'
 
 function ProfileHero() {
-  const { t } = useTranslation('profile')
+  const { t } = useTranslation(['profile', 'common'])
+  const navigate = useNavigate()
   const { profile } = useAuth()
   const { formatDateLong } = useFormatDate()
 
-  const username = profile?.username ?? '-'
+  const username = profile?.username ?? '–'
   const initial = username.charAt(0).toUpperCase()
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100">
-      <div className="h-32 bg-gradient-to-r from-[#39BBDE]/25 via-[#39BBDE]/10 to-[#F4C15A]/25 sm:h-40" />
+    <div className="relative rounded-2xl bg-white shadow-sm ring-1 ring-slate-100">
+      <div className="h-32 rounded-t-2xl bg-gradient-to-r from-[#39BBDE]/25 via-[#39BBDE]/10 to-[#F4C15A]/25 sm:h-40" />
+
+      <div className="absolute right-3 top-3">
+        <HeaderMenu
+          label={t('common:menu.open')}
+          items={[{ label: t('menu.settings'), onClick: () => navigate('/settings') }]}
+        />
+      </div>
+
       <div className="px-5 pb-5 sm:px-6 sm:pb-6">
         <div className="-mt-12 sm:-mt-14">
           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#39BBDE] text-3xl font-bold text-white ring-4 ring-white sm:h-28 sm:w-28">

@@ -51,9 +51,9 @@ const book = (
     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
   </Icon>
 )
-const bookmark = (
+const star = (
   <Icon>
-    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </Icon>
 )
 
@@ -70,7 +70,7 @@ function ProfileStats() {
       { label: t('stats.places'), value: places.length, icon: pin },
       { label: t('stats.trips'), value: trips.length, icon: map },
       { label: t('stats.journals'), value: journals.length, icon: book },
-      { label: t('stats.saved'), value: wishlist.length, icon: bookmark },
+      { label: t('stats.wishlist'), value: wishlist.length, icon: star },
     ],
     [t, places, trips, journals, wishlist],
   )

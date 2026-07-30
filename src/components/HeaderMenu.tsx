@@ -59,7 +59,7 @@ function HeaderMenu({ label, items }: Props) {
                 setOpen(false)
                 item.onClick()
               }}
-              className={`block w-full px-4 py-2 text-left text-sm transition-colors hover:bg-slate-50 ${
+              className={`block w-full px-4 py-2 text-left text-sm transition-colors hover:bg-slate-100 ${
                 item.destructive ? 'text-red-600' : 'text-slate-700'
               }`}
             >

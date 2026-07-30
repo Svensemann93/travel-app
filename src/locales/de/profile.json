@@ -11,7 +11,7 @@
     "places": "Orte",
     "trips": "Reisen",
     "journals": "Tagebücher",
-    "saved": "Gespeichert"
+    "wishlist": "Wunschliste"
   },
   "tabs": {
     "highlights": "Highlights",
@@ -42,5 +42,17 @@
     "searchFailed": "Suche fehlgeschlagen. Bitte später erneut versuchen.",
     "saveFailed": "Speichern fehlgeschlagen.",
     "resetFailed": "Zurücksetzen fehlgeschlagen."
+  },
+  "menu": {
+    "settings": "Einstellungen"
+  },
+  "settings": {
+    "eyebrow": "Konto",
+    "title": "Einstellungen",
+    "subtitle": "Verwalte Sprache, Karte und deinen Account."
+  },
+  "about": {
+    "emptyTitle": "Über mich",
+    "emptyMessage": "Hier erscheinen bald Bio, Region und Interessen. Bearbeiten kannst du sie in Kürze."
   }
 }

@@ -11,7 +11,7 @@
     "places": "Places",
     "trips": "Trips",
     "journals": "Journals",
-    "saved": "Saved"
+    "wishlist": "Wishlist"
   },
   "tabs": {
     "highlights": "Highlights",
@@ -42,5 +42,17 @@
     "searchFailed": "Search failed. Please try again later.",
     "saveFailed": "Saving failed.",
     "resetFailed": "Reset failed."
+  },
+  "menu": {
+    "settings": "Settings"
+  },
+  "settings": {
+    "eyebrow": "Account",
+    "title": "Settings",
+    "subtitle": "Manage language, map and your account."
+  },
+  "about": {
+    "emptyTitle": "About me",
+    "emptyMessage": "Bio, region and interests will appear here soon. You can edit them shortly."
   }
 }
