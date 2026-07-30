@@ -74,5 +74,9 @@
     "hint": "Klicke auf die Stelle, die im Mittelpunkt stehen soll.",
     "preview": "Vorschau",
     "apply": "Übernehmen"
+  },
+  "journalsTab": {
+    "emptyTitle": "Noch keine Tagebücher",
+    "emptyMessage": "Hier erscheinen deine Reisetagebücher."
   }
 }
