@@ -21,6 +21,7 @@ const JournalsListPage = lazyWithReload(() => import('./pages/JournalsListPage')
 const JournalDetailPage = lazyWithReload(() => import('./pages/JournalDetailPage'))
 const JournalReadPage = lazyWithReload(() => import('./pages/JournalReadPage'))
 const ProfilePage = lazyWithReload(() => import('./pages/ProfilePage'))
+const SettingsPage = lazyWithReload(() => import('./pages/SettingsPage'))
 const JournalSharePage = lazyWithReload(() => import('./pages/JournalSharePage'))
 const PassportPage = lazyWithReload(() => import('./pages/PassportPage'))
 const YearReviewPage = lazyWithReload(() => import('./pages/YearReviewPage'))
@@ -100,6 +101,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
                 </ProtectedRoute>
               }
             />
