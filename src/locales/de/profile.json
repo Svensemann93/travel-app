@@ -60,5 +60,11 @@
     "interests": "Interessen",
     "editInterests": "Interessen bearbeiten",
     "interestsPlaceholder": "Interesse hinzufügen und Enter drücken"
+  },
+  "image": {
+    "editAvatar": "Profilbild ändern",
+    "editCover": "Titelbild bearbeiten",
+    "avatarAlt": "Profilbild",
+    "coverAlt": "Titelbild"
   }
 }
