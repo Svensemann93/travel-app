@@ -13,13 +13,22 @@ const CONTENT_MAX = 372
 type Props = {
   place: Place
   stats?: MyPlaceStats
+  autoPan?: boolean
   onPhotoClick: (place: Place, index: number) => void
-  onEdit: (place: Place) => void
-  onDelete: (place: Place) => void
-  onAddToTrip: (place: Place) => void
+  onEdit?: (place: Place) => void
+  onDelete?: (place: Place) => void
+  onAddToTrip?: (place: Place) => void
 }
 
-function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip }: Props) {
+function PlacePopup({
+  place,
+  stats,
+  onPhotoClick,
+  onEdit,
+  onDelete,
+  onAddToTrip,
+  autoPan = false,
+}: Props) {
   const { t } = useTranslation(['map', 'common', 'category'])
   const photos = (place.photos ?? []).slice().sort((a, b) => a.position - b.position)
   const websiteText = place.website_url
@@ -29,7 +38,7 @@ function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip 
   const visit = visitOf(place)
 
   return (
-    <Popup minWidth={280} autoPan={false}>
+    <Popup minWidth={280} autoPan={autoPan} autoPanPadding={[20, 20]}>
       <div
         data-popup-content
         className="flex min-w-[280px] flex-col gap-2"
@@ -100,30 +109,37 @@ function PlacePopup({ place, stats, onPhotoClick, onEdit, onDelete, onAddToTrip 
               {websiteText}
             </a>
           ) : null}
-
-          <div className="flex flex-wrap gap-x-3 gap-y-1 border-t border-slate-100 pt-1">
-            <button
-              type="button"
-              onClick={() => onAddToTrip(place)}
-              className="text-sm leading-tight text-green-700 hover:underline"
-            >
-              {t('addToTrip')}
-            </button>
-            <button
-              type="button"
-              onClick={() => onEdit(place)}
-              className="text-sm leading-tight text-blue-600 hover:underline"
-            >
-              {t('common:action.edit')}
-            </button>
-            <button
-              type="button"
-              onClick={() => onDelete(place)}
-              className="text-sm leading-tight text-red-600 hover:underline"
-            >
-              {t('common:action.delete')}
-            </button>
-          </div>
+          {(onAddToTrip || onEdit || onDelete) && (
+            <div className="flex flex-wrap gap-x-3 gap-y-1 border-t border-slate-100 pt-1">
+              {onAddToTrip && (
+                <button
+                  type="button"
+                  onClick={() => onAddToTrip(place)}
+                  className="text-sm leading-tight text-green-700 hover:underline"
+                >
+                  {t('addToTrip')}
+                </button>
+              )}
+              {onEdit && (
+                <button
+                  type="button"
+                  onClick={() => onEdit(place)}
+                  className="text-sm leading-tight text-blue-600 hover:underline"
+                >
+                  {t('common:action.edit')}
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  type="button"
+                  onClick={() => onDelete(place)}
+                  className="text-sm leading-tight text-red-600 hover:underline"
+                >
+                  {t('common:action.delete')}
+                </button>
+              )}
+            </div>
+          )}{' '}
         </div>
       </div>
     </Popup>

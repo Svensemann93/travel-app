@@ -6,7 +6,7 @@ const TABS: { key: ProfileTab; enabled: boolean }[] = [
   { key: 'highlights', enabled: false },
   { key: 'pins', enabled: false },
   { key: 'journals', enabled: true },
-  { key: 'map', enabled: false },
+  { key: 'map', enabled: true },
   { key: 'about', enabled: true },
 ]
 
