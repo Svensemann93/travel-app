@@ -55,7 +55,6 @@ function Map({
         url={tiles.url}
         subdomains={tiles.subdomains}
         maxZoom={tiles.maxZoom}
-        detectRetina
         updateWhenZooming={false}
       />
       {children}

@@ -78,5 +78,10 @@
   "journalsTab": {
     "emptyTitle": "Noch keine Tagebücher",
     "emptyMessage": "Hier erscheinen deine Reisetagebücher."
+  },
+  "mapTab": {
+    "emptyTitle": "Noch keine Orte",
+    "emptyMessage": "Sobald du Orte hinzufügst, erscheinen sie hier auf deiner Reisekarte.",
+    "hint": "Tippe einen Pin an, um Details zu sehen."
   }
 }
