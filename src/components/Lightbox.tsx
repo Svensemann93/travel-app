@@ -100,7 +100,7 @@ function Lightbox({ photos, initialIndex, onClose }: Props) {
         />
       </div>
       {photos.length > 1 && (
-        <div className="absolute bottom-4 text-white text-sm">
+        <div className="absolute bottom-safe-4 text-white text-sm">
           {index + 1} / {photos.length}
         </div>
       )}

@@ -1,6 +1,22 @@
 /* Global Styles */
 @import 'tailwindcss';
 
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility bottom-safe-6 {
+  bottom: calc(env(safe-area-inset-bottom) + 1.5rem);
+}
+
+@utility bottom-safe-8 {
+  bottom: calc(env(safe-area-inset-bottom) + 2rem);
+}
+
+@utility bottom-safe-4 {
+  bottom: calc(env(safe-area-inset-bottom) + 1rem);
+}
+
 @keyframes review-photo-in {
   from {
     opacity: 0;

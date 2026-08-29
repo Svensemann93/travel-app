@@ -75,7 +75,7 @@ function LocateControl() {
 
       <div
         ref={containerRef}
-        className="absolute right-4 bottom-8 z-[1000] flex flex-col items-end gap-2"
+        className="absolute right-4 bottom-safe-8 z-[1000] flex flex-col items-end gap-2"
       >
         {status === 'error' && (
           <div className="flex max-w-[260px] items-start gap-2 rounded-lg bg-white px-3 py-2 text-sm text-slate-700 shadow-md">
