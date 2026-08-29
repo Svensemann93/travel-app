@@ -33,6 +33,7 @@ import { useMyPlaceStats } from '../hooks/useMyPlaceStats'
 import MapBoundsWatcher from '../components/MapBoundsWatcher'
 import { boundsContain, padBounds } from '../lib/publicBounds'
 import PlacesClusterLayer from '../components/PlacesClusterLayer'
+import RepositionFocuser from '../components/RepositionFocuser'
 import type { LatLng } from 'leaflet'
 import type { PlaceFormValues } from '../hooks/usePlaceForm'
 import type { Place, PublicPlace } from '../types/place'
@@ -194,6 +195,11 @@ function MapPage() {
             {!reposition.place && <MapClickHandler onMapClick={handleMapClick} />}
             <MapFocuser place={focusedPlace ?? focusedPoint} />
             <PopupAutoCenter />
+            <RepositionFocuser
+              placeId={reposition.place?.id ?? null}
+              latitude={reposition.place?.latitude}
+              longitude={reposition.place?.longitude}
+            />
           </Map>
         )}
         {!isEntryLoading && isLoading && <MapLoadingIndicator />}
