@@ -161,9 +161,9 @@ function MapPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="flex h-[100dvh] flex-col">
+      {' '}
       <AppHeader />
-
       <main className="flex-1 relative">
         {isEntryLoading ? (
           <MapLoadingIndicator />
@@ -227,7 +227,6 @@ function MapPage() {
           />
         )}
       </main>
-
       <PlaceFormModal
         key={clickedPosition ? `${clickedPosition.lat}-${clickedPosition.lng}` : 'create-closed'}
         isOpen={clickedPosition !== null}
@@ -236,7 +235,6 @@ function MapPage() {
         onClose={() => setClickedPosition(null)}
         onSave={handleCreatePlace}
       />
-
       <PlaceFormModal
         key={editingPlace?.id ?? 'edit-closed'}
         isOpen={editingPlace !== null}
@@ -247,7 +245,6 @@ function MapPage() {
         onSave={handleUpdatePlace}
         onReposition={handleStartReposition}
       />
-
       <ConfirmDialog
         isOpen={deletingPlace !== null}
         title={t('delete.title')}
@@ -257,9 +254,7 @@ function MapPage() {
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeletingPlace(null)}
       />
-
       <AddToTripModal place={addingToTripPlace} onClose={() => setAddingToTripPlace(null)} />
-
       {editingVisit && (
         <VisitEditModal
           key={editingVisit.id}

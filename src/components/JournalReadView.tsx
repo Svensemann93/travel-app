@@ -167,7 +167,7 @@ function JournalReadView({ journal, stickyHeader = false }: Props) {
       {mapped.length > 0 && (
         <button
           onClick={() => setMapOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-lg transition-colors hover:bg-blue-700 lg:hidden"
+          className="fixed bottom-safe-6 right-6 z-40 flex items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-lg transition-colors hover:bg-blue-700 lg:hidden"
         >
           <svg
             viewBox="0 0 24 24"

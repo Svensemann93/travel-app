@@ -12,7 +12,7 @@ function RepositionBar({ placeName, hasMoved, isSaving, onSave, onCancel }: Prop
   const { t } = useTranslation(['map', 'common'])
 
   return (
-    <div className="absolute bottom-6 left-1/2 z-[1000] flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 flex-col gap-1.5 rounded-2xl bg-white px-4 py-2.5 shadow-lg sm:w-auto sm:flex-row sm:items-center sm:gap-4 sm:rounded-full sm:px-5 sm:py-3">
+    <div className="fixed bottom-safe-6 left-1/2 z-[1000] flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 flex-col gap-1.5 rounded-2xl bg-white px-4 py-2.5 shadow-lg sm:w-auto sm:flex-row sm:items-center sm:gap-4 sm:rounded-full sm:px-5 sm:py-3">
       <span className="text-sm text-slate-700">
         <Trans
           i18nKey="reposition.hint"
