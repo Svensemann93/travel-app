@@ -5,6 +5,16 @@ import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
 import './SearchControl.css'
 
+type SearchResult = { x: number; y: number; label: string }
+
+type SubmitArgs = { query: string; data?: SearchResult }
+
+type SearchControlInstance = {
+  onSubmit?: (args: SubmitArgs) => Promise<void> | void
+  showResult?: (result: SearchResult, args: SubmitArgs) => void
+  resultList?: { clear: () => void }
+}
+
 function SearchControl() {
   const map = useMap()
   const { t, i18n } = useTranslation('map')
@@ -24,6 +34,18 @@ function SearchControl() {
       searchLabel: t('search.label'),
       notFoundMessage: t('search.notFound'),
     })
+
+    const control = searchControl as unknown as SearchControlInstance
+    const submit = control.onSubmit
+    const showResult = control.showResult
+
+    if (submit && showResult) {
+      control.onSubmit = (args: SubmitArgs) => {
+        if (!args.data) return submit.call(control, args)
+        control.resultList?.clear()
+        showResult.call(control, args.data, args)
+      }
+    }
 
     map.addControl(searchControl)
     return () => {
