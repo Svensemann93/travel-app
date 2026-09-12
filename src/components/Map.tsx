@@ -15,6 +15,13 @@ type Props = {
 const WORLD_CENTER: LatLngExpression = [20, 0]
 const WORLD_ZOOM = 2
 
+const CARTO_KEY = import.meta.env.VITE_CARTO_API_KEY
+
+function mutedUrl(): string {
+  const base = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+  return CARTO_KEY ? `${base}?key=${CARTO_KEY}` : base
+}
+
 const BASEMAPS = {
   street: {
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -24,7 +31,7 @@ const BASEMAPS = {
     maxZoom: 19,
   },
   muted: {
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    url: mutedUrl(),
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd',
