@@ -82,7 +82,8 @@
   "mapTab": {
     "emptyTitle": "No places yet",
     "emptyMessage": "Add places and they will appear here on your travel map.",
-    "hint": "Tap a pin to see its details."
+    "hint": "Tap a pin to see its details.",
+    "openJournal": "Journal: {{title}}"
   },
   "mapThemes": {
     "all": "All",

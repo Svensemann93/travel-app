@@ -1,12 +1,16 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PopupPhoto from './PopupPhoto'
 import StarDisplay from './StarDisplay'
 import Lightbox from './Lightbox'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 import type { ShowcasePoint } from '../lib/showcasePoints'
+import type { JournalLink } from '../lib/placeJournals'
 
-function ProfilePlaceCard({ point }: { point: ShowcasePoint | null }) {
+type Props = { point: ShowcasePoint | null; journals?: JournalLink[] }
+
+function ProfilePlaceCard({ point, journals = [] }: Props) {
   const { t } = useTranslation(['profile', 'category'])
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
@@ -51,6 +55,20 @@ function ProfilePlaceCard({ point }: { point: ShowcasePoint | null }) {
           {point.description}
         </p>
       ) : null}
+
+      {journals.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {journals.map((journal) => (
+            <Link
+              key={journal.id}
+              to={`/journal/${journal.id}`}
+              className="inline-flex items-center gap-1.5 rounded-md bg-sky-50 px-2.5 py-1 text-sm font-medium text-sky-700 transition-colors hover:bg-sky-100"
+            >
+              {t('mapTab.openJournal', { title: journal.title })}
+            </Link>
+          ))}
+        </div>
+      )}
 
       {website ? (
         <a

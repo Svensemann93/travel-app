@@ -23,6 +23,8 @@ import {
   visitedPlacesToPoints,
   type ShowcaseTheme,
 } from '../lib/showcasePoints'
+import { usePlaceJournals } from '../hooks/usePlaceJournals'
+import { journalsByPlace } from '../lib/placeJournals'
 
 function ProfileMap() {
   const { t } = useTranslation('profile')
@@ -33,6 +35,7 @@ function ProfileMap() {
   const wishlist = useWishlist()
   const tripPlaces = useMyTripPlaces()
   const tripRoutes = useMyTripRoutes()
+  const placeJournals = usePlaceJournals()
 
   const query = theme === 'wishlist' ? wishlist : theme === 'planned' ? tripPlaces : places
 
@@ -46,6 +49,11 @@ function ProfileMap() {
   const routes = useMemo(
     () => (theme === 'planned' ? buildTripRoutes(tripRoutes.data ?? []) : []),
     [theme, tripRoutes.data],
+  )
+
+  const journalsForPlace = useMemo(
+    () => journalsByPlace(placeJournals.data ?? []),
+    [placeJournals.data],
   )
 
   const handleSelect = useCallback((id: string) => setSelectedId(id), [])
@@ -107,7 +115,11 @@ function ProfileMap() {
               <MapFitBounds places={points} />
             </Map>
           </div>
-          <ProfilePlaceCard key={selected?.id ?? 'none'} point={selected} />
+          <ProfilePlaceCard
+            key={selected?.id ?? 'none'}
+            point={selected}
+            journals={selected ? (journalsForPlace[selected.id] ?? []) : []}
+          />
         </div>
       </QueryBoundary>
     </div>
