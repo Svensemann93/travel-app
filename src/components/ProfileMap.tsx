@@ -7,54 +7,88 @@ import MarkerCluster from './MarkerCluster'
 import QueryBoundary from './QueryBoundary'
 import EmptyState from './EmptyState'
 import ProfilePlaceCard from './ProfilePlaceCard'
+import ProfileMapThemes from './ProfileMapThemes'
 import { getCategoryMarkerIcon } from '../lib/leafletIcons'
 import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 import { usePlaces } from '../hooks/usePlaces'
+import { useWishlist } from '../hooks/useWishlist'
+import { useMyTripPlaces } from '../hooks/useMyTripPlaces'
+import {
+  dedupePoints,
+  placesToPoints,
+  publicPlacesToPoints,
+  visitedPlacesToPoints,
+  type ShowcaseTheme,
+} from '../lib/showcasePoints'
 
 function ProfileMap() {
   const { t } = useTranslation('profile')
-  const { data: places = [], isLoading, isError, error, refetch } = usePlaces()
+  const [theme, setTheme] = useState<ShowcaseTheme>('all')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const places = usePlaces()
+  const wishlist = useWishlist()
+  const tripPlaces = useMyTripPlaces()
+
+  const query = theme === 'wishlist' ? wishlist : theme === 'planned' ? tripPlaces : places
+
+  const points = useMemo(() => {
+    if (theme === 'wishlist') return dedupePoints(publicPlacesToPoints(wishlist.data ?? []))
+    if (theme === 'planned') return dedupePoints(placesToPoints(tripPlaces.data ?? []))
+    if (theme === 'visited') return dedupePoints(visitedPlacesToPoints(places.data ?? []))
+    return dedupePoints(placesToPoints(places.data ?? []))
+  }, [theme, places.data, wishlist.data, tripPlaces.data])
+
   const handleSelect = useCallback((id: string) => setSelectedId(id), [])
 
   const markers = useMemo(
     () =>
-      places.map((place) => {
-        const category = CATEGORY_MAP[place.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
+      points.map((point) => {
+        const category = CATEGORY_MAP[point.category] ?? CATEGORY_MAP[DEFAULT_CATEGORY]
         return (
           <Marker
-            key={place.id}
-            position={[place.latitude, place.longitude]}
+            key={point.id}
+            position={[point.latitude, point.longitude]}
             icon={getCategoryMarkerIcon(category.color)}
-            eventHandlers={{ click: () => handleSelect(place.id) }}
+            eventHandlers={{ click: () => handleSelect(point.id) }}
           />
         )
       }),
-    [places, handleSelect],
+    [points, handleSelect],
   )
 
-  const selected = places.find((p) => p.id === selectedId) ?? null
+  const selected = points.find((point) => point.id === selectedId) ?? null
+
+  function handleTheme(next: ShowcaseTheme) {
+    setTheme(next)
+    setSelectedId(null)
+  }
 
   return (
-    <QueryBoundary
-      isLoading={isLoading}
-      isError={isError}
-      error={error}
-      isEmpty={places.length === 0}
-      onRetry={() => void refetch()}
-      loading={<div className="h-[26rem] animate-pulse rounded-2xl bg-slate-100" />}
-      empty={<EmptyState title={t('mapTab.emptyTitle')} message={t('mapTab.emptyMessage')} />}
-    >
-      <div className="space-y-4">
-        <div className="h-[26rem] overflow-hidden rounded-2xl shadow-sm ring-1 ring-slate-200">
-          <Map basemap="muted">
-            <MarkerCluster>{markers}</MarkerCluster>
-            <MapFitBounds places={places} />
-          </Map>
+    <div className="space-y-4">
+      <ProfileMapThemes active={theme} onSelect={handleTheme} />
+      <QueryBoundary
+        isLoading={query.isLoading}
+        isError={query.isError}
+        error={query.error}
+        isEmpty={points.length === 0}
+        onRetry={() => void query.refetch()}
+        loading={<div className="h-[26rem] animate-pulse rounded-2xl bg-slate-100" />}
+        empty={
+          <EmptyState title={t('mapTab.emptyTitle')} message={t(`mapThemes.empty.${theme}`)} />
+        }
+      >
+        <div className="space-y-4">
+          <div className="h-[26rem] overflow-hidden rounded-2xl shadow-sm ring-1 ring-slate-200">
+            <Map basemap="muted">
+              <MarkerCluster>{markers}</MarkerCluster>
+              <MapFitBounds places={points} />
+            </Map>
+          </div>
+          <ProfilePlaceCard key={selected?.id ?? 'none'} point={selected} />
         </div>
-        <ProfilePlaceCard key={selected?.id ?? 'none'} place={selected} />
-      </div>
-    </QueryBoundary>
+      </QueryBoundary>
+    </div>
   )
 }
 

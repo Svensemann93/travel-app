@@ -83,5 +83,17 @@
     "emptyTitle": "No places yet",
     "emptyMessage": "Add places and they will appear here on your travel map.",
     "hint": "Tap a pin to see its details."
+  },
+  "mapThemes": {
+    "all": "All",
+    "visited": "Visited",
+    "wishlist": "Wishlist",
+    "planned": "Planned",
+    "empty": {
+      "all": "Add places and they will appear here on your travel map.",
+      "visited": "Mark places as visited and they will show up here.",
+      "wishlist": "Your wishlist is still empty.",
+      "planned": "Add places to a trip and they will show up here."
+    }
   }
 }
