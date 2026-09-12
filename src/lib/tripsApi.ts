@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 import { mergePublicPhotos, placeIdsMissingPhotos, toTripPlace } from './tripPlaces'
 import type { TripPlaceRow } from './tripPlaces'
-import type { PlacePhoto } from '../types/place'
+import type { Place, PlacePhoto } from '../types/place'
 import type {
   Trip,
   TripInput,
@@ -38,7 +38,11 @@ export async function fetchTripsForUser(signal?: AbortSignal): Promise<TripListI
       head && head.place_latitude != null && head.place_longitude != null
         ? { latitude: head.place_latitude, longitude: head.place_longitude }
         : null
-    return { ...trip, place_count: place_count[0]?.count ?? 0, first_stop: firstStop }
+    return {
+      ...trip,
+      place_count: place_count[0]?.count ?? 0,
+      first_stop: firstStop,
+    }
   })
 }
 
@@ -204,4 +208,23 @@ export async function fetchPublicPlacePhotos(
     else byPlace.set(row.place_id, [row])
   }
   return byPlace
+}
+
+export async function fetchMyTripPlaces(signal?: AbortSignal): Promise<Place[]> {
+  let query = supabase
+    .from('trip_places')
+    .select('place:places(*, photos:place_photos(*), visits:place_visits(*))')
+
+  if (signal) {
+    query = query.abortSignal(signal)
+  }
+
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+
+  return (data ?? []).flatMap((row) => {
+    const place = row.place as unknown as Place | Place[] | null
+    if (!place) return []
+    return Array.isArray(place) ? place : [place]
+  })
 }
