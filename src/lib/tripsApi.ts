@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import type { TripRouteRow } from './tripRoutes'
 import { mergePublicPhotos, placeIdsMissingPhotos, toTripPlace } from './tripPlaces'
 import type { TripPlaceRow } from './tripPlaces'
 import type { Place, PlacePhoto } from '../types/place'
@@ -226,5 +227,31 @@ export async function fetchMyTripPlaces(signal?: AbortSignal): Promise<Place[]> 
     const place = row.place as unknown as Place | Place[] | null
     if (!place) return []
     return Array.isArray(place) ? place : [place]
+  })
+}
+
+export async function fetchMyTripRoutes(signal?: AbortSignal): Promise<TripRouteRow[]> {
+  let query = supabase
+    .from('trip_places')
+    .select('trip_id, position, place:places(latitude, longitude)')
+
+  if (signal) {
+    query = query.abortSignal(signal)
+  }
+
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+
+  return (data ?? []).flatMap((row) => {
+    const related = row.place as unknown as { latitude: number; longitude: number } | null
+    if (!related) return []
+    return [
+      {
+        trip_id: row.trip_id,
+        position: row.position,
+        latitude: related.latitude,
+        longitude: related.longitude,
+      },
+    ]
   })
 }
