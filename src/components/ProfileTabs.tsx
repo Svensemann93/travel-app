@@ -12,7 +12,7 @@ const TABS: { key: ProfileTab; enabled: boolean }[] = [
 ]
 
 const base =
-  '-mb-px flex shrink-0 snap-start items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors'
+  'flex shrink-0 snap-start items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors'
 
 type Props = { active: ProfileTab; onSelect: (tab: ProfileTab) => void }
 
@@ -30,10 +30,10 @@ function ProfileTabs({ active, onSelect }: Props) {
   }, [active])
 
   return (
-    <div className="relative">
+    <div className="relative border-b border-slate-200">
       <div
         ref={containerRef}
-        className="flex snap-x gap-1 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible"
+        className="-mb-px flex snap-x gap-1 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-x-visible sm:overflow-y-visible"
       >
         {TABS.map((tab) => {
           const isActive = tab.enabled && tab.key === active
