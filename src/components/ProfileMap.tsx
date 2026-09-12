@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Marker } from 'react-leaflet'
+import { Marker, Polyline } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
 import Map from './Map'
 import MapFitBounds from './MapFitBounds'
@@ -13,6 +13,9 @@ import { CATEGORY_MAP, DEFAULT_CATEGORY } from '../lib/categories'
 import { usePlaces } from '../hooks/usePlaces'
 import { useWishlist } from '../hooks/useWishlist'
 import { useMyTripPlaces } from '../hooks/useMyTripPlaces'
+import { useMyTripRoutes } from '../hooks/useMyTripRoutes'
+import { buildTripRoutes } from '../lib/tripRoutes'
+import { curvePath } from '../lib/curvedPath'
 import {
   dedupePoints,
   placesToPoints,
@@ -29,6 +32,7 @@ function ProfileMap() {
   const places = usePlaces()
   const wishlist = useWishlist()
   const tripPlaces = useMyTripPlaces()
+  const tripRoutes = useMyTripRoutes()
 
   const query = theme === 'wishlist' ? wishlist : theme === 'planned' ? tripPlaces : places
 
@@ -38,6 +42,11 @@ function ProfileMap() {
     if (theme === 'visited') return dedupePoints(visitedPlacesToPoints(places.data ?? []))
     return dedupePoints(placesToPoints(places.data ?? []))
   }, [theme, places.data, wishlist.data, tripPlaces.data])
+
+  const routes = useMemo(
+    () => (theme === 'planned' ? buildTripRoutes(tripRoutes.data ?? []) : []),
+    [theme, tripRoutes.data],
+  )
 
   const handleSelect = useCallback((id: string) => setSelectedId(id), [])
 
@@ -81,6 +90,19 @@ function ProfileMap() {
         <div className="space-y-4">
           <div className="h-[26rem] overflow-hidden rounded-2xl shadow-sm ring-1 ring-slate-200">
             <Map basemap="muted">
+              {routes.map((route) => (
+                <Polyline
+                  key={route.tripId}
+                  positions={curvePath(route.points)}
+                  pathOptions={{
+                    color: '#39BBDE',
+                    weight: 3,
+                    opacity: 0.8,
+                    dashArray: '6 8',
+                    lineCap: 'round',
+                  }}
+                />
+              ))}
               <MarkerCluster>{markers}</MarkerCluster>
               <MapFitBounds places={points} />
             </Map>
