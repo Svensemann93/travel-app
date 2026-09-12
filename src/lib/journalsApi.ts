@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
-import { uploadPhoto, deletePhotos as deletePhotoFiles } from './photoStorage'
+import type { PlaceJournalRow } from './placeJournals'
+import { deletePhotos as deletePhotoFiles, uploadPhoto } from './photoStorage'
 import type {
   Journal,
   JournalEntryInput,
@@ -14,7 +15,9 @@ function collectStoragePaths(photos: JournalEntryPhoto[]): string[] {
 }
 
 export async function fetchJournalsForUser(signal?: AbortSignal): Promise<Journal[]> {
-  let query = supabase.from('journals').select('*').order('created_at', { ascending: false })
+  let query = supabase.from('journals').select('*').order('created_at', {
+    ascending: false,
+  })
   if (signal) query = query.abortSignal(signal)
   const { data, error } = await query
   if (error) throw new Error(error.message)
@@ -67,7 +70,11 @@ export async function updateJournalCover(
 ): Promise<Journal> {
   const { data: row, error } = await supabase
     .from('journals')
-    .update({ cover_photo_path: coverPhotoPath, cover_focus_x: focusX, cover_focus_y: focusY })
+    .update({
+      cover_photo_path: coverPhotoPath,
+      cover_focus_x: focusX,
+      cover_focus_y: focusY,
+    })
     .eq('id', id)
     .select('*')
     .single()
@@ -99,7 +106,11 @@ export async function insertEntryRows(
   entries: { position: number; data: JournalEntryInput }[],
 ): Promise<void> {
   if (entries.length === 0) return
-  const rows = entries.map(({ position, data }) => ({ ...data, journal_id: journalId, position }))
+  const rows = entries.map(({ position, data }) => ({
+    ...data,
+    journal_id: journalId,
+    position,
+  }))
   const { error } = await supabase.from('journal_entries').insert(rows)
   if (error) throw new Error(error.message)
 }
@@ -166,4 +177,30 @@ export async function removeEntryPhotos(photos: JournalEntryPhoto[]): Promise<vo
       photos.map((p) => p.id),
     )
   if (error) throw new Error(error.message)
+}
+
+export async function fetchPlaceJournals(signal?: AbortSignal): Promise<PlaceJournalRow[]> {
+  let query = supabase
+    .from('journal_entries')
+    .select('place_id, journal:journals(id, title)')
+    .not('place_id', 'is', null)
+
+  if (signal) {
+    query = query.abortSignal(signal)
+  }
+
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+
+  return (data ?? []).flatMap((row) => {
+    const journal = row.journal as unknown as { id: string; title: string } | null
+    if (!journal) return []
+    return [
+      {
+        place_id: row.place_id,
+        journal_id: journal.id,
+        journal_title: journal.title,
+      },
+    ]
+  })
 }
