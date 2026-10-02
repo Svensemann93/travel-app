@@ -6,6 +6,7 @@ import ProfileTabs, { type ProfileTab } from '../components/ProfileTabs'
 import ProfileAbout from '../components/ProfileAbout'
 import ProfileJournals from '../components/ProfileJournals'
 import ProfileMap from '../components/ProfileMap'
+import ProfilePins from '../components/ProfilePins'
 
 function ProfilePage() {
   const [tab, setTab] = useState<ProfileTab>('journals')
@@ -20,6 +21,7 @@ function ProfilePage() {
 
         <div className="space-y-6">
           <ProfileTabs active={tab} onSelect={setTab} />
+          {tab === 'pins' && <ProfilePins />}
           {tab === 'journals' && <ProfileJournals />}
           {tab === 'map' && <ProfileMap />}
           {tab === 'about' && <ProfileAbout />}
