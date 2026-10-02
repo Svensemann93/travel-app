@@ -100,5 +100,22 @@
   "pinsTab": {
     "emptyTitle": "No places yet",
     "emptyMessage": "Places you save will appear here."
+  },
+  "highlightsTab": {
+    "activity": "Activity",
+    "latestPins": "Latest pins",
+    "latestJournals": "Latest journals",
+    "showAll": "Show all",
+    "activityEmpty": "No activity yet.",
+    "pinsEmpty": "No places saved yet.",
+    "journalsEmpty": "No journals yet."
+  },
+  "activity": {
+    "kind": {
+      "place": "New pin",
+      "public_place": "New public pin",
+      "journal": "Journal created",
+      "photos": "New photos added"
+    }
   }
 }

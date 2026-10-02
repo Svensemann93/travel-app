@@ -7,9 +7,10 @@ import ProfileAbout from '../components/ProfileAbout'
 import ProfileJournals from '../components/ProfileJournals'
 import ProfileMap from '../components/ProfileMap'
 import ProfilePins from '../components/ProfilePins'
+import ProfileHighlights from '../components/ProfileHighlights'
 
 function ProfilePage() {
-  const [tab, setTab] = useState<ProfileTab>('journals')
+  const [tab, setTab] = useState<ProfileTab>('highlights')
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -21,6 +22,7 @@ function ProfilePage() {
 
         <div className="space-y-6">
           <ProfileTabs active={tab} onSelect={setTab} />
+          {tab === 'highlights' && <ProfileHighlights onSelectTab={setTab} />}
           {tab === 'pins' && <ProfilePins />}
           {tab === 'journals' && <ProfileJournals />}
           {tab === 'map' && <ProfileMap />}

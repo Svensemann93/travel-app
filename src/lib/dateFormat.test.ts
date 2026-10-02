@@ -1,4 +1,10 @@
-import { formatDate, formatDateLong, formatDateRange, parseLocalDate } from './dateFormat'
+import {
+  formatDate,
+  formatDateLong,
+  formatDateRange,
+  formatRelative,
+  parseLocalDate,
+} from './dateFormat'
 
 const PREFIXES = { from: 'from', until: 'until' }
 
@@ -84,5 +90,21 @@ describe('date-only timezone safety', () => {
     expect(result).toMatch(/15/)
     expect(result).toMatch(/20/)
     expect(result).not.toMatch(/14/)
+  })
+})
+
+describe('formatRelative', () => {
+  const now = new Date('2026-03-10T12:00:00Z')
+
+  it('describes a moment two days ago', () => {
+    expect(formatRelative('2026-03-08T12:00:00Z', 'en-US', now)).toBe('2 days ago')
+  })
+
+  it('describes a moment a week ago', () => {
+    expect(formatRelative('2026-03-03T12:00:00Z', 'en-US', now)).toBe('last week')
+  })
+
+  it('falls back to minutes for very recent moments', () => {
+    expect(formatRelative('2026-03-10T11:59:30Z', 'en-US', now)).toBe('this minute')
   })
 })

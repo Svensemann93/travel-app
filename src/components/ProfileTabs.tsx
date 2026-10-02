@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 export type ProfileTab = 'highlights' | 'pins' | 'journals' | 'map' | 'about'
 
 const TABS: { key: ProfileTab; enabled: boolean }[] = [
-  { key: 'highlights', enabled: false },
+  { key: 'highlights', enabled: true },
   { key: 'pins', enabled: true },
   { key: 'journals', enabled: true },
   { key: 'map', enabled: true },

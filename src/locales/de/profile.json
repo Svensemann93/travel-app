@@ -100,5 +100,22 @@
   "pinsTab": {
     "emptyTitle": "Noch keine Orte",
     "emptyMessage": "Sobald du Orte speicherst, erscheinen sie hier."
+  },
+  "highlightsTab": {
+    "activity": "Aktivitäten",
+    "latestPins": "Neueste Pins",
+    "latestJournals": "Neueste Tagebücher",
+    "showAll": "Alle anzeigen",
+    "activityEmpty": "Noch keine Aktivitäten.",
+    "pinsEmpty": "Noch keine Orte gespeichert.",
+    "journalsEmpty": "Noch keine Tagebücher."
+  },
+  "activity": {
+    "kind": {
+      "place": "Neuer Pin",
+      "public_place": "Neuer öffentlicher Pin",
+      "journal": "Tagebuch erstellt",
+      "photos": "Neue Fotos hinzugefügt"
+    }
   }
 }
