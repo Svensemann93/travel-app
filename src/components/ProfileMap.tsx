@@ -111,7 +111,7 @@ function ProfileMap() {
                   }}
                 />
               ))}
-              <MarkerCluster>{markers}</MarkerCluster>
+              {theme === 'planned' ? markers : <MarkerCluster>{markers}</MarkerCluster>}
               <MapFitBounds places={points} />
             </Map>
           </div>

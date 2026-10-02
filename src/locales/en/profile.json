@@ -96,5 +96,9 @@
       "wishlist": "Your wishlist is still empty.",
       "planned": "Add places to a trip and they will show up here."
     }
+  },
+  "pinsTab": {
+    "emptyTitle": "No places yet",
+    "emptyMessage": "Places you save will appear here."
   }
 }

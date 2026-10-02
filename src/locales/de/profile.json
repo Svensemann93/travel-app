@@ -96,5 +96,9 @@
       "wishlist": "Deine Wunschliste ist noch leer.",
       "planned": "Füge Orte zu einer Reise hinzu, damit sie hier erscheinen."
     }
+  },
+  "pinsTab": {
+    "emptyTitle": "Noch keine Orte",
+    "emptyMessage": "Sobald du Orte speicherst, erscheinen sie hier."
   }
 }
