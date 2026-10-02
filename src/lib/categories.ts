@@ -1,13 +1,5 @@
 export type CategoryId =
-  | 'restaurant'
-  | 'cafe'
-  | 'bar'
-  | 'sight'
-  | 'nature'
-  | 'lodging'
-  | 'activity'
-  | 'hiking'
-  | 'other'
+  'restaurant' | 'cafe' | 'bar' | 'sight' | 'nature' | 'lodging' | 'activity' | 'hiking' | 'other'
 
 export type Category = {
   id: CategoryId
