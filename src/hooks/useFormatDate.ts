@@ -4,6 +4,7 @@ import {
   formatDateLong as rawFormatDateLong,
   formatDateRange as rawFormatDateRange,
   formatWeekday as rawFormatWeekday,
+  formatRelative as rawFormatRelative,
 } from '../lib/dateFormat'
 import { resolveLocale } from '../lib/i18nLocale'
 
@@ -18,5 +19,6 @@ export function useFormatDate() {
     formatDateRange: (start: string | null, end: string | null) =>
       rawFormatDateRange(start, end, locale, prefixes),
     formatWeekday: (dateString: string) => rawFormatWeekday(dateString, locale),
+    formatRelative: (dateString: string) => rawFormatRelative(dateString, locale),
   }
 }
